@@ -1,8 +1,10 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
-import { Bell, Search } from "lucide-react"
+import { Bell, Search, User, LogOut } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { SidebarTrigger } from "@/components/ui/sidebar"
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator } from "@/components/ui/dropdown-menu"
+import Link from "next/link"
 
 export function Header() {
   return (
@@ -26,10 +28,29 @@ export function Header() {
           <Bell className="h-5 w-5" />
           <span className="sr-only">Toggle notifications</span>
         </Button>
-        <Avatar>
-          <AvatarImage src="https://placehold.co/40x40" alt="@user" data-ai-hint="male avatar" />
-          <AvatarFallback>CS</AvatarFallback>
-        </Avatar>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Avatar className="cursor-pointer">
+              <AvatarImage src="https://placehold.co/40x40" alt="@user" data-ai-hint="male avatar" />
+              <AvatarFallback>CS</AvatarFallback>
+            </Avatar>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-56">
+            <DropdownMenuLabel>My Account</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem asChild>
+                <Link href="/profile">
+                    <User className="mr-2 h-4 w-4" />
+                    <span>Profile</span>
+                </Link>
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem>
+                <LogOut className="mr-2 h-4 w-4" />
+                <span>Log out</span>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
     </header>
   )

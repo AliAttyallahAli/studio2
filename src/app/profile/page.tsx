@@ -1,12 +1,11 @@
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { SidebarProvider, Sidebar, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarInset, SidebarHeader } from "@/components/ui/sidebar"
 import { Header } from "@/components/header"
-import { DashboardView } from "@/components/dashboard-view"
-import { OptimizationView } from "@/components/optimization-view"
+import { ProfileView } from "@/components/profile-view"
 import { SentinelIcon } from "@/components/icons"
-import { LayoutDashboard, Settings, LifeBuoy } from "lucide-react"
+import { LayoutDashboard, Settings, LifeBuoy, User } from "lucide-react"
+import Link from "next/link"
 
-export default function Home() {
+export default function ProfilePage() {
   return (
     <SidebarProvider>
       <Sidebar>
@@ -19,7 +18,7 @@ export default function Home() {
           </SidebarHeader>
           <SidebarMenu className="flex-1 px-2">
             <SidebarMenuItem>
-              <SidebarMenuButton href="/" isActive={true} tooltip={{ children: "Dashboard" }}>
+              <SidebarMenuButton href="/" tooltip={{ children: "Dashboard" }}>
                 <LayoutDashboard />
                 <span>Dashboard</span>
               </SidebarMenuButton>
@@ -47,18 +46,7 @@ export default function Home() {
       <SidebarInset>
         <Header />
         <main className="p-4 lg:p-6 bg-background">
-          <Tabs defaultValue="dashboard" className="w-full">
-            <TabsList className="grid w-full grid-cols-2 md:w-[400px]">
-              <TabsTrigger value="dashboard">Monitoring</TabsTrigger>
-              <TabsTrigger value="optimizer">AI Optimizer</TabsTrigger>
-            </TabsList>
-            <TabsContent value="dashboard" className="mt-6">
-              <DashboardView />
-            </TabsContent>
-            <TabsContent value="optimizer" className="mt-6">
-              <OptimizationView />
-            </TabsContent>
-          </Tabs>
+          <ProfileView />
         </main>
       </SidebarInset>
     </SidebarProvider>
