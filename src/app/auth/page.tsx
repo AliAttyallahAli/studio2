@@ -23,7 +23,7 @@ export default function AuthPage() {
   const handleAuth = () => {
     // Logic to handle authentication would go here
     // For now, just navigate to the dashboard
-    router.push('/');
+    router.push('/mining');
   };
 
   return (
@@ -53,7 +53,7 @@ export default function AuthPage() {
                     <Label htmlFor="password-login">Mot de passe</Label>
                     <Input id="password-login" type="password" required />
                   </div>
-                  <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">
+                  <Button type="submit" className="w-full">
                     Se connecter
                   </Button>
                 </form>
@@ -72,7 +72,7 @@ export default function AuthPage() {
                     <Label htmlFor="password-confirm">Confirmer le mot de passe</Label>
                     <Input id="password-confirm" type="password" required />
                   </div>
-                  <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">
+                  <Button type="submit" className="w-full">
                     S'inscrire
                   </Button>
                 </form>

@@ -23,26 +23,31 @@ export default function ProfilePage() {
   return (
     <AppLayout>
         <div className="space-y-6">
-            <div className="flex flex-col items-center space-y-4">
-                <div className="relative">
-                    <Avatar className="w-24 h-24">
-                        <AvatarImage src="https://placehold.co/100x100.png" alt="@username" data-ai-hint="profile avatar" />
-                        <AvatarFallback>CS</AvatarFallback>
-                    </Avatar>
-                    <Button size="icon" className="absolute bottom-0 right-0 rounded-full">
-                        <Camera className="h-4 w-4" />
-                    </Button>
-                </div>
-                <div className="text-center">
-                    <h1 className="text-2xl font-bold">@CryptoMiner</h1>
-                    <p className="text-muted-foreground">miner@example.com</p>
-                </div>
-            </div>
+            <Card>
+                <CardHeader>
+                    <CardTitle>Profil</CardTitle>
+                    <CardDescription>Gérez vos informations personnelles et paramètres.</CardDescription>
+                </CardHeader>
+                <CardContent className="flex flex-col items-center pt-6 space-y-4">
+                    <div className="relative">
+                        <Avatar className="w-24 h-24">
+                            <AvatarImage src="https://placehold.co/100x100.png" alt="@username" data-ai-hint="profile avatar" />
+                            <AvatarFallback>CS</AvatarFallback>
+                        </Avatar>
+                        <Button size="icon" className="absolute bottom-0 right-0 rounded-full">
+                            <Camera className="h-4 w-4" />
+                        </Button>
+                    </div>
+                    <div className="text-center">
+                        <h1 className="text-2xl font-bold">@CryptoMiner</h1>
+                        <p className="text-muted-foreground">miner@example.com</p>
+                    </div>
+                </CardContent>
+            </Card>
 
             <Card>
                 <CardHeader>
-                    <CardTitle>Gérer le profil</CardTitle>
-                    <CardDescription>Mettez à jour vos informations personnelles.</CardDescription>
+                    <CardTitle>Mettre à jour le profil</CardTitle>
                 </CardHeader>
                 <CardContent>
                     <form className="space-y-4">
@@ -58,20 +63,10 @@ export default function ProfilePage() {
                             <Label htmlFor="bio">Biographie</Label>
                             <Textarea id="bio" placeholder="Parlez-nous un peu de vous..." defaultValue="Passionné de crypto et d'optimisation de la performance."/>
                         </div>
-                        <Button className="w-full bg-primary hover:bg-primary/90">Sauvegarder</Button>
+                        <Button className="w-full">Sauvegarder</Button>
                     </form>
                 </CardContent>
             </Card>
-            
-             <Button variant="outline" className="w-full justify-start text-base py-6" onClick={() => router.push('/verification')}>
-                <ShieldCheck className="mr-4 h-5 w-5" />
-                Vérification du compte
-            </Button>
-
-            <Button variant="destructive" className="w-full" onClick={handleLogout}>
-                <LogOut className="mr-2 h-4 w-4" />
-                Se déconnecter
-            </Button>
         </div>
     </AppLayout>
   );

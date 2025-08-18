@@ -113,7 +113,7 @@ function SendDialog() {
                     <Label htmlFor="amount">Montant</Label>
                     <Input id="amount" type="number" placeholder="0.00" />
                 </div>
-                <Button className="w-full bg-accent hover:bg-accent/90">Envoyer</Button>
+                <Button className="w-full">Envoyer</Button>
             </div>
         </DialogContent>
     );
@@ -188,7 +188,7 @@ function ExchangeDialog() {
                     <Input id="amount-exchange" type="number" placeholder="0.00" />
                 </div>
                 <p className="text-sm text-muted-foreground">Taux de change : 1 Z = 500 XAF</p>
-                <Button className="w-full bg-accent hover:bg-accent/90" disabled={!selectedCountry}>Échanger</Button>
+                <Button className="w-full" disabled={!selectedCountry}>Échanger</Button>
             </div>
         </DialogContent>
     );
