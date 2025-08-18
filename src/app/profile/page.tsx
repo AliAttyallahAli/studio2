@@ -14,6 +14,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 
 export default function ProfilePage() {
     const router = useRouter();
+    const referralLink = "https://cryptosen.tinal/join/CryptoMiner";
 
     const handleLogout = () => {
         // Logout logic here
@@ -65,6 +66,22 @@ export default function ProfilePage() {
                         </div>
                         <Button className="w-full">Sauvegarder</Button>
                     </form>
+                </CardContent>
+            </Card>
+
+            <Card>
+                <CardHeader>
+                    <CardTitle>Parrainage</CardTitle>
+                    <CardDescription>Invitez des amis et gagnez des récompenses.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <div className="flex items-center space-x-2 p-2 bg-secondary rounded-md">
+                        <Gift className="h-5 w-5 text-primary"/>
+                        <Input readOnly defaultValue={referralLink} className="flex-grow border-0 bg-transparent text-sm" />
+                        <Button variant="ghost" size="icon" onClick={() => navigator.clipboard.writeText(referralLink)}>
+                            <Copy className="h-4 w-4" />
+                        </Button>
+                    </div>
                 </CardContent>
             </Card>
         </div>
