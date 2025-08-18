@@ -1,10 +1,18 @@
 'use client';
 
 import { usePathname, useRouter } from 'next/navigation';
-import { User, Repeat, Wallet, Menu } from 'lucide-react';
+import { User, Repeat, Wallet, Menu, X } from 'lucide-react';
 import { Mine } from '@/components/ui/mine';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+  SheetClose,
+} from '@/components/ui/sheet';
 
 const navItems = [
   { href: '/wallet', label: 'Portefeuille', icon: Wallet },
@@ -22,17 +30,43 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="flex flex-col h-screen">
-       <header className="sticky top-0 z-50 flex items-center justify-between h-16 px-4 border-b shrink-0 bg-background">
+      <header className="sticky top-0 z-50 flex items-center justify-between h-16 px-4 border-b shrink-0 bg-background">
         <div className="flex items-center gap-2">
-           <h1 className="text-lg font-semibold">{pageTitle}</h1>
+          <h1 className="text-lg font-semibold">{pageTitle}</h1>
         </div>
-        <Button variant="ghost" size="icon">
-          <Menu className="w-6 h-6" />
-          <span className="sr-only">Ouvrir le menu</span>
-        </Button>
+        <Sheet>
+          <SheetTrigger asChild>
+            <Button variant="ghost" size="icon">
+              <Menu className="w-6 h-6" />
+              <span className="sr-only">Ouvrir le menu</span>
+            </Button>
+          </SheetTrigger>
+          <SheetContent side="right">
+            <SheetHeader>
+              <SheetTitle>Menu</SheetTitle>
+            </SheetHeader>
+            <div className="flex flex-col space-y-4 py-4">
+              {navItems.map((item) => (
+                <SheetClose asChild key={item.href}>
+                  <Button
+                    variant="outline"
+                    className={cn(
+                      "justify-start",
+                      pathname === item.href && "bg-accent text-accent-foreground"
+                    )}
+                    onClick={() => router.push(item.href)}
+                  >
+                    <item.icon className="mr-2 h-5 w-5" />
+                    {item.label}
+                  </Button>
+                </SheetClose>
+              ))}
+            </div>
+          </SheetContent>
+        </Sheet>
       </header>
       <div className="flex-grow p-4 md:p-6 overflow-y-auto pb-24">
-          {children}
+        {children}
       </div>
       <footer className="fixed bottom-0 left-0 right-0 bg-secondary border-t border-border z-50">
         <nav className="flex justify-around items-center h-16 max-w-lg mx-auto">
