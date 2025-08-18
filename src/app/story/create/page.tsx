@@ -8,22 +8,25 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import Image from 'next/image';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
 export default function CreateStoryPage() {
   const router = useRouter();
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [caption, setCaption] = useState('');
+  const [imageFile, setImageFile] = useState<File | null>(null);
 
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
       const file = event.target.files[0];
+      setImageFile(file);
       setImagePreview(URL.createObjectURL(file));
     }
   };
 
   const handlePublish = () => {
     // Logic to upload image and caption would go here
-    console.log('Publishing story:', { image: imagePreview, caption });
+    console.log('Publishing story:', { image: imageFile, caption });
     router.push('/feed'); // Redirect to feed after publishing
   };
 
@@ -34,56 +37,51 @@ export default function CreateStoryPage() {
           <ArrowLeft className="h-6 w-6" />
         </Button>
         <h1 className="text-lg font-semibold">Créer un Statut</h1>
-        <div className="w-9" />
+        <Button onClick={handlePublish} disabled={!imageFile} className="bg-accent hover:bg-accent/90">
+            Publier <Send className="ml-2 h-4 w-4" />
+        </Button>
       </header>
 
-      <div className="flex-grow flex flex-col items-center justify-center p-4 bg-secondary/50">
-        {imagePreview ? (
-          <div className="relative w-full max-w-lg aspect-[9/16]">
-            <Image
-              src={imagePreview}
-              alt="Aperçu du statut"
-              layout="fill"
-              objectFit="cover"
-              className="rounded-lg"
-            />
-          </div>
-        ) : (
-          <label
-            htmlFor="story-upload"
-            className="flex flex-col items-center justify-center w-full max-w-lg aspect-[9/16] border-2 border-dashed border-muted-foreground rounded-lg cursor-pointer hover:bg-muted"
-          >
-            <ImageIcon className="h-16 w-16 text-muted-foreground mb-4" />
-            <p className="text-muted-foreground">Appuyez pour ajouter une photo</p>
-            <Input
-              id="story-upload"
-              type="file"
-              className="hidden"
-              accept="image/*"
-              onChange={handleImageChange}
-            />
-          </label>
-        )}
-      </div>
+      <div className="flex-grow flex flex-col p-4 space-y-4">
+        <div>
+            <Label htmlFor="story-upload" className="font-semibold">Image du statut</Label>
+            <div className="mt-2 flex items-center gap-4">
+                 <label
+                    htmlFor="story-upload"
+                    className="flex-shrink-0 flex flex-col items-center justify-center w-32 h-32 border-2 border-dashed border-muted-foreground rounded-lg cursor-pointer hover:bg-muted"
+                >
+                    {imagePreview ? (
+                         <Image
+                            src={imagePreview}
+                            alt="Aperçu"
+                            width={128}
+                            height={128}
+                            className="object-cover w-full h-full rounded-md"
+                        />
+                    ) : (
+                        <div className="text-center p-2">
+                             <ImageIcon className="h-8 w-8 text-muted-foreground mx-auto" />
+                             <p className="text-xs text-muted-foreground mt-1">Ajouter une photo</p>
+                        </div>
+                    )}
+                     <Input
+                        id="story-upload"
+                        type="file"
+                        className="hidden"
+                        accept="image/*"
+                        onChange={handleImageChange}
+                    />
+                </label>
 
-      <footer className="p-3 border-t bg-background">
-        <div className="flex items-center gap-2">
-          <Textarea
-            placeholder="Ajouter une légende..."
-            value={caption}
-            onChange={(e) => setCaption(e.target.value)}
-            className="min-h-0 h-10 flex-grow"
-          />
-          <Button
-            size="icon"
-            className="bg-accent hover:bg-accent/90"
-            onClick={handlePublish}
-            disabled={!imagePreview}
-          >
-            <Send className="h-5 w-5" />
-          </Button>
+                <Textarea
+                    placeholder="Ajouter une légende..."
+                    value={caption}
+                    onChange={(e) => setCaption(e.target.value)}
+                    className="min-h-[128px] h-32 flex-grow"
+                />
+            </div>
         </div>
-      </footer>
+      </div>
     </div>
   );
 }
