@@ -55,7 +55,7 @@ export default function ChatListPage() {
           </div>
 
           <div className="fixed bottom-20 right-4">
-              <Button size="icon" className="rounded-full h-14 w-14 bg-accent hover:bg-accent/90 shadow-lg">
+              <Button size="icon" className="rounded-full h-14 w-14 bg-accent hover:bg-accent/90 shadow-lg" onClick={() => router.push('/chat/new')}>
                   <Plus className="h-6 w-6" />
               </Button>
           </div>
