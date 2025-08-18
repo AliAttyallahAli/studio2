@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -83,8 +84,8 @@ export default function MiningPage() {
         </Card>
 
         <div className="text-sm text-muted-foreground">
-            <p>Taux de minage : +0.1 Z / heure</p>
-            <p>Session active pendant 24 heures.</p>
+            <p>Taux de minage : +3 Z / jour pour vous.</p>
+            <p>Un total de 10 Z est miné, dont 7 Z pour la Core Team.</p>
         </div>
 
       </div>
