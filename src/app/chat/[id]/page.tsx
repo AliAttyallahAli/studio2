@@ -29,7 +29,7 @@ export default function ChatPage({ params }: { params: { id: string } }) {
         <Button variant="ghost" size="icon" onClick={() => router.back()}>
           <ArrowLeft className="h-6 w-6" />
         </Button>
-        <div className="flex items-center gap-3 ml-2" onClick={() => router.push(`/chat/${params.id}/settings`)}>
+        <div className="flex items-center gap-3 ml-2 cursor-pointer" onClick={() => router.push(`/chat/${params.id}/settings`)}>
             <Avatar>
                 <AvatarImage src={chatAvatar} alt={chatName} data-ai-hint="profile avatar"/>
                 <AvatarFallback>{chatName.charAt(0)}</AvatarFallback>
