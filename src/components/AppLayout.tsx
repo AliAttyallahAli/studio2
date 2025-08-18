@@ -2,7 +2,7 @@
 'use client';
 
 import { usePathname, useRouter } from 'next/navigation';
-import { User, Wallet, Menu, Settings, LogOut, Shield, BarChart2, Repeat, MessageSquare, Landmark, Pickaxe } from 'lucide-react';
+import { User, Wallet, Menu, Settings, LogOut, Shield, BarChart2, Repeat, MessageSquare, Landmark, Pickaxe, UserCog } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import {
@@ -26,14 +26,19 @@ const navItems = [
   { href: '/profile', label: 'Profil', icon: User },
 ];
 
+const adminNavItems = [
+    { href: '/admin', label: 'Admin', icon: UserCog },
+]
+
 
 export function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
 
   const getPageTitle = () => {
-    const current = navItems.find(i => pathname.startsWith(i.href) && i.href !== '/');
+    const allItems = [...navItems, ...adminNavItems];
     if (pathname === '/') return 'Minage';
+    const current = allItems.find(i => pathname.startsWith(i.href) && i.href !== '/');
     if (current) return current.label;
     if (pathname.startsWith('/profile')) return 'Profil';
     return 'Crypto Sentinel';
@@ -61,6 +66,18 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                     {item.label}
                   </Button>
               ))}
+                <Separator className="my-4"/>
+                {adminNavItems.map((item) => (
+                    <Button
+                        key={item.label}
+                        variant={pathname === item.href ? 'secondary' : 'ghost'}
+                        className="w-full justify-start"
+                        onClick={() => router.push(item.href)}
+                    >
+                        <item.icon className="mr-2 h-5 w-5" />
+                        {item.label}
+                    </Button>
+                ))}
            </nav>
             <div className="p-4 border-t">
                  <Button variant="ghost" className="w-full justify-start" onClick={() => router.push('/profile')}>
@@ -108,6 +125,19 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                                 <item.icon className="mr-2 h-5 w-5" />
                                 {item.label}
                             </Button>
+                            </SheetClose>
+                        ))}
+                         <Separator className="my-4"/>
+                        {adminNavItems.map((item) => (
+                            <SheetClose asChild key={item.label}>
+                                <Button
+                                    variant={pathname === item.href ? 'secondary' : 'ghost'}
+                                    className="justify-start"
+                                    onClick={() => router.push(item.href)}
+                                >
+                                    <item.icon className="mr-2 h-5 w-5" />
+                                    {item.label}
+                                </Button>
                             </SheetClose>
                         ))}
                         </div>
