@@ -30,17 +30,50 @@ export default function VerificationPage() {
                         <CardDescription>Statut : <span className="text-yellow-400 font-semibold">Non vérifié</span></CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
-                         <div className="space-y-2">
-                            <Label htmlFor="kyc-doc-type">Type de document</Label>
-                            <Input id="kyc-doc-type" placeholder="Ex: Carte d'identité nationale, Passeport" />
+                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                                <Label htmlFor="kyc-fullname">Nom(s) et Prénom(s)</Label>
+                                <Input id="kyc-fullname" placeholder="Ex: Jean Dupont" />
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="kyc-birthdate">Date de naissance</Label>
+                                <Input id="kyc-birthdate" type="date" />
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="kyc-birthplace">Lieu de naissance</Label>
+                                <Input id="kyc-birthplace" placeholder="Ex: Douala" />
+                            </div>
+                             <div className="space-y-2">
+                                <Label htmlFor="kyc-address">Adresse</Label>
+                                <Input id="kyc-address" placeholder="Ex: 123, Rue de la Liberté" />
+                            </div>
+                             <div className="space-y-2">
+                                <Label htmlFor="kyc-profession">Profession</Label>
+                                <Input id="kyc-profession" placeholder="Ex: Développeur" />
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="kyc-doc-type">Type de document</Label>
+                                <Input id="kyc-doc-type" placeholder="Ex: Carte d'identité, Passeport" />
+                            </div>
+                             <div className="space-y-2">
+                                <Label htmlFor="kyc-doc-number">Numéro du document</Label>
+                                <Input id="kyc-doc-number" placeholder="Ex: 123456789" />
+                            </div>
                         </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="kyc-doc-upload">Télécharger le document (Recto)</Label>
-                            <Input id="kyc-doc-upload" type="file" />
-                        </div>
-                         <div className="space-y-2">
-                            <Label htmlFor="kyc-doc-upload-verso">Télécharger le document (Verso, si applicable)</Label>
-                            <Input id="kyc-doc-upload-verso" type="file" />
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            <div className="space-y-2">
+                                <Label htmlFor="kyc-doc-upload-recto">Document (Recto)</Label>
+                                <Input id="kyc-doc-upload-recto" type="file" />
+                            </div>
+                             <div className="space-y-2">
+                                <Label htmlFor="kyc-doc-upload-verso">Document (Verso)</Label>
+                                <Input id="kyc-doc-upload-verso" type="file" />
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="kyc-selfie">Selfie</Label>
+                                <Input id="kyc-selfie" type="file" />
+                            </div>
                         </div>
                         <Button className="w-full bg-accent hover:bg-accent/90">Soumettre pour vérification KYC</Button>
                     </CardContent>
