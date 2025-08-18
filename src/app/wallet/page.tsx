@@ -14,12 +14,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 
 const hotWallet = {
-    address: '0xHotWalletZoudouUser123ABC',
+    address: '0x4a7c7e5a3e1b9b8c6d4f5a3e1b9b8c6d4f5a3e1b',
     balance: '234.56 Z'
 };
 
 const coldWallet = {
-    address: '0xColdWalletZoudouUser789XYZ',
+    address: '0x9f8e7d6c5b4a3f2e1d9c8b7a6f5e4d3c2b1a9f8e',
     balance: '1,000.00 Z',
     privateKey: 'cold-wallet-private-key-example-never-share-this'
 };

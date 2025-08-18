@@ -8,7 +8,7 @@ import { ArrowUpRight, Copy, DollarSign, Shield, Users } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 const coreTeamWallet = {
-    address: '0xCoreTeamZoudouAdminWalletAddress789XYZ',
+    address: '0xFedCba0987654321fEdCbA0987654321FeDcBa09',
     balance: '10,500,000.00 Z',
 };
 
