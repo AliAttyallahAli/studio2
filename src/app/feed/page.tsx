@@ -6,12 +6,36 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Heart, MessageCircle, Share2, Image as ImageIcon } from 'lucide-react';
+import { Heart, MessageCircle, Share2, Image as ImageIcon, Link2 } from 'lucide-react';
 import Image from 'next/image';
 import { Separator } from '@/components/ui/separator';
 import { StoryCarousel } from '@/components/StoryCarousel';
+import { cn } from '@/lib/utils';
+import React from 'react';
 
-const PostCard = ({ post }: { post: any }) => (
+const urlRegex = /(https?:\/\/[^\s]+)/g;
+
+const LinkPreviewCard = ({ link }: { link: any }) => (
+    <a href={link.url} target="_blank" rel="noopener noreferrer" className="block mt-4">
+        <Card className="hover:bg-secondary transition-colors">
+            {link.image && (
+                 <Image src={link.image} alt={link.title} width={600} height={315} className="rounded-t-lg object-cover w-full aspect-video" data-ai-hint="website preview" />
+            )}
+            <div className="p-4">
+                <p className="text-xs text-muted-foreground uppercase">{new URL(link.url).hostname}</p>
+                <h4 className="font-semibold truncate">{link.title}</h4>
+                <p className="text-sm text-muted-foreground line-clamp-2">{link.description}</p>
+            </div>
+        </Card>
+    </a>
+);
+
+
+const PostCard = ({ post }: { post: any }) => {
+    const link = post.linkPreview;
+    const contentWithoutUrl = post.content.replace(urlRegex, '').trim();
+
+    return (
     <Card>
         <CardHeader>
             <div className="flex items-center gap-3">
@@ -26,13 +50,17 @@ const PostCard = ({ post }: { post: any }) => (
             </div>
         </CardHeader>
         <CardContent>
-            <p className="mb-4">{post.content}</p>
+            {contentWithoutUrl && <p className="mb-4">{contentWithoutUrl}</p>}
+            
             {post.image && (
                 <div className="mb-4">
                     <Image src={post.image} alt="Post image" width={600} height={400} className="rounded-lg object-cover w-full" data-ai-hint={post.imageHint} />
                 </div>
             )}
-            <Separator />
+
+            {link && <LinkPreviewCard link={link} />}
+
+            <Separator className="mt-4" />
             <div className="flex justify-around pt-2">
                 <Button variant="ghost" className="w-full">
                     <Heart className="mr-2 h-4 w-4" /> J'aime
@@ -46,7 +74,8 @@ const PostCard = ({ post }: { post: any }) => (
             </div>
         </CardContent>
     </Card>
-);
+    );
+};
 
 const feedPosts = [
   {
@@ -54,14 +83,29 @@ const feedPosts = [
     time: 'Il y a 2 heures',
     content: 'Heureux de rejoindre la communauté Zoudou ! Prêt à miner mes premiers tokens Z. 🚀',
     image: 'https://placehold.co/600x400.png',
-    imageHint: 'rocket launch'
+    imageHint: 'rocket launch',
+    linkPreview: null,
+  },
+  {
+    user: { name: '@tech_news', avatar: 'https://placehold.co/100x100.png' },
+    time: 'Il y a 4 heures',
+    content: 'Article intéressant sur le futur du Web3 : https://example-web3-news.com/article',
+    image: null,
+    imageHint: '',
+    linkPreview: {
+        url: 'https://example-web3-news.com/article',
+        title: 'Le futur du Web3 : décentralisation et tokens',
+        description: 'Un aperçu des tendances qui façonneront la prochaine génération d\'internet, de la DeFi aux DAO en passant par les identités décentralisées.',
+        image: 'https://placehold.co/600x315.png',
+    }
   },
   {
     user: { name: '@crypto_queen', avatar: 'https://placehold.co/100x100.png' },
     time: 'Il y a 5 heures',
     content: "Le marché est en pleine effervescence aujourd'hui. J'ai échangé quelques Z contre un bon d'achat. C'est tellement pratique !",
     image: null,
-    imageHint: ''
+    imageHint: '',
+    linkPreview: null,
   },
 ];
 
