@@ -33,9 +33,9 @@ const workers = [
 ]
 
 const recentTransactions = [
-    {id: 'tx-1', type: 'Reward', amount: '+0.005 BTC', date: '2024-07-07 14:30'},
-    {id: 'tx-2', type: 'Payout', amount: '-0.1 BTC', date: '2024-07-06 10:00'},
-    {id: 'tx-3', type: 'Reward', amount: '+0.0048 BTC', date: '2024-07-05 14:25'},
+    {id: 'tx-1', type: 'Reward', amount: '+0.005 Z', date: '2024-07-07 14:30'},
+    {id: 'tx-2', type: 'Payout', amount: '-10 Z', date: '2024-07-06 10:00'},
+    {id: 'tx-3', type: 'Reward', amount: '+0.0048 Z', date: '2024-07-05 14:25'},
 ]
 
 export default function MiningPage() {
@@ -56,12 +56,12 @@ export default function MiningPage() {
           </Card>
            <Card>
             <CardHeader>
-              <CardTitle>Récompenses Estimées</CardTitle>
-              <CardDescription>Gains prévus pour les 24h</CardDescription>
+              <CardTitle>Récompenses Journalières</CardTitle>
+              <CardDescription>Tokens Z générés aujourd'hui</CardDescription>
             </CardHeader>
             <CardContent>
-              <p className="text-4xl font-bold">0.0051 BTC</p>
-               <p className="text-xs text-muted-foreground mt-1">~250.00 USD</p>
+              <p className="text-4xl font-bold">2.50 Z</p>
+               <p className="text-xs text-muted-foreground mt-1">Prochaine distribution dans 6h</p>
             </CardContent>
           </Card>
            <Card>

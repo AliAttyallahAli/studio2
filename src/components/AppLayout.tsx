@@ -20,7 +20,9 @@ const navItems = [
   { href: '/', label: 'Minage', icon: Pickaxe },
   { href: '/wallet', label: 'Portefeuille', icon: Wallet },
   { href: '/p2p', label: 'Échange P2P', icon: Repeat },
+  { href: '/marketplace', label: 'Marché', icon: MessageSquare },
   { href: '/citizens', label: 'Citoyens', icon: Landmark },
+  { href: '/verification', label: 'Vérification', icon: Shield },
   { href: '/profile', label: 'Profil', icon: User },
 ];
 
@@ -30,7 +32,8 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
 
   const getPageTitle = () => {
-    const current = navItems.find(i => pathname === i.href);
+    const current = navItems.find(i => pathname.startsWith(i.href) && i.href !== '/');
+    if (pathname === '/') return 'Minage';
     if (current) return current.label;
     if (pathname.startsWith('/profile')) return 'Profil';
     return 'Crypto Sentinel';
@@ -84,7 +87,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                     <span className="sr-only">Ouvrir le menu</span>
                     </Button>
                 </SheetTrigger>
-                <SheetContent side="left">
+                <SheetContent side="left" className="w-[280px]">
                     <SheetHeader>
                         <SheetTitle>
                             <div className="flex items-center">
@@ -112,7 +115,14 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                 </SheetContent>
             </Sheet>
              <h1 className="font-semibold">{pageTitle}</h1>
-             <div className="w-8"></div>
+             <div className="w-10">
+                <Button variant="ghost" size="icon" onClick={() => router.push('/profile')}>
+                     <Avatar className="w-8 h-8">
+                        <AvatarImage src="https://placehold.co/100x100.png" alt="@username" data-ai-hint="profile avatar"/>
+                        <AvatarFallback>CS</AvatarFallback>
+                    </Avatar>
+                </Button>
+             </div>
           </header>
           <main className="flex-grow p-4 md:p-6 overflow-y-auto">
             {children}

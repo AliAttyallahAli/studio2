@@ -42,15 +42,7 @@ const userProfiles: { [key: string]: any } = {
 
 export default function UserProfilePage({ params }: { params: { username: string } }) {
     const { username } = params;
-    const userProfile = userProfiles[username] || {
-        name: `@${username}`,
-        avatar: 'https://placehold.co/100x100.png',
-        email: `${username}@exemple.com`,
-        bio: "Ce profil n'a pas encore été complété.",
-        parcours: "Aucune information.",
-        interests: "Aucun centre d'intérêt spécifié.",
-        maritalStatus: "Non spécifié",
-    };
+    const userProfile = userProfiles[username] || userProfiles['user123'];
 
   return (
     <AppLayout>
