@@ -15,8 +15,8 @@ import {
 } from '@/components/ui/sheet';
 
 const navItems = [
+  { href: '/', label: 'Minage', icon: Mine },
   { href: '/wallet', label: 'Portefeuille', icon: Wallet },
-  { href: '/mining', label: 'Minage', icon: Mine },
   { href: '/feed', label: 'Feed', icon: Rss },
   { href: '/marketplace', label: 'Marché', icon: Repeat },
   { href: '/profile', label: 'Profil', icon: User },
