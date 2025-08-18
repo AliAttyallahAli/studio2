@@ -12,6 +12,7 @@ import { Separator } from '@/components/ui/separator';
 import { StoryCarousel } from '@/components/StoryCarousel';
 import { cn } from '@/lib/utils';
 import React from 'react';
+import Link from 'next/link';
 
 const urlRegex = /(https?:\/\/[^\s]+)/g;
 
@@ -38,16 +39,16 @@ const PostCard = ({ post }: { post: any }) => {
     return (
     <Card>
         <CardHeader>
-            <div className="flex items-center gap-3">
+            <Link href={`/profile/${post.user.username}`} className="flex items-center gap-3 group">
                 <Avatar>
                     <AvatarImage src={post.user.avatar} alt={post.user.name} data-ai-hint="profile avatar" />
                     <AvatarFallback>{post.user.name.charAt(0)}</AvatarFallback>
                 </Avatar>
                 <div>
-                    <p className="font-semibold">{post.user.name}</p>
+                    <p className="font-semibold group-hover:underline">{post.user.name}</p>
                     <p className="text-xs text-muted-foreground">{post.time}</p>
                 </div>
-            </div>
+            </Link>
         </CardHeader>
         <CardContent>
             {contentWithoutUrl && <p className="mb-4">{contentWithoutUrl}</p>}
@@ -79,7 +80,7 @@ const PostCard = ({ post }: { post: any }) => {
 
 const feedPosts = [
   {
-    user: { name: '@user123', avatar: 'https://placehold.co/100x100.png' },
+    user: { name: '@user123', username: 'user123', avatar: 'https://placehold.co/100x100.png' },
     time: 'Il y a 2 heures',
     content: 'Heureux de rejoindre la communauté Zoudou ! Prêt à miner mes premiers tokens Z. 🚀',
     image: 'https://placehold.co/600x400.png',
@@ -87,7 +88,7 @@ const feedPosts = [
     linkPreview: null,
   },
   {
-    user: { name: '@tech_news', avatar: 'https://placehold.co/100x100.png' },
+    user: { name: '@tech_news', username: 'tech_news', avatar: 'https://placehold.co/100x100.png' },
     time: 'Il y a 4 heures',
     content: 'Article intéressant sur le futur du Web3 : https://example-web3-news.com/article',
     image: null,
@@ -100,7 +101,7 @@ const feedPosts = [
     }
   },
   {
-    user: { name: '@crypto_queen', avatar: 'https://placehold.co/100x100.png' },
+    user: { name: '@crypto_queen', username: 'crypto_queen', avatar: 'https://placehold.co/100x100.png' },
     time: 'Il y a 5 heures',
     content: "Le marché est en pleine effervescence aujourd'hui. J'ai échangé quelques Z contre un bon d'achat. C'est tellement pratique !",
     image: null,
