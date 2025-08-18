@@ -1,13 +1,63 @@
+
 'use client';
 
+import React, { useState, useEffect, useRef } from 'react';
 import { AppLayout } from '@/components/AppLayout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { useToast } from "@/hooks/use-toast"
+import { Camera } from 'lucide-react';
+
 
 export default function VerificationPage() {
+  const { toast } = useToast();
+  const [hasCameraPermission, setHasCameraPermission] = useState<boolean | null>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+   useEffect(() => {
+    const getCameraPermission = async () => {
+      if (typeof window !== 'undefined' && navigator.mediaDevices) {
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia({video: true});
+          setHasCameraPermission(true);
+
+          if (videoRef.current) {
+            videoRef.current.srcObject = stream;
+          }
+        } catch (error) {
+          console.error('Error accessing camera:', error);
+          setHasCameraPermission(false);
+          toast({
+            variant: 'destructive',
+            title: 'Accès à la caméra refusé',
+            description: 'Veuillez autoriser l\'accès à la caméra dans les paramètres de votre navigateur pour continuer.',
+          });
+        }
+      } else {
+        setHasCameraPermission(false);
+         toast({
+            variant: 'destructive',
+            title: 'Appareil non pris en charge',
+            description: 'Votre navigateur ne prend pas en charge l\'accès à la caméra.',
+          });
+      }
+    };
+
+    getCameraPermission();
+
+     return () => {
+      if (videoRef.current && videoRef.current.srcObject) {
+        const stream = videoRef.current.srcObject as MediaStream;
+        stream.getTracks().forEach(track => track.stop());
+      }
+    };
+  }, [toast]);
+
+
   return (
     <AppLayout>
         <div className="space-y-6">
@@ -61,7 +111,7 @@ export default function VerificationPage() {
                             </div>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div className="space-y-2">
                                 <Label htmlFor="kyc-doc-upload-recto">Document (Recto)</Label>
                                 <Input id="kyc-doc-upload-recto" type="file" />
@@ -70,11 +120,28 @@ export default function VerificationPage() {
                                 <Label htmlFor="kyc-doc-upload-verso">Document (Verso)</Label>
                                 <Input id="kyc-doc-upload-verso" type="file" />
                             </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="kyc-selfie">Selfie</Label>
-                                <Input id="kyc-selfie" type="file" />
-                            </div>
                         </div>
+
+                        <div className="space-y-2">
+                            <Label>Selfie Vidéo</Label>
+                             <div className="p-2 border rounded-md bg-secondary aspect-video flex items-center justify-center">
+                                <video ref={videoRef} className="w-full h-full rounded-md" autoPlay muted playsInline />
+                            </div>
+                             {hasCameraPermission === false && (
+                                <Alert variant="destructive">
+                                          <AlertTitle>Accès à la caméra requis</AlertTitle>
+                                          <AlertDescription>
+                                            Veuillez autoriser l'accès à la caméra pour utiliser cette fonctionnalité.
+                                          </AlertDescription>
+                                  </Alert>
+                            )}
+                            <Button className="w-full" disabled={!hasCameraPermission}>
+                                <Camera className="mr-2 h-4 w-4" />
+                                Capturer le Selfie
+                            </Button>
+                        </div>
+
+
                         <Button className="w-full bg-accent hover:bg-accent/90">Soumettre pour vérification KYC</Button>
                     </CardContent>
                 </Card>
@@ -132,3 +199,4 @@ export default function VerificationPage() {
     </AppLayout>
   );
 }
+
