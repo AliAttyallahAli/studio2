@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useRouter } from 'next/navigation';
@@ -6,11 +7,12 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Shield } from 'lucide-react';
 
-function ZLogo() {
+function AppLogo() {
   return (
     <div className="flex items-center justify-center w-16 h-16 rounded-full bg-primary mb-6">
-      <span className="text-4xl font-bold text-primary-foreground">Z</span>
+      <Shield className="w-8 h-8 text-primary-foreground" />
     </div>
   );
 }
@@ -28,12 +30,12 @@ export default function AuthPage() {
     <main className="flex min-h-screen flex-col items-center justify-center p-4 bg-background">
       <div className="w-full max-w-md">
         <div className="flex justify-center mb-6">
-          <ZLogo />
+          <AppLogo />
         </div>
         <Card>
           <CardHeader className="text-center">
-            <CardTitle className="text-2xl">Bienvenue sur Zoudou</CardTitle>
-            <CardDescription>Votre portefeuille de tokens sécurisé</CardDescription>
+            <CardTitle className="text-2xl">Crypto Sentinel</CardTitle>
+            <CardDescription>Votre tableau de bord de mining sécurisé</CardDescription>
           </CardHeader>
           <CardContent>
             <Tabs defaultValue="login" className="w-full">
@@ -51,7 +53,7 @@ export default function AuthPage() {
                     <Label htmlFor="password-login">Mot de passe</Label>
                     <Input id="password-login" type="password" required />
                   </div>
-                  <Button type="submit" className="w-full bg-accent hover:bg-accent/90 text-accent-foreground">
+                  <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">
                     Se connecter
                   </Button>
                 </form>
@@ -70,7 +72,7 @@ export default function AuthPage() {
                     <Label htmlFor="password-confirm">Confirmer le mot de passe</Label>
                     <Input id="password-confirm" type="password" required />
                   </div>
-                  <Button type="submit" className="w-full bg-accent hover:bg-accent/90 text-accent-foreground">
+                  <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">
                     S'inscrire
                   </Button>
                 </form>

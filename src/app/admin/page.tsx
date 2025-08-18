@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { ArrowUpRight, Copy, DollarSign, Shield, Users } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { AppLayout } from '@/components/AppLayout';
 
 const coreTeamWallet = {
     address: '0xFedCba0987654321fEdCbA0987654321FeDcBa09',
@@ -22,16 +23,9 @@ export default function AdminPage() {
     const router = useRouter();
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
-       <header className="sticky top-0 z-50 flex items-center justify-between h-16 px-4 sm:px-6 border-b shrink-0 bg-background">
-         <div className="flex items-center gap-2">
-            <Shield className="h-6 w-6 text-primary"/>
-            <h1 className="text-xl font-semibold">Panneau d'Administration</h1>
-         </div>
-         <Button onClick={() => router.push('/')}>Retour à l'application</Button>
-      </header>
-
-      <main className="p-4 sm:p-6 space-y-6">
+    <AppLayout>
+      <div className="space-y-6">
+        <h1 className="text-3xl font-bold">Panneau d'Administration</h1>
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -114,7 +108,7 @@ export default function AdminPage() {
                 </Table>
             </CardContent>
         </Card>
-      </main>
-    </div>
+      </div>
+    </AppLayout>
   );
 }

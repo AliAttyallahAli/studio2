@@ -1,51 +1,70 @@
+@import url('https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&family=Space+Grotesk:wght@300..700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 48 96% 53%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 48 96% 53%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 48 96% 53%;
+    --background: 210 20% 98%; /* Very light desaturated blue (#F0F8FF) */
+    --foreground: 224 76% 15%;
+
+    --card: 210 20% 100%;
+    --card-foreground: 224 76% 15%;
+
+    --popover: 210 20% 100%;
+    --popover-foreground: 224 76% 15%;
+
+    --primary: 217 91% 60%; /* Saturated blue (#4287f5) */
+    --primary-foreground: 210 20% 98%;
+
+    --secondary: 210 20% 94%;
+    --secondary-foreground: 224 76% 25%;
+
+    --muted: 210 20% 94%;
+    --muted-foreground: 224 76% 45%;
+
+    --accent: 271 76% 53%; /* Vibrant purple (#A020F0) */
+    --accent-foreground: 210 20% 98%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 210 20% 98%;
+
+    --border: 210 20% 90%;
+    --input: 210 20% 90%;
+    --ring: 217 91% 60%;
+    
     --radius: 0.5rem;
   }
  
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 48 96% 53%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 48 96% 53%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 48 96% 53%;
+    --background: 214 25% 12%; /* Darker blue background */
+    --foreground: 210 20% 95%;
+
+    --card: 214 25% 16%;
+    --card-foreground: 210 20% 95%;
+    
+    --popover: 214 25% 12%;
+    --popover-foreground: 210 20% 95%;
+
+    --primary: 217 91% 60%; /* Saturated blue */
+    --primary-foreground: 210 20% 98%;
+
+    --secondary: 214 25% 20%;
+    --secondary-foreground: 210 20% 95%;
+
+    --muted: 214 25% 20%;
+    --muted-foreground: 210 20% 75%;
+
+    --accent: 271 76% 53%; /* Vibrant purple */
+    --accent-foreground: 210 20% 98%;
+
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 210 20% 98%;
+
+    --border: 214 25% 25%;
+    --input: 214 25% 25%;
+    --ring: 217 91% 60%;
   }
 }
  
@@ -56,16 +75,10 @@
   body {
     @apply bg-background text-foreground;
   }
-}
-
-@layer components {
-  .story-avatar-ring {
-    @apply ring-2 ring-offset-2 ring-offset-background;
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Space Grotesk', sans-serif;
   }
-  .story-avatar-ring-unseen {
-    @apply ring-primary;
-  }
-  .story-avatar-ring-seen {
-    @apply ring-muted-foreground/50;
+  body, p, span, div, input, button, label, textarea, select {
+    font-family: 'PT Sans', sans-serif;
   }
 }

@@ -1,13 +1,23 @@
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
+import { PT_Sans, Space_Grotesk } from 'next/font/google';
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
+import { cn } from '@/lib/utils';
 
-const inter = Inter({ subsets: ['latin'] });
+const ptSans = PT_Sans({ 
+  subsets: ['latin'], 
+  weight: ['400', '700'],
+  variable: '--font-pt-sans',
+});
+
+const spaceGrotesk = Space_Grotesk({
+  subsets: ['latin'],
+  variable: '--font-space-grotesk',
+});
 
 export const metadata: Metadata = {
-  title: 'Zoudou',
-  description: 'Générez des tokens Zoudou chaque jour.',
+  title: 'Crypto Sentinel',
+  description: 'Votre tableau de bord de mining sécurisé.',
 };
 
 export default function RootLayout({
@@ -17,7 +27,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="fr" className="dark">
-      <body className={inter.className}>
+      <body className={cn(ptSans.variable, spaceGrotesk.variable, "font-sans")}>
         <div className="flex flex-col min-h-screen">
           <main className="flex-grow">{children}</main>
         </div>

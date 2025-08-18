@@ -25,43 +25,65 @@ export default function ChatListPage() {
 
   return (
     <AppLayout>
-      <div className="relative h-full flex flex-col -m-4">
-        <div className="flex-grow overflow-y-auto pb-20">
-          <div className="p-4">
-            <StoryCarousel />
-          </div>
-          <Card className="border-0 rounded-none border-t">
-            <CardContent className="p-0">
-              <div className="divide-y divide-border">
-                {chats.map((chat) => (
-                  <div
-                    key={chat.id}
-                    className="flex items-center p-4 cursor-pointer hover:bg-secondary"
-                    onClick={() => handleChatClick(chat.id)}
-                  >
-                    <Avatar className="w-12 h-12 mr-4">
-                      <AvatarImage src={chat.avatar} alt={chat.name} data-ai-hint={chat.type === 'group' ? 'group icon' : 'profile avatar'} />
-                      <AvatarFallback>{chat.name.charAt(0)}</AvatarFallback>
-                    </Avatar>
-                    <div className="flex-grow">
-                      <p className="font-semibold">{chat.name}</p>
-                      <p className="text-sm text-muted-foreground truncate">{chat.lastMessage}</p>
+      <div className="grid md:grid-cols-[300px_1fr] h-full gap-6">
+        <div className="flex-col h-full hidden md:flex">
+          <Card className="h-full">
+              <CardContent className="p-0 h-full">
+                <div className="divide-y divide-border h-full overflow-y-auto">
+                  {chats.map((chat) => (
+                    <div
+                      key={chat.id}
+                      className="flex items-center p-4 cursor-pointer hover:bg-secondary"
+                      onClick={() => handleChatClick(chat.id)}
+                    >
+                      <Avatar className="w-12 h-12 mr-4">
+                        <AvatarImage src={chat.avatar} alt={chat.name} data-ai-hint={chat.type === 'group' ? 'group icon' : 'profile avatar'} />
+                        <AvatarFallback>{chat.name.charAt(0)}</AvatarFallback>
+                      </Avatar>
+                      <div className="flex-grow">
+                        <p className="font-semibold">{chat.name}</p>
+                        <p className="text-sm text-muted-foreground truncate">{chat.lastMessage}</p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-xs text-muted-foreground">{chat.time}</p>
+                      </div>
                     </div>
-                    <div className="text-right">
-                      <p className="text-xs text-muted-foreground">{chat.time}</p>
-                      {/* Unread count badge can go here */}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
         </div>
-
-        <div className="fixed bottom-20 right-4">
-          <Button size="icon" className="rounded-full h-14 w-14 bg-accent hover:bg-accent/90 shadow-lg" onClick={() => router.push('/chat/new')}>
-            <Plus className="h-6 w-6" />
-          </Button>
+        <div className="h-full flex-col items-center justify-center text-center hidden md:flex">
+            <MessageSquare size={64} className="text-muted-foreground" />
+            <h2 className="mt-4 text-2xl font-semibold">Sélectionnez une conversation</h2>
+            <p className="text-muted-foreground">Choisissez parmi vos conversations existantes pour commencer à chatter.</p>
+        </div>
+         <div className="md:hidden">
+            <Card>
+                <CardContent className="p-0">
+                <div className="divide-y divide-border">
+                    {chats.map((chat) => (
+                    <div
+                        key={chat.id}
+                        className="flex items-center p-4 cursor-pointer hover:bg-secondary"
+                        onClick={() => handleChatClick(chat.id)}
+                    >
+                        <Avatar className="w-12 h-12 mr-4">
+                        <AvatarImage src={chat.avatar} alt={chat.name} data-ai-hint={chat.type === 'group' ? 'group icon' : 'profile avatar'} />
+                        <AvatarFallback>{chat.name.charAt(0)}</AvatarFallback>
+                        </Avatar>
+                        <div className="flex-grow">
+                        <p className="font-semibold">{chat.name}</p>
+                        <p className="text-sm text-muted-foreground truncate">{chat.lastMessage}</p>
+                        </div>
+                        <div className="text-right">
+                        <p className="text-xs text-muted-foreground">{chat.time}</p>
+                        </div>
+                    </div>
+                    ))}
+                </div>
+                </CardContent>
+            </Card>
         </div>
       </div>
     </AppLayout>

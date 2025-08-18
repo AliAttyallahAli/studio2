@@ -2,8 +2,7 @@
 'use client';
 
 import { usePathname, useRouter } from 'next/navigation';
-import { User, Repeat, Wallet, Menu, Rss, ShieldCheck, Store, MessageSquare, Search, Gift, Shield, Landmark } from 'lucide-react';
-import { Mine } from '@/components/ui/mine';
+import { User, Wallet, Menu, Settings, LogOut, Shield, BarChart2, Repeat, MessageSquare } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import {
@@ -14,139 +13,121 @@ import {
   SheetTrigger,
   SheetClose,
 } from '@/components/ui/sheet';
-import { Input } from './ui/input';
+import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
+import { Separator } from './ui/separator';
 
 const navItems = [
-  { href: '/', label: 'Minage', icon: Mine },
-  { href: '/wallet', label: 'Portefeuille', icon: Wallet },
-  { href: '/chat', label: 'Chat', icon: MessageSquare },
-  { href: '/feed', label: 'Feed', icon: Rss },
-  { href: '/marketplace', label: 'Marché', icon: Store },
-  { href: '/p2p', label: 'P2P', icon: Repeat },
-  { href: '/citizens', label: 'Citoyens', icon: Landmark },
-  { href: '/verification', label: 'Vérification', icon: ShieldCheck },
-  { href: '/profile', label: 'Profil', icon: User },
-  { href: '/profile', label: 'Parrainage', icon: Gift },
-  { href: '/admin', label: 'Admin', icon: Shield },
+  { href: '/', label: 'Dashboard', icon: BarChart2 },
+  { href: '/config', label: 'Configuration', icon: Settings },
+  { href: '/transactions', label: 'Transactions', icon: Repeat },
+  { href: '/chat', label: 'Support Chat', icon: MessageSquare },
 ];
-
-const mainNavItems = navItems.filter(item => !['/verification', '/profile', '/p2p'].includes(item.href) || item.href === '/profile' && item.label ==='Profil');
 
 
 export function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
 
-  const isChatPage = pathname.startsWith('/chat');
-
-  const currentPage = navItems.find((item) => {
-    if (item.href === '/') return pathname === '/';
-    if (item.href === '/profile') return false; // Handled separately
-    return pathname.startsWith(item.href)
-  });
-  
   const getPageTitle = () => {
-    if (pathname === '/profile') return 'Profil';
-    const current = navItems.find(i => pathname.startsWith(i.href) && i.href !== '/');
+    const current = navItems.find(i => pathname === i.href);
     if (current) return current.label;
-    if (pathname === '/') return 'Minage';
-    return 'Zoudou';
+    if (pathname.startsWith('/config')) return 'Configuration';
+    if (pathname.startsWith('/profile')) return 'Profil';
+    return 'Crypto Sentinel';
   }
   
   const pageTitle = getPageTitle();
 
 
   return (
-    <div className="flex flex-col h-screen">
-      <header className="sticky top-0 z-50 flex items-center justify-between h-16 px-4 border-b shrink-0 bg-background">
-        <div className="flex items-center gap-2">
-           {isChatPage && pathname === '/chat' ? (
-             <div className="relative w-full max-w-xs">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                <Input placeholder="Rechercher..." className="pl-10 bg-secondary border-none" />
-            </div>
-           ) : (
-             <h1 className="text-lg font-semibold">{pageTitle}</h1>
-           )}
-        </div>
-        <Sheet>
-          <SheetTrigger asChild>
-            <Button variant="ghost" size="icon">
-              <Menu className="w-6 h-6" />
-              <span className="sr-only">Ouvrir le menu</span>
-            </Button>
-          </SheetTrigger>
-          <SheetContent side="right">
-            <SheetHeader>
-              <SheetTitle>Menu</SheetTitle>
-            </SheetHeader>
-            <div className="flex flex-col space-y-4 py-4">
-              {navItems.map((item) => (
-                <SheetClose asChild key={item.label}>
+    <div className="flex h-screen bg-background">
+       <aside className="hidden md:flex flex-col w-64 border-r">
+          <div className="h-16 flex items-center px-4 border-b">
+             <Shield className="h-6 w-6 text-primary mr-2"/>
+             <h1 className="text-xl font-semibold">Crypto Sentinel</h1>
+          </div>
+           <nav className="flex-grow p-4 space-y-2">
+                {navItems.map((item) => (
                   <Button
-                    variant="outline"
-                    className={cn(
-                      "justify-start",
-                      pathname === item.href && "bg-accent text-accent-foreground"
-                    )}
+                    key={item.label}
+                    variant={pathname === item.href ? 'secondary' : 'ghost'}
+                    className="w-full justify-start"
                     onClick={() => router.push(item.href)}
                   >
                     <item.icon className="mr-2 h-5 w-5" />
                     {item.label}
                   </Button>
-                </SheetClose>
               ))}
+           </nav>
+            <div className="p-4 border-t">
+                <Button variant="ghost" className="w-full justify-start" onClick={() => router.push('/profile')}>
+                    <Avatar className="w-8 h-8 mr-2">
+                        <AvatarImage src="https://placehold.co/100x100.png" alt="@username" data-ai-hint="profile avatar" />
+                        <AvatarFallback>CS</AvatarFallback>
+                    </Avatar>
+                    <span className="font-semibold">@CryptoMiner</span>
+                </Button>
             </div>
-          </SheetContent>
-        </Sheet>
-      </header>
-      <div className="flex-grow p-4 md:p-6 overflow-y-auto pb-24">
-        {children}
-      </div>
-      <footer className="fixed bottom-0 left-0 right-0 bg-secondary border-t border-border z-50">
-        <nav className="flex justify-around items-center h-16 max-w-lg mx-auto">
-          {navItems.map((item) => {
-             if (['/verification', '/profile', '/p2p', '/feed', '/marketplace', '/admin', '/citizens'].includes(item.href)) return null;
+       </aside>
 
-            const isActive = pathname.startsWith(item.href) && (item.href !== '/' || pathname === '/');
-            return (
-              <button
-                key={item.href}
-                onClick={() => router.push(item.href)}
-                className={cn(
-                  'flex flex-col items-center justify-center w-full h-full gap-1 transition-colors',
-                  isActive ? 'text-primary' : 'text-muted-foreground hover:text-primary'
-                )}
-              >
-                <item.icon className="w-6 h-6" />
-                <span className="text-xs font-medium">{item.label}</span>
-              </button>
-            );
-          })}
-           <button
-                key={'/citizens'}
-                onClick={() => router.push('/citizens')}
-                className={cn(
-                  'flex flex-col items-center justify-center w-full h-full gap-1 transition-colors',
-                  pathname.startsWith('/citizens') ? 'text-primary' : 'text-muted-foreground hover:text-primary'
-                )}
-              >
-                <Landmark className="w-6 h-6" />
-                <span className="text-xs font-medium">Citoyens</span>
-              </button>
-           <button
-                key={'/profile'}
-                onClick={() => router.push('/profile')}
-                className={cn(
-                  'flex flex-col items-center justify-center w-full h-full gap-1 transition-colors',
-                  pathname.startsWith('/profile') ? 'text-primary' : 'text-muted-foreground hover:text-primary'
-                )}
-              >
-                <User className="w-6 h-6" />
-                <span className="text-xs font-medium">Profil</span>
-              </button>
-        </nav>
-      </footer>
+       <div className="flex flex-col flex-1">
+          <header className="sticky top-0 z-50 flex items-center justify-between md:justify-end h-16 px-4 border-b shrink-0 bg-background">
+             <div className="md:hidden">
+                 <Sheet>
+                    <SheetTrigger asChild>
+                        <Button variant="ghost" size="icon">
+                        <Menu className="w-6 h-6" />
+                        <span className="sr-only">Ouvrir le menu</span>
+                        </Button>
+                    </SheetTrigger>
+                    <SheetContent side="left">
+                        <SheetHeader className="border-b pb-4 mb-4">
+                           <SheetTitle>
+                                <div className="flex items-center">
+                                    <Shield className="h-6 w-6 text-primary mr-2"/>
+                                    Crypto Sentinel
+                                </div>
+                           </SheetTitle>
+                        </SheetHeader>
+                        <div className="flex flex-col space-y-2">
+                        {navItems.map((item) => (
+                            <SheetClose asChild key={item.label}>
+                            <Button
+                                variant={pathname === item.href ? 'secondary' : 'ghost'}
+                                className="justify-start"
+                                onClick={() => router.push(item.href)}
+                            >
+                                <item.icon className="mr-2 h-5 w-5" />
+                                {item.label}
+                            </Button>
+                            </SheetClose>
+                        ))}
+                         <Separator className="my-2"/>
+                         <SheetClose asChild>
+                             <Button variant="ghost" className="justify-start" onClick={() => router.push('/profile')}>
+                                <User className="mr-2 h-5 w-5" />
+                                Profil
+                            </Button>
+                         </SheetClose>
+                          <SheetClose asChild>
+                             <Button variant="ghost" className="justify-start text-destructive hover:text-destructive" onClick={() => router.push('/auth')}>
+                                <LogOut className="mr-2 h-5 w-5" />
+                                Se déconnecter
+                            </Button>
+                         </SheetClose>
+                        </div>
+                    </SheetContent>
+                </Sheet>
+            </div>
+             <h1 className="font-semibold md:hidden">{pageTitle}</h1>
+            <Button variant="ghost" size="icon" className="hidden md:flex" onClick={() => router.push('/profile')}>
+              <User className="w-5 h-5" />
+            </Button>
+          </header>
+          <main className="flex-grow p-4 md:p-6 overflow-y-auto">
+            {children}
+          </main>
+       </div>
     </div>
   );
 }
