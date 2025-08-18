@@ -1,7 +1,7 @@
 'use client';
 
 import { usePathname, useRouter } from 'next/navigation';
-import { User, Repeat, Wallet, Menu, Rss, ShieldCheck, Store, MessageSquare, Search } from 'lucide-react';
+import { User, Repeat, Wallet, Menu, Rss, ShieldCheck, Store, MessageSquare, Search, Gift } from 'lucide-react';
 import { Mine } from '@/components/ui/mine';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -24,7 +24,11 @@ const navItems = [
   { href: '/p2p', label: 'P2P', icon: Repeat },
   { href: '/verification', label: 'Vérification', icon: ShieldCheck },
   { href: '/profile', label: 'Profil', icon: User },
+  { href: '/profile', label: 'Parrainage', icon: Gift },
 ];
+
+const mainNavItems = navItems.filter(item => !['/verification', '/profile', '/p2p'].includes(item.href) || item.href === '/profile' && item.label ==='Profil');
+
 
 export function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -32,9 +36,21 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
 
   const isChatPage = pathname.startsWith('/chat');
 
-  const currentPage = navItems.find((item) => item.href === pathname);
-  // For dynamic routes like /chat/[id], find the base path
-  const pageTitle = currentPage ? currentPage.label : navItems.find(i => pathname.startsWith(i.href))?.label || 'Zoudou';
+  const currentPage = navItems.find((item) => {
+    if (item.href === '/') return pathname === '/';
+    if (item.href === '/profile') return false; // Handled separately
+    return pathname.startsWith(item.href)
+  });
+  
+  const getPageTitle = () => {
+    if (pathname === '/profile') return 'Profil';
+    const current = navItems.find(i => pathname.startsWith(i.href) && i.href !== '/');
+    if (current) return current.label;
+    if (pathname === '/') return 'Minage';
+    return 'Zoudou';
+  }
+  
+  const pageTitle = getPageTitle();
 
 
   return (
@@ -42,7 +58,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
       <header className="sticky top-0 z-50 flex items-center justify-between h-16 px-4 border-b shrink-0 bg-background">
         <div className="flex items-center gap-2">
            {isChatPage && pathname === '/chat' ? (
-             <div className="relative w-full">
+             <div className="relative w-full max-w-xs">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                 <Input placeholder="Rechercher..." className="pl-10 bg-secondary border-none" />
             </div>
@@ -63,7 +79,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
             </SheetHeader>
             <div className="flex flex-col space-y-4 py-4">
               {navItems.map((item) => (
-                <SheetClose asChild key={item.href}>
+                <SheetClose asChild key={item.label}>
                   <Button
                     variant="outline"
                     className={cn(
@@ -87,7 +103,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
       <footer className="fixed bottom-0 left-0 right-0 bg-secondary border-t border-border z-50">
         <nav className="flex justify-around items-center h-16 max-w-lg mx-auto">
           {navItems.map((item) => {
-             if (['/verification', '/profile', '/p2p'].includes(item.href)) return null;
+             if (['/verification', '/profile', '/p2p', '/feed', '/marketplace'].includes(item.href)) return null;
 
             const isActive = pathname.startsWith(item.href) && (item.href !== '/' || pathname === '/');
             return (
@@ -104,6 +120,17 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
               </button>
             );
           })}
+           <button
+                key={'/profile'}
+                onClick={() => router.push('/profile')}
+                className={cn(
+                  'flex flex-col items-center justify-center w-full h-full gap-1 transition-colors',
+                  pathname.startsWith('/profile') ? 'text-primary' : 'text-muted-foreground hover:text-primary'
+                )}
+              >
+                <User className="w-6 h-6" />
+                <span className="text-xs font-medium">Profil</span>
+              </button>
         </nav>
       </footer>
     </div>

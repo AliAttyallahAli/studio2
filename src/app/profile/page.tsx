@@ -4,9 +4,9 @@ import { AppLayout } from '@/components/AppLayout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Camera, LogOut, ShieldCheck } from 'lucide-react';
+import { Camera, LogOut, ShieldCheck, Copy, Gift } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 
@@ -36,6 +36,34 @@ export default function ProfilePage() {
                     <p className="text-muted-foreground">utilisateur@exemple.com</p>
                 </div>
             </div>
+
+            <Card>
+                <CardHeader>
+                    <CardTitle>Mon Code de Parrainage</CardTitle>
+                    <CardDescription>Partagez ce code avec vos amis !</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <div className="flex items-center space-x-2 p-2 bg-secondary rounded-md">
+                        <Gift className="h-5 w-5 text-primary" />
+                        <p className="text-lg font-mono font-semibold text-primary flex-grow">ZOUDOU-1A2B3C</p>
+                        <Button variant="ghost" size="icon">
+                            <Copy className="h-5 w-5" />
+                        </Button>
+                    </div>
+                </CardContent>
+            </Card>
+
+             <Card>
+                <CardHeader>
+                    <CardTitle>Utiliser un code de parrainage</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <form className="flex items-center space-x-2">
+                        <Input id="referral-code" placeholder="Entrez un code de parrainage" className="flex-grow" />
+                        <Button type="submit" className="bg-accent hover:bg-accent/90">Valider</Button>
+                    </form>
+                </CardContent>
+            </Card>
 
             <Card>
                 <CardHeader>
