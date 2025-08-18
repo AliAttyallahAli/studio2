@@ -10,6 +10,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Plus } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useRouter } from 'next/navigation';
 
 const stories = [
   {
@@ -45,6 +46,8 @@ const stories = [
 ];
 
 export function StoryCarousel() {
+  const router = useRouter();
+
   return (
     <Carousel
       opts={{
@@ -56,7 +59,7 @@ export function StoryCarousel() {
       <CarouselContent>
         {/* Add Your Story */}
         <CarouselItem className="basis-1/4 sm:basis-1/5 md:basis-1/6 lg:basis-1/8">
-          <div className="p-1 cursor-pointer">
+          <div className="p-1 cursor-pointer" onClick={() => router.push('/story/create')}>
             <div className="flex flex-col items-center gap-2">
               <div className="relative">
                 <Avatar className="w-16 h-16 border-2 border-dashed border-muted-foreground">
@@ -77,7 +80,7 @@ export function StoryCarousel() {
         {/* Other user stories */}
         {stories.map((story) => (
           <CarouselItem key={story.id} className="basis-1/4 sm:basis-1/5 md:basis-1/6 lg:basis-1/8">
-            <div className="p-1 cursor-pointer">
+            <div className="p-1 cursor-pointer" onClick={() => router.push(`/story/${story.id}`)}>
               <div className="flex flex-col items-center gap-2">
                 <Avatar
                   className={cn(
