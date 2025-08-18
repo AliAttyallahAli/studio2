@@ -1,7 +1,7 @@
 'use client';
 
 import { usePathname, useRouter } from 'next/navigation';
-import { User, Repeat, Wallet, Menu, X } from 'lucide-react';
+import { User, Repeat, Wallet, Menu, Rss } from 'lucide-react';
 import { Mine } from '@/components/ui/mine';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -17,6 +17,7 @@ import {
 const navItems = [
   { href: '/wallet', label: 'Portefeuille', icon: Wallet },
   { href: '/mining', label: 'Minage', icon: Mine },
+  { href: '/feed', label: 'Feed', icon: Rss },
   { href: '/marketplace', label: 'Marché', icon: Repeat },
   { href: '/profile', label: 'Profil', icon: User },
 ];
