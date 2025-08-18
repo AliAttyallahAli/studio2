@@ -1,7 +1,7 @@
 'use client';
 
 import { usePathname, useRouter } from 'next/navigation';
-import { User, Repeat, Wallet, Menu, Rss, ShieldCheck, Store, MessageSquare } from 'lucide-react';
+import { User, Repeat, Wallet, Menu, Rss, ShieldCheck, Store, MessageSquare, Search } from 'lucide-react';
 import { Mine } from '@/components/ui/mine';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -13,6 +13,7 @@ import {
   SheetTrigger,
   SheetClose,
 } from '@/components/ui/sheet';
+import { Input } from './ui/input';
 
 const navItems = [
   { href: '/', label: 'Minage', icon: Mine },
@@ -29,6 +30,8 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
 
+  const isChatPage = pathname.startsWith('/chat');
+
   const currentPage = navItems.find((item) => item.href === pathname);
   // For dynamic routes like /chat/[id], find the base path
   const pageTitle = currentPage ? currentPage.label : navItems.find(i => pathname.startsWith(i.href))?.label || 'Zoudou';
@@ -38,7 +41,14 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
     <div className="flex flex-col h-screen">
       <header className="sticky top-0 z-50 flex items-center justify-between h-16 px-4 border-b shrink-0 bg-background">
         <div className="flex items-center gap-2">
-          <h1 className="text-lg font-semibold">{pageTitle}</h1>
+           {isChatPage && pathname === '/chat' ? (
+             <div className="relative w-full">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                <Input placeholder="Rechercher..." className="pl-10 bg-secondary border-none" />
+            </div>
+           ) : (
+             <h1 className="text-lg font-semibold">{pageTitle}</h1>
+           )}
         </div>
         <Sheet>
           <SheetTrigger asChild>

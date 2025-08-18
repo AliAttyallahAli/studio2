@@ -23,48 +23,43 @@ export default function ChatListPage() {
   };
 
   return (
-    <div className="relative h-full flex flex-col">
-        <div className="p-4 space-y-4 bg-background fixed top-16 left-0 right-0 z-10">
-             <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                <Input placeholder="Rechercher ou démarrer une nouvelle discussion" className="pl-10" />
-            </div>
-        </div>
-        
-        <div className="pt-24 pb-20 flex-grow overflow-y-auto">
-            <Card>
-                <CardContent className="p-0">
-                    <div className="divide-y divide-border">
-                        {chats.map((chat) => (
-                            <div
-                                key={chat.id}
-                                className="flex items-center p-4 cursor-pointer hover:bg-secondary"
-                                onClick={() => handleChatClick(chat.id)}
-                            >
-                                <Avatar className="w-12 h-12 mr-4">
-                                    <AvatarImage src={chat.avatar} alt={chat.name} data-ai-hint={chat.type === 'group' ? 'group icon' : 'profile avatar'} />
-                                    <AvatarFallback>{chat.name.charAt(0)}</AvatarFallback>
-                                </Avatar>
-                                <div className="flex-grow">
-                                    <p className="font-semibold">{chat.name}</p>
-                                    <p className="text-sm text-muted-foreground truncate">{chat.lastMessage}</p>
-                                </div>
-                                <div className="text-right">
-                                    <p className="text-xs text-muted-foreground">{chat.time}</p>
-                                    {/* Unread count badge can go here */}
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </CardContent>
-            </Card>
-        </div>
+    <AppLayout>
+      <div className="relative h-full flex flex-col -m-4">
+          <div className="flex-grow overflow-y-auto pb-20">
+              <Card className="border-0 rounded-none">
+                  <CardContent className="p-0">
+                      <div className="divide-y divide-border">
+                          {chats.map((chat) => (
+                              <div
+                                  key={chat.id}
+                                  className="flex items-center p-4 cursor-pointer hover:bg-secondary"
+                                  onClick={() => handleChatClick(chat.id)}
+                              >
+                                  <Avatar className="w-12 h-12 mr-4">
+                                      <AvatarImage src={chat.avatar} alt={chat.name} data-ai-hint={chat.type === 'group' ? 'group icon' : 'profile avatar'} />
+                                      <AvatarFallback>{chat.name.charAt(0)}</AvatarFallback>
+                                  </Avatar>
+                                  <div className="flex-grow">
+                                      <p className="font-semibold">{chat.name}</p>
+                                      <p className="text-sm text-muted-foreground truncate">{chat.lastMessage}</p>
+                                  </div>
+                                  <div className="text-right">
+                                      <p className="text-xs text-muted-foreground">{chat.time}</p>
+                                      {/* Unread count badge can go here */}
+                                  </div>
+                              </div>
+                          ))}
+                      </div>
+                  </CardContent>
+              </Card>
+          </div>
 
-        <div className="fixed bottom-20 right-4">
-            <Button size="icon" className="rounded-full h-14 w-14 bg-accent hover:bg-accent/90 shadow-lg">
-                <Plus className="h-6 w-6" />
-            </Button>
-        </div>
-    </div>
+          <div className="fixed bottom-20 right-4">
+              <Button size="icon" className="rounded-full h-14 w-14 bg-accent hover:bg-accent/90 shadow-lg">
+                  <Plus className="h-6 w-6" />
+              </Button>
+          </div>
+      </div>
+    </AppLayout>
   );
 }
