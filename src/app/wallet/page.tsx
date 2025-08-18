@@ -9,6 +9,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, Dialog
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+
 
 const transactions = [
     { type: 'reçu', amount: '+ 50.25 Z', from: 'de @user123', date: 'Aujourd\'hui', icon: ArrowDown },
@@ -55,16 +57,65 @@ function SendDialog() {
     );
 }
 
+const gsmOperators: Record<string, string[]> = {
+    'Cameroun': ['MTN', 'Orange', 'Nexttel', 'Camtel'],
+    'Gabon': ['Airtel', 'Moov'],
+    'Congo-Brazzaville': ['MTN', 'Airtel'],
+    'Tchad': ['Airtel', 'Moov'],
+    'République Centrafricaine': ['Orange', 'Telecel', 'Moov'],
+    'Guinée Équatoriale': ['Orange', 'MTN', 'Getesa'],
+    'Nigeria': ['MTN', 'Airtel', 'Glo', '9mobile'],
+    'Ghana': ['MTN', 'Vodafone', 'AirtelTigo'],
+    'Côte d\'Ivoire': ['Orange', 'MTN', 'Moov'],
+    'Sénégal': ['Orange', 'Free', 'Expresso'],
+};
+
 function ExchangeDialog() {
+    const [selectedCountry, setSelectedCountry] = useState('');
+    const [operators, setOperators] = useState<string[]>([]);
+
+    const handleCountryChange = (country: string) => {
+        setSelectedCountry(country);
+        setOperators(gsmOperators[country] || []);
+    }
+
     return (
         <DialogContent>
             <DialogHeader>
                 <DialogTitle>Échanger Z contre du Crédit GSM</DialogTitle>
                 <DialogDescription>
-                    Afrique Centrale uniquement.
+                    Sélectionnez le pays et l'opérateur, puis entrez le numéro.
                 </DialogDescription>
             </DialogHeader>
             <div className="space-y-4 py-4">
+                <div className="space-y-2">
+                    <Label htmlFor="country">Pays</Label>
+                     <Select onValueChange={handleCountryChange}>
+                        <SelectTrigger id="country">
+                            <SelectValue placeholder="Sélectionnez un pays" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {Object.keys(gsmOperators).map(country => (
+                                <SelectItem key={country} value={country}>{country}</SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                </div>
+                 {selectedCountry && (
+                    <div className="space-y-2">
+                        <Label htmlFor="operator">Opérateur</Label>
+                        <Select>
+                            <SelectTrigger id="operator">
+                                <SelectValue placeholder="Sélectionnez un opérateur" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {operators.map(operator => (
+                                    <SelectItem key={operator} value={operator}>{operator}</SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
+                )}
                 <div className="space-y-2">
                     <Label htmlFor="phone">Numéro de téléphone</Label>
                     <Input id="phone" placeholder="+237..." />
@@ -74,7 +125,7 @@ function ExchangeDialog() {
                     <Input id="amount-exchange" type="number" placeholder="0.00" />
                 </div>
                 <p className="text-sm text-muted-foreground">Taux de change : 1 Z = 500 XAF</p>
-                <Button className="w-full bg-accent hover:bg-accent/90">Échanger</Button>
+                <Button className="w-full bg-accent hover:bg-accent/90" disabled={!selectedCountry}>Échanger</Button>
             </div>
         </DialogContent>
     );
