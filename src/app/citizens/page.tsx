@@ -8,20 +8,26 @@ import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import Image from 'next/image';
-import { ArrowRight, Briefcase, Handshake, Lightbulb, PiggyBank } from 'lucide-react';
+import { ArrowRight, Briefcase, Handshake, Lightbulb, PiggyBank, PlusCircle } from 'lucide-react';
+import Link from 'next/link';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 const projects = [
     { 
         title: "Ferme Écologique Urbaine",
         description: "Développer une ferme verticale pour fournir des produits frais et locaux à la communauté. Nous cherchons des volontaires et des experts en agronomie.",
-        author: { name: "EcoVille", avatar: "https://placehold.co/100x100.png" },
+        author: { name: "EcoVille", username: "ecoville", avatar: "https://placehold.co/100x100.png" },
         tags: ["Écologie", "Communauté"],
         action: "Participer"
     },
      { 
         title: "Ateliers de Code pour Enfants",
         description: "Lancer des ateliers gratuits pour initier les jeunes de 8 à 14 ans à la programmation et à la robotique.",
-        author: { name: "TechFuture", avatar: "https://placehold.co/100x100.png" },
+        author: { name: "TechFuture", username: "tech_news", avatar: "https://placehold.co/100x100.png" },
         tags: ["Éducation", "Technologie"],
         action: "S'inscrire"
     },
@@ -31,7 +37,7 @@ const fundingCampaigns = [
     {
         title: "Application Mobile 'Zoudou Pay'",
         description: "Financer le développement d'une solution de paiement mobile intégrée à l'écosystème Zoudou pour faciliter les transactions locales.",
-        author: { name: "Zoudou Core", avatar: "https://placehold.co/100x100.png" },
+        author: { name: "Zoudou Core", username: "user123", avatar: "https://placehold.co/100x100.png" },
         goal: "100,000 Z",
         raised: "45,000 Z",
         progress: 45,
@@ -41,7 +47,7 @@ const fundingCampaigns = [
     {
         title: "Installation de Panneaux Solaires",
         description: "Équiper le marché communautaire de panneaux solaires pour une énergie propre et réduire les coûts pour les vendeurs.",
-        author: { name: "Énergie Solidaire", avatar: "https://placehold.co/100x100.png" },
+        author: { name: "Énergie Solidaire", username: "crypto_queen", avatar: "https://placehold.co/100x100.png" },
         goal: "50,000 Z",
         raised: "42,500 Z",
         progress: 85,
@@ -54,6 +60,7 @@ const investments = [
     {
         title: "Obligations Zoudou - Tranche 1",
         description: "Investissez dans le développement de l'infrastructure Zoudou et recevez un rendement annuel de 5%.",
+        author: { name: "Zoudou Core", username: "user123", avatar: "https://placehold.co/100x100.png" },
         minInvestment: "500 Z",
         apy: "5% APY",
         term: "2 ans",
@@ -61,19 +68,73 @@ const investments = [
     {
         title: "Parts dans 'Z-Immobilier'",
         description: "Devenez co-propriétaire d'un projet immobilier tokenisé, générant des revenus locatifs mensuels.",
+        author: { name: "ImmoToken", username: "tech_news", avatar: "https://placehold.co/100x100.png" },
         minInvestment: "1,000 Z",
         apy: "8% APY (estimé)",
         term: "Long terme",
     }
 ]
 
+function ProposeProjectDialog() {
+    return (
+        <DialogContent>
+            <DialogHeader>
+                <DialogTitle>Proposer une initiative citoyenne</DialogTitle>
+                <DialogDescription>
+                    Remplissez les détails ci-dessous. Votre proposition sera examinée par la communauté.
+                </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+                <div className="space-y-2">
+                    <Label htmlFor="initiative-type">Type d'initiative</Label>
+                     <Select>
+                        <SelectTrigger id="initiative-type">
+                            <SelectValue placeholder="Sélectionnez un type" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="project">Appel à projet</SelectItem>
+                            <SelectItem value="funding">Financement participatif</SelectItem>
+                            <SelectItem value="investment">Opportunité d'investissement</SelectItem>
+                        </SelectContent>
+                    </Select>
+                </div>
+                 <div className="space-y-2">
+                    <Label htmlFor="initiative-title">Titre de l'initiative</Label>
+                    <Input id="initiative-title" placeholder="Ex: Marché de créateurs locaux" />
+                </div>
+                <div className="space-y-2">
+                    <Label htmlFor="initiative-description">Description</Label>
+                    <Textarea id="initiative-description" placeholder="Décrivez votre idée en quelques phrases." />
+                </div>
+                 <div className="space-y-2">
+                    <Label htmlFor="initiative-goal">Objectif financier (en Z, si applicable)</Label>
+                    <Input id="initiative-goal" type="number" placeholder="50000" />
+                </div>
+                <Button className="w-full bg-accent hover:bg-accent/90">Soumettre la proposition</Button>
+            </div>
+        </DialogContent>
+    );
+}
+
+
 export default function CitizensSpacePage() {
   return (
     <AppLayout>
       <div className="space-y-6">
-        <div className="text-left">
-            <h1 className="text-3xl font-bold">Espace Citoyens</h1>
-            <p className="text-muted-foreground">Participez, financez et investissez dans l'avenir de la communauté.</p>
+        <div className="flex justify-between items-start">
+            <div className="text-left">
+                <h1 className="text-3xl font-bold">Espace Citoyens</h1>
+                <p className="text-muted-foreground">Participez, financez et investissez dans l'avenir de la communauté.</p>
+            </div>
+             <Dialog>
+                <DialogTrigger asChild>
+                     <Button>
+                        <PlusCircle className="mr-2 h-5 w-5"/>
+                        Proposer un projet
+                    </Button>
+                </DialogTrigger>
+                <ProposeProjectDialog />
+            </Dialog>
         </div>
 
         <Tabs defaultValue="projects" className="w-full">
@@ -90,13 +151,13 @@ export default function CitizensSpacePage() {
                         <Card key={index}>
                             <CardHeader>
                                 <CardTitle>{project.title}</CardTitle>
-                                 <div className="flex items-center gap-2 pt-2">
+                                 <Link href={`/profile/${project.author.username}`} className="flex items-center gap-2 pt-2 group">
                                     <Avatar className="h-6 w-6">
                                         <AvatarImage src={project.author.avatar} alt={project.author.name} data-ai-hint="profile avatar" />
                                         <AvatarFallback>{project.author.name.charAt(0)}</AvatarFallback>
                                     </Avatar>
-                                    <span className="text-sm text-muted-foreground">Proposé par {project.author.name}</span>
-                                </div>
+                                    <span className="text-sm text-muted-foreground group-hover:underline">Proposé par {project.author.name}</span>
+                                </Link>
                             </CardHeader>
                             <CardContent>
                                 <p className="text-muted-foreground mb-4">{project.description}</p>
@@ -123,6 +184,13 @@ export default function CitizensSpacePage() {
                             </CardHeader>
                             <CardContent className="p-4">
                                 <CardTitle className="text-xl mb-2">{campaign.title}</CardTitle>
+                                <Link href={`/profile/${campaign.author.username}`} className="flex items-center gap-2 mb-2 group">
+                                    <Avatar className="h-6 w-6">
+                                        <AvatarImage src={campaign.author.avatar} alt={campaign.author.name} data-ai-hint="profile avatar" />
+                                        <AvatarFallback>{campaign.author.name.charAt(0)}</AvatarFallback>
+                                    </Avatar>
+                                    <span className="text-sm text-muted-foreground group-hover:underline">Par {campaign.author.name}</span>
+                                </Link>
                                 <p className="text-sm text-muted-foreground mb-4 h-10">{campaign.description}</p>
                                 <Progress value={campaign.progress} className="mb-2" />
                                 <div className="flex justify-between items-center text-sm mb-4">
@@ -142,12 +210,33 @@ export default function CitizensSpacePage() {
                         <Card key={index}>
                             <CardHeader>
                                 <CardTitle>{inv.title}</CardTitle>
-                                <CardDescription>Rendement : <span className="text-primary font-semibold">{inv.apy}</span> | Durée : {inv.term}</CardDescription>
+                                <CardDescription>
+                                    <Link href={`/profile/${inv.author.username}`} className="inline-flex items-center gap-2 group">
+                                         <Avatar className="h-5 w-5">
+                                            <AvatarImage src={inv.author.avatar} alt={inv.author.name} data-ai-hint="profile avatar" />
+                                            <AvatarFallback>{inv.author.name.charAt(0)}</AvatarFallback>
+                                        </Avatar>
+                                        <span className="text-xs text-muted-foreground group-hover:underline">Offert par {inv.author.name}</span>
+                                    </Link>
+                                </CardDescription>
                             </CardHeader>
                             <CardContent>
                                 <p className="text-muted-foreground mb-4">{inv.description}</p>
-                                 <div className="flex items-center justify-between">
-                                    <p className="text-sm">Investissement min: <span className="font-semibold">{inv.minInvestment}</span></p>
+                                <div className="flex items-center justify-between p-3 bg-secondary rounded-md">
+                                    <div>
+                                        <p className="text-xs text-muted-foreground">Rendement</p>
+                                        <p className="text-primary font-semibold">{inv.apy}</p>
+                                    </div>
+                                    <div>
+                                         <p className="text-xs text-muted-foreground">Durée</p>
+                                         <p className="font-semibold">{inv.term}</p>
+                                    </div>
+                                     <div>
+                                         <p className="text-xs text-muted-foreground">Invest. min</p>
+                                         <p className="font-semibold">{inv.minInvestment}</p>
+                                    </div>
+                                </div>
+                                 <div className="flex items-center justify-end mt-4">
                                     <Button variant="default">Investir <ArrowRight className="ml-2 h-4 w-4"/></Button>
                                 </div>
                             </CardContent>
@@ -167,3 +256,5 @@ export default function CitizensSpacePage() {
     </AppLayout>
   );
 }
+
+    
