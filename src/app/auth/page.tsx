@@ -23,7 +23,7 @@ export default function AuthPage() {
   const handleAuth = () => {
     // Logic to handle authentication would go here
     // For now, just navigate to the dashboard
-    router.push('/mining');
+    router.push('/');
   };
 
   return (

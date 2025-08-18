@@ -17,9 +17,10 @@ import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { Separator } from './ui/separator';
 
 const navItems = [
-  { href: '/mining', label: 'Minage', icon: Pickaxe },
+  { href: '/', label: 'Minage', icon: Pickaxe },
   { href: '/wallet', label: 'Portefeuille', icon: Wallet },
   { href: '/p2p', label: 'Échange P2P', icon: Repeat },
+  { href: '/citizens', label: 'Citoyens', icon: Landmark },
   { href: '/profile', label: 'Profil', icon: User },
 ];
 
