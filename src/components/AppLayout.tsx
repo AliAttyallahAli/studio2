@@ -1,7 +1,8 @@
+
 'use client';
 
 import { usePathname, useRouter } from 'next/navigation';
-import { User, Repeat, Wallet, Menu, Rss, ShieldCheck, Store, MessageSquare, Search, Gift, Shield } from 'lucide-react';
+import { User, Repeat, Wallet, Menu, Rss, ShieldCheck, Store, MessageSquare, Search, Gift, Shield, Landmark } from 'lucide-react';
 import { Mine } from '@/components/ui/mine';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -22,6 +23,7 @@ const navItems = [
   { href: '/feed', label: 'Feed', icon: Rss },
   { href: '/marketplace', label: 'Marché', icon: Store },
   { href: '/p2p', label: 'P2P', icon: Repeat },
+  { href: '/citizens', label: 'Citoyens', icon: Landmark },
   { href: '/verification', label: 'Vérification', icon: ShieldCheck },
   { href: '/profile', label: 'Profil', icon: User },
   { href: '/profile', label: 'Parrainage', icon: Gift },
@@ -104,7 +106,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
       <footer className="fixed bottom-0 left-0 right-0 bg-secondary border-t border-border z-50">
         <nav className="flex justify-around items-center h-16 max-w-lg mx-auto">
           {navItems.map((item) => {
-             if (['/verification', '/profile', '/p2p', '/feed', '/marketplace', '/admin'].includes(item.href)) return null;
+             if (['/verification', '/profile', '/p2p', '/feed', '/marketplace', '/admin', '/citizens'].includes(item.href)) return null;
 
             const isActive = pathname.startsWith(item.href) && (item.href !== '/' || pathname === '/');
             return (
@@ -121,6 +123,17 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
               </button>
             );
           })}
+           <button
+                key={'/citizens'}
+                onClick={() => router.push('/citizens')}
+                className={cn(
+                  'flex flex-col items-center justify-center w-full h-full gap-1 transition-colors',
+                  pathname.startsWith('/citizens') ? 'text-primary' : 'text-muted-foreground hover:text-primary'
+                )}
+              >
+                <Landmark className="w-6 h-6" />
+                <span className="text-xs font-medium">Citoyens</span>
+              </button>
            <button
                 key={'/profile'}
                 onClick={() => router.push('/profile')}
