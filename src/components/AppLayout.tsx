@@ -1,7 +1,8 @@
 'use client';
 
 import { usePathname, useRouter } from 'next/navigation';
-import { Home, Mine, User, Repeat, Wallet } from 'lucide-react';
+import { User, Repeat, Wallet } from 'lucide-react';
+import { Mine } from '@/components/ui/mine';
 import { cn } from '@/lib/utils';
 
 const navItems = [
