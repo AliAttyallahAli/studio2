@@ -40,8 +40,7 @@ const userProfiles: { [key: string]: any } = {
 };
 
 
-export default function UserProfilePage({ params }: { params: { username: string } }) {
-    const { username } = params;
+export default function UserProfilePage({ params: { username } }: { params: { username: string } }) {
     const userProfile = userProfiles[username] || {
         name: `@${username}`,
         avatar: 'https://placehold.co/100x100.png',
