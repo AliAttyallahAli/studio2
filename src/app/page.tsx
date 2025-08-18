@@ -5,7 +5,8 @@ import { AppLayout } from '@/components/AppLayout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Zap } from 'lucide-react';
-import { Progress } from '@/components/ui/progress';
+import { CircularProgress } from '@/components/ui/circular-progress';
+
 
 function ZLogoAnimate() {
     return (
@@ -35,7 +36,7 @@ export default function MiningPage() {
                 setCooldown(prev => prev - 1);
             }, 1000);
             return () => clearInterval(timer);
-        } else if (cooldown === 0) {
+        } else if (cooldown <= 0 && isMining) {
             setIsMining(false);
         }
     }, [isMining, cooldown]);
@@ -47,7 +48,7 @@ export default function MiningPage() {
         return `${h}:${m}:${s}`;
     };
 
-    const progress = isMining ? (cooldown / (24 * 60 * 60)) * 100 : 0;
+    const progress = isMining ? ((24 * 60 * 60 - cooldown) / (24 * 60 * 60)) * 100 : 0;
 
   return (
     <AppLayout>
@@ -64,11 +65,13 @@ export default function MiningPage() {
             </CardHeader>
             <CardContent>
                 {isMining ? (
-                    <div className="space-y-4">
-                        <div className="text-4xl font-mono font-bold text-primary">
-                            {formatTime(cooldown)}
-                        </div>
-                        <Progress value={100 - progress} className="h-2"/>
+                    <div className="relative w-40 h-40 mx-auto">
+                       <CircularProgress value={progress} strokeWidth={10} />
+                       <div className="absolute inset-0 flex items-center justify-center">
+                            <div className="text-3xl font-mono font-bold text-primary">
+                                {formatTime(cooldown)}
+                            </div>
+                       </div>
                     </div>
                 ) : (
                     <Button size="lg" className="w-full bg-accent hover:bg-accent/90" onClick={startMining}>
