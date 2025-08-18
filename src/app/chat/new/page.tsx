@@ -3,7 +3,6 @@
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { ArrowLeft, Search, UserPlus, Users } from 'lucide-react';
 import { useRouter } from 'next/navigation';
@@ -20,7 +19,7 @@ export default function NewChatPage() {
   const router = useRouter();
 
   return (
-    <div className="flex flex-col h-full bg-background">
+    <div className="flex flex-col h-full bg-background absolute inset-0 z-20 md:relative">
       <header className="flex items-center p-3 border-b shrink-0 bg-background sticky top-0 z-10">
         <Button variant="ghost" size="icon" onClick={() => router.back()}>
           <ArrowLeft className="h-6 w-6" />
@@ -31,7 +30,7 @@ export default function NewChatPage() {
         </div>
       </header>
 
-      <div className="flex-grow p-4 space-y-6">
+      <div className="flex-grow p-4 space-y-6 overflow-y-auto">
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
           <Input placeholder="Rechercher par nom ou @utilisateur" className="pl-10" />

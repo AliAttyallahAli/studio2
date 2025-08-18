@@ -10,7 +10,6 @@ import { useRouter } from 'next/navigation';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import Image from 'next/image';
 import React from 'react';
-import { AppLayout } from '@/components/AppLayout';
 
 const messages = [
   { id: 1, content: 'Salut ! Comment ça va ?', sender: 'other', time: '14:28' },
@@ -57,10 +56,9 @@ export default function ChatPage({ params }: { params: { id: string } }) {
 
 
   return (
-    <AppLayout>
-    <div className="flex flex-col h-full bg-card border rounded-lg">
+    <div className="flex flex-col h-full bg-card md:border-l">
       <header className="flex items-center p-3 border-b shrink-0">
-        <Button variant="ghost" size="icon" onClick={() => router.back()} className="md:hidden">
+        <Button variant="ghost" size="icon" onClick={() => router.push('/chat')} className="md:hidden">
           <ArrowLeft className="h-6 w-6" />
         </Button>
         <div className="flex items-center gap-3 ml-2 cursor-pointer" onClick={() => router.push(`/chat/${params.id}/settings`)}>
@@ -119,7 +117,7 @@ export default function ChatPage({ params }: { params: { id: string } }) {
         </div>
       </ScrollArea>
 
-      <footer className="p-3 border-t shrink-0">
+      <footer className="p-3 border-t shrink-0 bg-background">
         <div className="flex items-center gap-2">
             <input 
                 type="file" 
@@ -140,6 +138,5 @@ export default function ChatPage({ params }: { params: { id: string } }) {
         </div>
       </footer>
     </div>
-    </AppLayout>
   );
 }

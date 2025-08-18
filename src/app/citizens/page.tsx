@@ -121,7 +121,7 @@ export default function CitizensSpacePage() {
   return (
     <AppLayout>
       <div className="space-y-6">
-        <div className="flex justify-between items-start">
+        <div className="flex flex-col sm:flex-row justify-between sm:items-start gap-4">
             <div className="text-left">
                 <h1 className="text-3xl font-bold">Espace Citoyens</h1>
                 <p className="text-muted-foreground">Participez, financez et investissez dans l'avenir de la communauté.</p>

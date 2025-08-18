@@ -211,7 +211,7 @@ export default function WalletPage() {
                         <Label>Adresse de réception</Label>
                         <AddressRow address={hotWallet.address} />
                     </div>
-                    <div className="grid grid-cols-3 gap-2">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                          <DialogTrigger asChild>
                             <Button variant="outline" onClick={() => setDialogContent(<SendDialog />)}>
                                 <ArrowUp className="mr-2 h-4 w-4"/>Envoyer
@@ -241,7 +241,7 @@ export default function WalletPage() {
                         <Label>Adresse de réception</Label>
                         <AddressRow address={coldWallet.address} />
                     </div>
-                     <div className="grid grid-cols-2 gap-2">
+                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                         <DialogTrigger asChild>
                             <Button variant="outline" onClick={() => setDialogContent(<QrDialog address={coldWallet.address} />)}>
                                 <QrCode className="mr-2 h-4 w-4"/>Recevoir

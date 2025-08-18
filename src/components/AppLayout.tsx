@@ -2,7 +2,7 @@
 'use client';
 
 import { usePathname, useRouter } from 'next/navigation';
-import { User, Wallet, Menu, Settings, LogOut, Shield, BarChart2, Repeat, MessageSquare, Landmark, Pickaxe, UserCog } from 'lucide-react';
+import { User, Wallet, Menu, LogOut, Shield, Repeat, MessageSquare, Landmark, Pickaxe, UserCog, Rss } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import {
@@ -18,6 +18,8 @@ import { Separator } from './ui/separator';
 
 const navItems = [
   { href: '/', label: 'Minage', icon: Pickaxe },
+  { href: '/feed', label: 'Fil d\'actualité', icon: Rss },
+  { href: '/chat', label: 'Messages', icon: MessageSquare },
   { href: '/wallet', label: 'Portefeuille', icon: Wallet },
   { href: '/p2p', label: 'Échange P2P', icon: Repeat },
   { href: '/marketplace', label: 'Marché', icon: MessageSquare },
@@ -38,27 +40,36 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
   const getPageTitle = () => {
     const allItems = [...navItems, ...adminNavItems];
     if (pathname === '/') return 'Minage';
-    const current = allItems.find(i => pathname.startsWith(i.href) && i.href !== '/');
+    // Match more specific paths first
+    const sortedItems = [...allItems].sort((a, b) => b.href.length - a.href.length);
+    const current = sortedItems.find(i => pathname.startsWith(i.href) && i.href !== '/');
     if (current) return current.label;
-    if (pathname.startsWith('/profile')) return 'Profil';
+
+    // Handle dynamic routes
+    if (pathname.startsWith('/profile/')) return 'Profil';
+    if (pathname.startsWith('/chat/')) return 'Messages';
+    if (pathname.startsWith('/story/')) return 'Statut';
+
     return 'Crypto Sentinel';
   }
   
   const pageTitle = getPageTitle();
 
+  const isChatPage = pathname.startsWith('/chat');
+
 
   return (
     <div className="flex h-screen bg-background">
-       <aside className="hidden md:flex flex-col w-64 border-r">
-          <div className="h-16 flex items-center px-4 border-b">
+       <aside className={cn("hidden md:flex flex-col border-r", isChatPage ? "w-80" : "w-64")}>
+          <div className="h-16 flex items-center px-4 border-b shrink-0">
              <Shield className="h-6 w-6 text-primary mr-2"/>
              <h1 className="text-xl font-semibold">Crypto Sentinel</h1>
           </div>
-           <nav className="flex-grow p-4 space-y-2">
+           <nav className="flex-grow p-4 space-y-2 overflow-y-auto">
                 {navItems.map((item) => (
                   <Button
                     key={item.label}
-                    variant={pathname === item.href ? 'secondary' : 'ghost'}
+                    variant={pathname.startsWith(item.href) && (item.href !== '/' || pathname === '/') ? 'secondary' : 'ghost'}
                     className="w-full justify-start"
                     onClick={() => router.push(item.href)}
                   >
@@ -70,7 +81,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                 {adminNavItems.map((item) => (
                     <Button
                         key={item.label}
-                        variant={pathname === item.href ? 'secondary' : 'ghost'}
+                        variant={pathname.startsWith(item.href) ? 'secondary' : 'ghost'}
                         className="w-full justify-start"
                         onClick={() => router.push(item.href)}
                     >
@@ -79,7 +90,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                     </Button>
                 ))}
            </nav>
-            <div className="p-4 border-t">
+            <div className="p-4 border-t shrink-0">
                  <Button variant="ghost" className="w-full justify-start" onClick={() => router.push('/profile')}>
                     <Avatar className="w-8 h-8 mr-2">
                         <AvatarImage src="https://placehold.co/100x100.png" alt="@username" data-ai-hint="profile avatar"/>
@@ -95,8 +106,8 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
             </div>
        </aside>
 
-       <div className="flex flex-col flex-1">
-          <header className="flex items-center justify-between h-16 px-4 border-b md:hidden">
+       <div className="flex flex-col flex-1 min-w-0">
+          <header className="flex items-center justify-between h-16 px-4 border-b md:hidden shrink-0">
              <Sheet>
                 <SheetTrigger asChild>
                     <Button variant="ghost" size="icon">
@@ -104,8 +115,8 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                     <span className="sr-only">Ouvrir le menu</span>
                     </Button>
                 </SheetTrigger>
-                <SheetContent side="left" className="w-[280px]">
-                    <SheetHeader>
+                <SheetContent side="left" className="w-[280px] p-0 flex flex-col">
+                    <SheetHeader className="p-4 border-b">
                         <SheetTitle>
                             <div className="flex items-center">
                                 <Shield className="h-6 w-6 text-primary mr-2"/>
@@ -113,13 +124,12 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                             </div>
                         </SheetTitle>
                     </SheetHeader>
-                    <div className="py-4">
-                        <div className="flex flex-col space-y-2">
+                    <div className="py-4 px-4 space-y-2 overflow-y-auto flex-grow">
                         {navItems.map((item) => (
                             <SheetClose asChild key={item.label}>
                             <Button
-                                variant={pathname === item.href ? 'secondary' : 'ghost'}
-                                className="justify-start"
+                                variant={pathname.startsWith(item.href) && (item.href !== '/' || pathname === '/') ? 'secondary' : 'ghost'}
+                                className="justify-start w-full"
                                 onClick={() => router.push(item.href)}
                             >
                                 <item.icon className="mr-2 h-5 w-5" />
@@ -131,8 +141,8 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                         {adminNavItems.map((item) => (
                             <SheetClose asChild key={item.label}>
                                 <Button
-                                    variant={pathname === item.href ? 'secondary' : 'ghost'}
-                                    className="justify-start"
+                                    variant={pathname.startsWith(item.href) ? 'secondary' : 'ghost'}
+                                    className="justify-start w-full"
                                     onClick={() => router.push(item.href)}
                                 >
                                     <item.icon className="mr-2 h-5 w-5" />
@@ -140,12 +150,19 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                                 </Button>
                             </SheetClose>
                         ))}
-                        </div>
+                    </div>
+                     <div className="p-4 border-t mt-auto">
+                        <SheetClose asChild>
+                             <Button variant="ghost" className="w-full justify-start" onClick={() => router.push('/auth')}>
+                                <LogOut className="mr-2 h-5 w-5" />
+                                Se déconnecter
+                            </Button>
+                        </SheetClose>
                     </div>
                 </SheetContent>
             </Sheet>
-             <h1 className="font-semibold">{pageTitle}</h1>
-             <div className="w-10">
+             <h1 className="font-semibold truncate">{pageTitle}</h1>
+             <div className="w-10 flex justify-end">
                 <Button variant="ghost" size="icon" onClick={() => router.push('/profile')}>
                      <Avatar className="w-8 h-8">
                         <AvatarImage src="https://placehold.co/100x100.png" alt="@username" data-ai-hint="profile avatar"/>

@@ -67,7 +67,7 @@ export default function VerificationPage() {
             </div>
 
             <Tabs defaultValue="kyc" className="w-full">
-              <TabsList className="grid w-full grid-cols-2">
+              <TabsList className="grid w-full grid-cols-1 sm:grid-cols-2">
                 <TabsTrigger value="kyc">KYC (Individu)</TabsTrigger>
                 <TabsTrigger value="kyb">KYB (Entreprise)</TabsTrigger>
               </TabsList>

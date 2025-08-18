@@ -4,7 +4,6 @@
 import { AppLayout } from '@/components/AppLayout';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useRouter } from 'next/navigation';
-import { MessageSquare } from 'lucide-react';
 
 const chats = [
   { id: '1', name: 'Zoudou Annonces', lastMessage: 'Bienvenue sur Zoudou !', time: '14:32', avatar: 'https://placehold.co/100x100.png', type: 'group' },
@@ -44,20 +43,17 @@ const ChatList = () => {
     )
 }
 
-export default function ChatListPage() {
-
-  return (
-    <AppLayout>
-        <div className="h-full flex flex-col">
-           <div className="md:hidden">
-             <ChatList />
-           </div>
-            <div className="h-full flex-col items-center justify-center text-center hidden md:flex">
-                <MessageSquare size={64} className="text-muted-foreground" />
-                <h2 className="mt-4 text-2xl font-semibold">Sélectionnez une conversation</h2>
-                <p className="text-muted-foreground">Choisissez parmi vos conversations existantes pour commencer à chatter.</p>
+export default function ChatLayout({ children }: { children: React.ReactNode }) {
+    return (
+        <AppLayout>
+            <div className="md:grid md:grid-cols-[auto,1fr] h-full gap-0 md:p-0 -m-4 md:-m-6">
+                <div className="hidden md:flex flex-col border-r h-full">
+                    <ChatList />
+                </div>
+                <div className="h-full">
+                    {children}
+                </div>
             </div>
-        </div>
-    </AppLayout>
-  );
+        </AppLayout>
+    );
 }

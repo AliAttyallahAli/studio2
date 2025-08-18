@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import { AppLayout } from '@/components/AppLayout';
@@ -7,11 +6,10 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Heart, MessageCircle, Share2, Image as ImageIcon, Link2, X } from 'lucide-react';
+import { Heart, MessageCircle, Share2, Image as ImageIcon, X } from 'lucide-react';
 import Image from 'next/image';
 import { Separator } from '@/components/ui/separator';
 import { StoryCarousel } from '@/components/StoryCarousel';
-import { cn } from '@/lib/utils';
 import React, { useState, useRef } from 'react';
 import Link from 'next/link';
 
@@ -148,46 +146,46 @@ export default function FeedPage() {
 
   return (
     <AppLayout>
-      <div className="space-y-6">
-        <StoryCarousel />
+        <div className="max-w-2xl mx-auto w-full space-y-6">
+            <StoryCarousel />
 
-        <Card>
-          <CardContent className="p-4 space-y-4">
-            <Textarea 
-                placeholder="Quoi de neuf, @NomUtilisateur ?" 
-                className="min-h-[100px]" 
-                value={newPostContent}
-                onChange={(e) => setNewPostContent(e.target.value)}
-            />
-            {imagePreview && (
-                <div className="relative">
-                    <Image src={imagePreview} alt="Aperçu" width={100} height={100} className="rounded-md" />
-                    <Button variant="ghost" size="icon" className="absolute top-0 right-0 bg-black/50 hover:bg-black/70 rounded-full h-6 w-6" onClick={() => setImagePreview(null)}>
-                        <X className="h-4 w-4 text-white"/>
+            <Card>
+            <CardContent className="p-4 space-y-4">
+                <Textarea 
+                    placeholder="Quoi de neuf, @NomUtilisateur ?" 
+                    className="min-h-[100px]" 
+                    value={newPostContent}
+                    onChange={(e) => setNewPostContent(e.target.value)}
+                />
+                {imagePreview && (
+                    <div className="relative w-24 h-24">
+                        <Image src={imagePreview} alt="Aperçu" layout="fill" objectFit="cover" className="rounded-md" />
+                        <Button variant="ghost" size="icon" className="absolute -top-2 -right-2 bg-black/50 hover:bg-black/70 rounded-full h-6 w-6" onClick={() => setImagePreview(null)}>
+                            <X className="h-4 w-4 text-white"/>
+                        </Button>
+                    </div>
+                )}
+                <div className="flex justify-between items-center">
+                    <Button variant="outline" size="icon" onClick={() => imageInputRef.current?.click()}>
+                        <ImageIcon className="h-4 w-4" />
                     </Button>
+                    <input 
+                        type="file" 
+                        ref={imageInputRef} 
+                        className="hidden" 
+                        accept="image/*"
+                        onChange={handleImageChange}
+                    />
+                    <Button className="bg-accent hover:bg-accent/90" onClick={handlePublish}>Publier</Button>
                 </div>
-            )}
-            <div className="flex justify-between items-center">
-                 <Button variant="outline" size="icon" onClick={() => imageInputRef.current?.click()}>
-                    <ImageIcon className="h-4 w-4" />
-                 </Button>
-                 <input 
-                    type="file" 
-                    ref={imageInputRef} 
-                    className="hidden" 
-                    accept="image/*"
-                    onChange={handleImageChange}
-                 />
-                 <Button className="bg-accent hover:bg-accent/90" onClick={handlePublish}>Publier</Button>
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+            </Card>
 
-        <div className="space-y-4">
-            {posts.map((post, index) => (
-                <PostCard key={index} post={post} />
-            ))}
-        </div>
+            <div className="space-y-4">
+                {posts.map((post, index) => (
+                    <PostCard key={index} post={post} />
+                ))}
+            </div>
       </div>
     </AppLayout>
   );
