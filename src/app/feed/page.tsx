@@ -6,12 +6,12 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Heart, MessageCircle, Share2, Image as ImageIcon, Link2 } from 'lucide-react';
+import { Heart, MessageCircle, Share2, Image as ImageIcon, Link2, X } from 'lucide-react';
 import Image from 'next/image';
 import { Separator } from '@/components/ui/separator';
 import { StoryCarousel } from '@/components/StoryCarousel';
 import { cn } from '@/lib/utils';
-import React from 'react';
+import React, { useState, useRef } from 'react';
 import Link from 'next/link';
 
 const urlRegex = /(https?:\/\/[^\s]+)/g;
@@ -51,7 +51,7 @@ const PostCard = ({ post }: { post: any }) => {
             </Link>
         </CardHeader>
         <CardContent>
-            {contentWithoutUrl && <p className="mb-4">{contentWithoutUrl}</p>}
+            {contentWithoutUrl && <p className="mb-4 whitespace-pre-wrap">{contentWithoutUrl}</p>}
             
             {post.image && (
                 <div className="mb-4">
@@ -78,7 +78,7 @@ const PostCard = ({ post }: { post: any }) => {
     );
 };
 
-const feedPosts = [
+const initialFeedPosts = [
   {
     user: { name: '@user123', username: 'user123', avatar: 'https://placehold.co/100x100.png' },
     time: 'Il y a 2 heures',
@@ -112,6 +112,39 @@ const feedPosts = [
 
 
 export default function FeedPage() {
+  const [posts, setPosts] = useState(initialFeedPosts);
+  const [newPostContent, setNewPostContent] = useState('');
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const imageInputRef = useRef<HTMLInputElement>(null);
+
+  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files && event.target.files[0]) {
+      const file = event.target.files[0];
+      setImagePreview(URL.createObjectURL(file));
+    }
+  };
+
+  const handlePublish = () => {
+    if (newPostContent.trim() === '' && !imagePreview) return;
+
+    const newPost = {
+      user: { name: '@NomUtilisateur', username: 'NomUtilisateur', avatar: 'https://placehold.co/100x100.png' },
+      time: 'À l\'instant',
+      content: newPostContent,
+      image: imagePreview,
+      imageHint: 'user content',
+      linkPreview: null, // Link detection can be added here in a real scenario
+    };
+
+    setPosts([newPost, ...posts]);
+    setNewPostContent('');
+    setImagePreview(null);
+    if(imageInputRef.current) {
+      imageInputRef.current.value = '';
+    }
+  };
+
+
   return (
     <AppLayout>
       <div className="space-y-6">
@@ -119,18 +152,38 @@ export default function FeedPage() {
 
         <Card>
           <CardContent className="p-4 space-y-4">
-            <Textarea placeholder="Quoi de neuf, @NomUtilisateur ?" className="min-h-[100px]" />
+            <Textarea 
+                placeholder="Quoi de neuf, @NomUtilisateur ?" 
+                className="min-h-[100px]" 
+                value={newPostContent}
+                onChange={(e) => setNewPostContent(e.target.value)}
+            />
+            {imagePreview && (
+                <div className="relative">
+                    <Image src={imagePreview} alt="Aperçu" width={100} height={100} className="rounded-md" />
+                    <Button variant="ghost" size="icon" className="absolute top-0 right-0 bg-black/50 hover:bg-black/70 rounded-full h-6 w-6" onClick={() => setImagePreview(null)}>
+                        <X className="h-4 w-4 text-white"/>
+                    </Button>
+                </div>
+            )}
             <div className="flex justify-between items-center">
-                 <Button variant="outline" size="icon">
+                 <Button variant="outline" size="icon" onClick={() => imageInputRef.current?.click()}>
                     <ImageIcon className="h-4 w-4" />
                  </Button>
-                 <Button className="bg-accent hover:bg-accent/90">Publier</Button>
+                 <input 
+                    type="file" 
+                    ref={imageInputRef} 
+                    className="hidden" 
+                    accept="image/*"
+                    onChange={handleImageChange}
+                 />
+                 <Button className="bg-accent hover:bg-accent/90" onClick={handlePublish}>Publier</Button>
             </div>
           </CardContent>
         </Card>
 
         <div className="space-y-4">
-            {feedPosts.map((post, index) => (
+            {posts.map((post, index) => (
                 <PostCard key={index} post={post} />
             ))}
         </div>
