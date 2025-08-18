@@ -1,10 +1,11 @@
+
 'use client';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
-import { ArrowLeft, Block, FileImage, LogOut, Trash2, Users } from 'lucide-react';
+import { ArrowLeft, Block, FileImage, Heart, LogOut, Milestone, ThumbsUp, Trash2, Users, Bell } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 export default function ChatSettingsPage({ params }: { params: { id: string } }) {
@@ -14,7 +15,14 @@ export default function ChatSettingsPage({ params }: { params: { id: string } })
     const isGroup = params.id === '1' || params.id === '4';
     const chatName = isGroup ? "Zoudou Annonces" : "Alice";
     const chatAvatar = "https://placehold.co/100x100.png";
-    const chatDescription = isGroup ? "24 Membres" : "En ligne";
+    const chatDescription = isGroup ? "24 Membres" : "@alice_crypto";
+
+    const userProfile = {
+        bio: "Passionnée de crypto et de voyages. J'explore le web3 un bloc à la fois. 🚀",
+        parcours: "Développeuse Blockchain depuis 5 ans, spécialisée dans les contrats intelligents sur Ethereum. A travaillé sur plusieurs projets DeFi et NFT.",
+        interests: "Blockchain, Randonnée, Photographie, Musique électronique",
+        maritalStatus: "Célibataire"
+    };
 
     return (
         <div className="flex flex-col h-full bg-background">
@@ -22,7 +30,7 @@ export default function ChatSettingsPage({ params }: { params: { id: string } })
                 <Button variant="ghost" size="icon" onClick={() => router.back()}>
                     <ArrowLeft className="h-6 w-6" />
                 </Button>
-                <h2 className="text-lg font-semibold ml-4">{isGroup ? 'Infos du groupe' : 'Infos du contact'}</h2>
+                <h2 className="text-lg font-semibold ml-4">{isGroup ? 'Infos du groupe' : 'Profil'}</h2>
             </header>
             <div className="flex-grow p-4 space-y-6 overflow-y-auto">
                 <div className="flex flex-col items-center space-y-4">
@@ -36,10 +44,42 @@ export default function ChatSettingsPage({ params }: { params: { id: string } })
                     </div>
                 </div>
 
+                {!isGroup && (
+                    <>
+                         <Card>
+                            <CardHeader>
+                                <CardTitle className="text-lg">À propos</CardTitle>
+                            </CardHeader>
+                            <CardContent className="space-y-4">
+                                <div>
+                                    <h4 className="font-semibold mb-1">Biographie</h4>
+                                    <p className="text-sm text-muted-foreground">{userProfile.bio}</p>
+                                </div>
+                                 <div>
+                                    <h4 className="font-semibold mb-1">Parcours</h4>
+                                    <p className="text-sm text-muted-foreground">{userProfile.parcours}</p>
+                                </div>
+                                <div className="flex items-center">
+                                    <Heart className="mr-2 h-4 w-4 text-muted-foreground"/>
+                                    <p className="text-sm">{userProfile.maritalStatus}</p>
+                                </div>
+                                <div className="flex items-center">
+                                    <ThumbsUp className="mr-2 h-4 w-4 text-muted-foreground"/>
+                                    <p className="text-sm">{userProfile.interests}</p>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </>
+                )}
+                
+
                 <Card>
                     <CardContent className="p-0">
                          <div className="flex items-center justify-between p-4">
-                            <Label htmlFor="mute-notifications">Notifications</Label>
+                            <div className="flex items-center">
+                                <Bell className="mr-4 h-5 w-5 text-muted-foreground" />
+                                <Label htmlFor="mute-notifications">Notifications</Label>
+                            </div>
                              <Switch id="mute-notifications" />
                         </div>
                     </CardContent>
@@ -91,3 +131,4 @@ const Label = ({ htmlFor, children }: { htmlFor: string, children: React.ReactNo
         {children}
     </label>
 );
+
