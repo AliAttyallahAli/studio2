@@ -41,10 +41,11 @@ const userProfiles: { [key: string]: any } = {
 
 
 export default function UserProfilePage({ params }: { params: { username: string } }) {
-    const userProfile = userProfiles[params.username] || {
-        name: `@${params.username}`,
+    const { username } = params;
+    const userProfile = userProfiles[username] || {
+        name: `@${username}`,
         avatar: 'https://placehold.co/100x100.png',
-        email: `${params.username}@exemple.com`,
+        email: `${username}@exemple.com`,
         bio: "Ce profil n'a pas encore été complété.",
         parcours: "Aucune information.",
         interests: "Aucun centre d'intérêt spécifié.",
