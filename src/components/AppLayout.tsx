@@ -1,7 +1,7 @@
 'use client';
 
 import { usePathname, useRouter } from 'next/navigation';
-import { User, Repeat, Wallet, Menu, Rss, ShieldCheck, Store, MessageSquare, Search, Gift } from 'lucide-react';
+import { User, Repeat, Wallet, Menu, Rss, ShieldCheck, Store, MessageSquare, Search, Gift, Shield } from 'lucide-react';
 import { Mine } from '@/components/ui/mine';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -25,6 +25,7 @@ const navItems = [
   { href: '/verification', label: 'Vérification', icon: ShieldCheck },
   { href: '/profile', label: 'Profil', icon: User },
   { href: '/profile', label: 'Parrainage', icon: Gift },
+  { href: '/admin', label: 'Admin', icon: Shield },
 ];
 
 const mainNavItems = navItems.filter(item => !['/verification', '/profile', '/p2p'].includes(item.href) || item.href === '/profile' && item.label ==='Profil');
@@ -103,7 +104,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
       <footer className="fixed bottom-0 left-0 right-0 bg-secondary border-t border-border z-50">
         <nav className="flex justify-around items-center h-16 max-w-lg mx-auto">
           {navItems.map((item) => {
-             if (['/verification', '/profile', '/p2p', '/feed', '/marketplace'].includes(item.href)) return null;
+             if (['/verification', '/profile', '/p2p', '/feed', '/marketplace', '/admin'].includes(item.href)) return null;
 
             const isActive = pathname.startsWith(item.href) && (item.href !== '/' || pathname === '/');
             return (
