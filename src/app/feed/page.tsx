@@ -1,3 +1,4 @@
+
 'use client';
 
 import { AppLayout } from '@/components/AppLayout';
@@ -8,6 +9,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Heart, MessageCircle, Share2, Image as ImageIcon } from 'lucide-react';
 import Image from 'next/image';
 import { Separator } from '@/components/ui/separator';
+import { StoryCarousel } from '@/components/StoryCarousel';
 
 const PostCard = ({ post }: { post: any }) => (
     <Card>
@@ -68,6 +70,8 @@ export default function FeedPage() {
   return (
     <AppLayout>
       <div className="space-y-6">
+        <StoryCarousel />
+
         <Card>
           <CardContent className="p-4 space-y-4">
             <Textarea placeholder="Quoi de neuf, @NomUtilisateur ?" className="min-h-[100px]" />
