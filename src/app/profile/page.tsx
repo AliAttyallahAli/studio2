@@ -8,6 +8,8 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Camera, LogOut, ShieldCheck, Copy, Gift } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 
 export default function ProfilePage() {
@@ -68,6 +70,7 @@ export default function ProfilePage() {
             <Card>
                 <CardHeader>
                     <CardTitle>Gérer le profil</CardTitle>
+                    <CardDescription>Mettez à jour vos informations personnelles et professionnelles.</CardDescription>
                 </CardHeader>
                 <CardContent>
                     <form className="space-y-4">
@@ -78,6 +81,33 @@ export default function ProfilePage() {
                         <div className="space-y-2">
                             <Label htmlFor="email">Email</Label>
                             <Input id="email" type="email" defaultValue="utilisateur@exemple.com" />
+                        </div>
+                         <div className="space-y-2">
+                            <Label htmlFor="bio">Biographie</Label>
+                            <Textarea id="bio" placeholder="Parlez-nous un peu de vous..." />
+                        </div>
+                         <div className="space-y-2">
+                            <Label htmlFor="parcours">Parcours</Label>
+                            <Textarea id="parcours" placeholder="Décrivez votre parcours, vos expériences..." />
+                        </div>
+                         <div className="space-y-2">
+                            <Label htmlFor="interests">Centres d'intérêt</Label>
+                            <Input id="interests" placeholder="Ex: Crypto, Lecture, Sport" />
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="marital-status">Situation amoureuse</Label>
+                             <Select>
+                                <SelectTrigger id="marital-status">
+                                    <SelectValue placeholder="Sélectionnez votre situation" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="single">Célibataire</SelectItem>
+                                    <SelectItem value="in_relationship">En couple</SelectItem>
+                                    <SelectItem value="married">Marié(e)</SelectItem>
+                                    <SelectItem value="complicated">C'est compliqué</SelectItem>
+                                    <SelectItem value="not_specified">Ne pas spécifier</SelectItem>
+                                </SelectContent>
+                            </Select>
                         </div>
                         <Button className="w-full bg-accent hover:bg-accent/90">Sauvegarder</Button>
                     </form>
