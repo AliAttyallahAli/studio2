@@ -1,7 +1,7 @@
 'use client';
 
 import { usePathname, useRouter } from 'next/navigation';
-import { User, Repeat, Wallet, Menu, Rss, ShieldCheck, Store } from 'lucide-react';
+import { User, Repeat, Wallet, Menu, Rss, ShieldCheck, Store, MessageSquare } from 'lucide-react';
 import { Mine } from '@/components/ui/mine';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -17,6 +17,7 @@ import {
 const navItems = [
   { href: '/', label: 'Minage', icon: Mine },
   { href: '/wallet', label: 'Portefeuille', icon: Wallet },
+  { href: '/chat', label: 'Chat', icon: MessageSquare },
   { href: '/feed', label: 'Feed', icon: Rss },
   { href: '/marketplace', label: 'Marché', icon: Store },
   { href: '/p2p', label: 'P2P', icon: Repeat },
@@ -29,7 +30,9 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
 
   const currentPage = navItems.find((item) => item.href === pathname);
-  const pageTitle = currentPage ? currentPage.label : 'Zoudou';
+  // For dynamic routes like /chat/[id], find the base path
+  const pageTitle = currentPage ? currentPage.label : navItems.find(i => pathname.startsWith(i.href))?.label || 'Zoudou';
+
 
   return (
     <div className="flex flex-col h-screen">
@@ -76,7 +79,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
           {navItems.map((item) => {
              if (['/verification', '/profile', '/p2p'].includes(item.href)) return null;
 
-            const isActive = pathname === item.href;
+            const isActive = pathname.startsWith(item.href) && (item.href !== '/' || pathname === '/');
             return (
               <button
                 key={item.href}
