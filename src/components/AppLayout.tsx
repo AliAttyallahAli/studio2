@@ -1,9 +1,10 @@
 'use client';
 
 import { usePathname, useRouter } from 'next/navigation';
-import { User, Repeat, Wallet } from 'lucide-react';
+import { User, Repeat, Wallet, Menu } from 'lucide-react';
 import { Mine } from '@/components/ui/mine';
 import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
 
 const navItems = [
   { href: '/wallet', label: 'Portefeuille', icon: Wallet },
@@ -16,8 +17,20 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
 
+  const currentPage = navItems.find((item) => item.href === pathname);
+  const pageTitle = currentPage ? currentPage.label : 'Zoudou';
+
   return (
     <div className="flex flex-col h-screen">
+       <header className="sticky top-0 z-50 flex items-center justify-between h-16 px-4 border-b shrink-0 bg-background">
+        <div className="flex items-center gap-2">
+           <h1 className="text-lg font-semibold">{pageTitle}</h1>
+        </div>
+        <Button variant="ghost" size="icon">
+          <Menu className="w-6 h-6" />
+          <span className="sr-only">Ouvrir le menu</span>
+        </Button>
+      </header>
       <div className="flex-grow p-4 md:p-6 overflow-y-auto pb-24">
           {children}
       </div>
