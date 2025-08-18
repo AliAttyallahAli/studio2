@@ -81,6 +81,8 @@ function ExchangeDialog() {
 }
 
 export default function WalletPage() {
+  const [dialogContent, setDialogContent] = useState<React.ReactNode | null>(null);
+
   return (
     <AppLayout>
       <div className="space-y-6">
@@ -92,42 +94,34 @@ export default function WalletPage() {
                 </CardTitle>
             </CardHeader>
             <CardContent>
-                <Dialog>
+                <Dialog onOpenChange={(open) => !open && setDialogContent(null)}>
                     <div className="grid grid-cols-4 gap-2 text-xs">
                         <DialogTrigger asChild>
-                            <button className="flex flex-col items-center gap-2 p-2 rounded-lg hover:bg-secondary">
+                            <button onClick={() => setDialogContent(<SendDialog />)} className="flex flex-col items-center gap-2 p-2 rounded-lg hover:bg-secondary">
                                 <ArrowUp className="w-5 h-5"/>
                                 <span>Envoyer</span>
                             </button>
                         </DialogTrigger>
-                        <DialogTrigger asChild>
-                            <button className="flex flex-col items-center gap-2 p-2 rounded-lg hover:bg-secondary">
+                         <DialogTrigger asChild>
+                            <button onClick={() => setDialogContent(<QrDialog />)} className="flex flex-col items-center gap-2 p-2 rounded-lg hover:bg-secondary">
                                 <ArrowDown className="w-5 h-5"/>
                                 <span>Recevoir</span>
                             </button>
                         </DialogTrigger>
                         <DialogTrigger asChild>
-                            <button className="flex flex-col items-center gap-2 p-2 rounded-lg hover:bg-secondary">
+                           <button onClick={() => setDialogContent(<ExchangeDialog />)} className="flex flex-col items-center gap-2 p-2 rounded-lg hover:bg-secondary">
                                 <Repeat className="w-5 h-5"/>
                                 <span>Échanger</span>
                             </button>
                         </DialogTrigger>
                         <DialogTrigger asChild>
-                            <button className="flex flex-col items-center gap-2 p-2 rounded-lg hover:bg-secondary">
+                            <button onClick={() => setDialogContent(<QrDialog />)} className="flex flex-col items-center gap-2 p-2 rounded-lg hover:bg-secondary">
                                 <QrCode className="w-5 h-5"/>
                                 <span>QR Code</span>
                             </button>
                         </DialogTrigger>
-
-                        {/* This setup is a bit tricky. We need to define the content outside, but trigger from inside.
-                            For this prototype, we'll just show one dialog. A real app would manage state.
-                            Let's assume the first trigger opens the send dialog for now.
-                         */}
-                         <SendDialog />
-                         {/* <QrDialog /> */}
-                         {/* <ExchangeDialog /> */}
-
                     </div>
+                     {dialogContent}
                 </Dialog>
             </CardContent>
         </Card>
