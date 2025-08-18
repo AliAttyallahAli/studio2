@@ -6,43 +6,72 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import Image from 'next/image';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from '@/components/ui/dialog';
+import { Textarea } from '@/components/ui/textarea';
+import { PlusCircle } from 'lucide-react';
+
 
 const marketplaceItems = [
-  { name: "NFT 'Z-Lion'", price: '150 Z', image: 'https://placehold.co/400x400.png', hint: 'lion abstract' },
-  { name: "Bon d'achat Amazon", price: '50 Z', image: 'https://placehold.co/400x400.png', hint: 'gift card' },
-  { name: "Ticket de tombola", price: '5 Z', image: 'https://placehold.co/400x400.png', hint: 'lottery ticket' },
+  { name: "NFT 'Z-Lion'", price: '150 Z', image: 'https://placehold.co/400x400.png', hint: 'lion abstract', seller: '@user123' },
+  { name: "Casque Audio Pro", price: '85 Z', image: 'https://placehold.co/400x400.png', hint: 'pro headphones', seller: '@tech_guru' },
+  { name: "Ticket de tombola", price: '5 Z', image: 'https://placehold.co/400x400.png', hint: 'lottery ticket', seller: '@zoudou_admin' },
+  { name: "T-shirt Zoudou", price: '25 Z', image: 'https://placehold.co/400x400.png', hint: 'branded t-shirt', seller: '@z_fashion' },
+
 ];
+
+function SellItemDialog() {
+    return (
+        <DialogContent>
+            <DialogHeader>
+                <DialogTitle>Mettre un article en vente</DialogTitle>
+                <DialogDescription>
+                    Remplissez les détails de votre article pour le vendre sur le marché.
+                </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+                <div className="space-y-2">
+                    <Label htmlFor="item-name">Nom de l'article</Label>
+                    <Input id="item-name" placeholder="Ex: Casque Audio Pro" />
+                </div>
+                <div className="space-y-2">
+                    <Label htmlFor="item-description">Description</Label>
+                    <Textarea id="item-description" placeholder="Décrivez votre article en quelques mots." />
+                </div>
+                <div className="space-y-2">
+                    <Label htmlFor="item-price">Prix en Z</Label>
+                    <Input id="item-price" type="number" placeholder="0.00" />
+                </div>
+                <div className="space-y-2">
+                    <Label htmlFor="item-image">Image de l'article</Label>
+                    <Input id="item-image" type="file" />
+                </div>
+                <Button className="w-full bg-accent hover:bg-accent/90">Mettre en vente</Button>
+            </div>
+        </DialogContent>
+    );
+}
 
 export default function MarketplacePage() {
   return (
     <AppLayout>
       <div className="space-y-6">
-        <div className="text-center">
-            <h1 className="text-3xl font-bold">Marché Zoudou</h1>
-            <p className="text-muted-foreground">Échangez vos tokens Z contre des récompenses.</p>
+        <div className="flex justify-between items-center">
+            <div className="text-left">
+                <h1 className="text-3xl font-bold">Marché</h1>
+                <p className="text-muted-foreground">Échangez vos tokens Z contre des biens et services.</p>
+            </div>
+             <Dialog>
+                <DialogTrigger asChild>
+                    <Button>
+                        <PlusCircle className="mr-2 h-5 w-5"/>
+                        Vendre un article
+                    </Button>
+                </DialogTrigger>
+                <SellItemDialog />
+            </Dialog>
         </div>
 
-        <Card>
-            <CardHeader>
-                <CardTitle>Vendre des Tokens Z</CardTitle>
-            </CardHeader>
-            <CardContent>
-                <form className="grid grid-cols-1 sm:grid-cols-3 gap-4 items-end">
-                    <div className="space-y-2">
-                        <Label htmlFor="amount-sell">Montant en Z</Label>
-                        <Input id="amount-sell" type="number" placeholder="100.00"/>
-                    </div>
-                    <div className="space-y-2">
-                        <Label htmlFor="price">Prix en USD</Label>
-                        <Input id="price" type="number" placeholder="50.00" />
-                    </div>
-                    <Button className="w-full sm:w-auto bg-accent hover:bg-accent/90">Mettre en vente</Button>
-                </form>
-            </CardContent>
-        </Card>
-
         <div>
-            <h2 className="text-xl font-semibold mb-4">Acheter des articles</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {marketplaceItems.map((item, index) => (
                     <Card key={index}>
@@ -51,8 +80,9 @@ export default function MarketplacePage() {
                         </CardHeader>
                         <CardContent className="p-4 space-y-2">
                             <CardTitle className="text-lg">{item.name}</CardTitle>
-                            <CardDescription>Prix : {item.price}</CardDescription>
-                            <Button className="w-full">Acheter</Button>
+                             <p className="text-sm text-muted-foreground">Vendu par {item.seller}</p>
+                            <CardDescription className="text-base font-semibold text-primary">{item.price}</CardDescription>
+                            <Button className="w-full bg-accent hover:bg-accent/90">Acheter</Button>
                         </CardContent>
                     </Card>
                 ))}
