@@ -76,10 +76,6 @@ export default function WalletPage() {
      localStorage.setItem('pin_is_set', 'true');
      setPinState('unlocked');
   }
-
-  const handleSendAction = () => {
-    setShowSendDialog(true);
-  }
   
   const handleConfirmSend = () => {
     setShowSendDialog(false);
@@ -140,11 +136,45 @@ export default function WalletPage() {
                           <CardDescription>Solde total estimé : <span className="font-bold text-primary">$1,850.50 USD</span></CardDescription>
                       </div>
                       <div className="flex gap-2 w-full md:w-auto">
-                           <PinDialog onPinSuccess={handleSendAction}>
-                               <Button className="flex-1 md:flex-auto">
-                                    <ArrowUp className="mr-2 h-4 w-4"/>Envoyer
-                               </Button>
-                           </PinDialog>
+                           <Dialog open={showSendDialog} onOpenChange={setShowSendDialog}>
+                               <DialogTrigger asChild>
+                                   <Button className="flex-1 md:flex-auto">
+                                        <ArrowUp className="mr-2 h-4 w-4"/>Envoyer
+                                   </Button>
+                               </DialogTrigger>
+                               <DialogContent>
+                                    <DialogHeader>
+                                        <DialogTitle>Envoyer des Actifs</DialogTitle>
+                                        <DialogDescription>Envoyer des SAHEL ou des tokens.</DialogDescription>
+                                    </DialogHeader>
+                                    <div className="space-y-4 py-4">
+                                        <div className="space-y-2">
+                                            <Label htmlFor="asset-select">Actif à envoyer</Label>
+                                            <Select>
+                                                <SelectTrigger id="asset-select">
+                                                    <SelectValue placeholder="Sélectionnez un actif" />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    <SelectItem value="sahel">SAHEL Coin</SelectItem>
+                                                    <SelectItem value="z-immo">Z-Immo Token</SelectItem>
+                                                    <SelectItem value="eco">EcoToken</SelectItem>
+                                                </SelectContent>
+                                            </Select>
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label htmlFor="recipient">Adresse ou @utilisateur du destinataire</Label>
+                                            <Input id="recipient" placeholder="@utilisateur ou 0x..." />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label htmlFor="amount">Montant</Label>
+                                            <Input id="amount" type="number" placeholder="0.00" />
+                                        </div>
+                                        <PinDialog onPinSuccess={handleConfirmSend}>
+                                            <Button className="w-full">Confirmer l'envoi</Button>
+                                        </PinDialog>
+                                    </div>
+                                </DialogContent>
+                           </Dialog>
 
                            <Dialog>
                                 <DialogTrigger asChild>
@@ -212,41 +242,6 @@ export default function WalletPage() {
                   </Tabs>
               </CardContent>
           </Card>
-
-          <Dialog open={showSendDialog} onOpenChange={setShowSendDialog}>
-            <DialogContent>
-                <DialogHeader>
-                    <DialogTitle>Envoyer des Actifs</DialogTitle>
-                    <DialogDescription>Envoyer des SAHEL ou des tokens.</DialogDescription>
-                </DialogHeader>
-                <div className="space-y-4 py-4">
-                     <div className="space-y-2">
-                        <Label htmlFor="asset-select">Actif à envoyer</Label>
-                        <Select>
-                            <SelectTrigger id="asset-select">
-                                <SelectValue placeholder="Sélectionnez un actif" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="sahel">SAHEL Coin</SelectItem>
-                                <SelectItem value="z-immo">Z-Immo Token</SelectItem>
-                                <SelectItem value="eco">EcoToken</SelectItem>
-                            </SelectContent>
-                        </Select>
-                    </div>
-                    <div className="space-y-2">
-                        <Label htmlFor="recipient">Adresse ou @utilisateur du destinataire</Label>
-                        <Input id="recipient" placeholder="@utilisateur ou 0x..." />
-                    </div>
-                    <div className="space-y-2">
-                        <Label htmlFor="amount">Montant</Label>
-                        <Input id="amount" type="number" placeholder="0.00" />
-                    </div>
-                    <PinDialog onPinSuccess={handleConfirmSend}>
-                        <Button className="w-full">Confirmer l'envoi</Button>
-                    </PinDialog>
-                </div>
-            </DialogContent>
-          </Dialog>
 
           <Card>
             <CardHeader>
