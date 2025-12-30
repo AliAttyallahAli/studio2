@@ -23,8 +23,19 @@ const leaderboard = [
 
 export default function ProfilePage() {
     const router = useRouter();
-    const referralLink = "https://sahel.app/join/SahelUser";
-    const [imagePreview, setImagePreview] = useState<string>("https://picsum.photos/seed/sahel/100/100");
+    
+    const currentUser = {
+        username: '@SahelUser',
+        email: 'sahel.user@exemple.com',
+        firstName: 'Sahel',
+        lastName: 'User',
+        avatar: 'https://picsum.photos/seed/sahel/100/100',
+        bio: "Passionné par la révolution Web3 en Afrique. #SAHEL"
+    };
+    
+    const referralLink = `https://sahel.app/join/${currentUser.username.replace('@','')}`;
+
+    const [imagePreview, setImagePreview] = useState<string>(currentUser.avatar);
     const imageInputRef = useRef<HTMLInputElement>(null);
 
 
@@ -51,8 +62,8 @@ export default function ProfilePage() {
                 <CardContent className="flex flex-col items-center pt-6 space-y-4">
                     <div className="relative">
                         <Avatar className="w-24 h-24">
-                            <AvatarImage src={imagePreview} alt="@SahelUser" data-ai-hint="profile avatar" />
-                            <AvatarFallback>SU</AvatarFallback>
+                            <AvatarImage src={imagePreview} alt={currentUser.username} data-ai-hint="profile avatar" />
+                            <AvatarFallback>{currentUser.username.replace('@','').substring(0,2).toUpperCase()}</AvatarFallback>
                         </Avatar>
                         <Button size="icon" className="absolute bottom-0 right-0 rounded-full" onClick={() => imageInputRef.current?.click()}>
                             <Camera className="h-4 w-4" />
@@ -66,8 +77,8 @@ export default function ProfilePage() {
                         />
                     </div>
                     <div className="text-center">
-                        <h1 className="text-2xl font-bold">@SahelUser</h1>
-                        <p className="text-muted-foreground">sahel.user@exemple.com</p>
+                        <h1 className="text-2xl font-bold">{currentUser.username}</h1>
+                        <p className="text-muted-foreground">{currentUser.email}</p>
                     </div>
                 </CardContent>
             </Card>
@@ -81,24 +92,24 @@ export default function ProfilePage() {
                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div className="space-y-2">
                                 <Label htmlFor="first-name">Prénom</Label>
-                                <Input id="first-name" defaultValue="Sahel" />
+                                <Input id="first-name" defaultValue={currentUser.firstName} />
                             </div>
                              <div className="space-y-2">
                                 <Label htmlFor="last-name">Nom de famille</Label>
-                                <Input id="last-name" defaultValue="User" />
+                                <Input id="last-name" defaultValue={currentUser.lastName} />
                             </div>
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="username">Nom d'utilisateur</Label>
-                            <Input id="username" defaultValue="@SahelUser" />
+                            <Input id="username" defaultValue={currentUser.username} />
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="email">Email</Label>
-                            <Input id="email" type="email" defaultValue="sahel.user@exemple.com" />
+                            <Input id="email" type="email" defaultValue={currentUser.email} />
                         </div>
                          <div className="space-y-2">
                             <Label htmlFor="bio">Biographie</Label>
-                            <Textarea id="bio" placeholder="Parlez-nous un peu de vous..." defaultValue="Passionné par la révolution Web3 en Afrique. #SAHEL"/>
+                            <Textarea id="bio" placeholder="Parlez-nous un peu de vous..." defaultValue={currentUser.bio}/>
                         </div>
                         <Button className="w-full">Sauvegarder</Button>
                     </form>
@@ -134,7 +145,7 @@ export default function ProfilePage() {
                             </TableHeader>
                             <TableBody>
                                 {leaderboard.map(entry => (
-                                    <TableRow key={entry.rank} className={entry.user === '@SahelUser' ? 'bg-primary/10' : ''}>
+                                    <TableRow key={entry.rank} className={entry.user === currentUser.username ? 'bg-primary/10' : ''}>
                                         <TableCell className="font-medium">{entry.rank}</TableCell>
                                         <TableCell>{entry.user}</TableCell>
                                         <TableCell>{entry.referrals}</TableCell>
