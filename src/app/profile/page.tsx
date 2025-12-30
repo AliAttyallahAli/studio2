@@ -11,6 +11,7 @@ import { Camera, Gift, Copy } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Textarea } from '@/components/ui/textarea';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import React, { useState, useRef } from 'react';
 
 const leaderboard = [
     { rank: 1, user: '@CryptoKing', referrals: 152, active: 140 },
@@ -23,11 +24,21 @@ const leaderboard = [
 export default function ProfilePage() {
     const router = useRouter();
     const referralLink = "https://zoudou.app/join/SahelUser";
+    const [imagePreview, setImagePreview] = useState<string>("https://picsum.photos/seed/zoudou/100/100");
+    const imageInputRef = useRef<HTMLInputElement>(null);
+
 
     const handleLogout = () => {
         // Logout logic here
         router.push('/auth');
     }
+
+    const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        if (event.target.files && event.target.files[0]) {
+            const file = event.target.files[0];
+            setImagePreview(URL.createObjectURL(file));
+        }
+    };
 
   return (
     <AppLayout>
@@ -40,12 +51,19 @@ export default function ProfilePage() {
                 <CardContent className="flex flex-col items-center pt-6 space-y-4">
                     <div className="relative">
                         <Avatar className="w-24 h-24">
-                            <AvatarImage src="https://picsum.photos/seed/zoudou/100/100" alt="@SahelUser" data-ai-hint="profile avatar" />
+                            <AvatarImage src={imagePreview} alt="@SahelUser" data-ai-hint="profile avatar" />
                             <AvatarFallback>SU</AvatarFallback>
                         </Avatar>
-                        <Button size="icon" className="absolute bottom-0 right-0 rounded-full">
+                        <Button size="icon" className="absolute bottom-0 right-0 rounded-full" onClick={() => imageInputRef.current?.click()}>
                             <Camera className="h-4 w-4" />
                         </Button>
+                        <input
+                            type="file"
+                            ref={imageInputRef}
+                            className="hidden"
+                            accept="image/*"
+                            onChange={handleImageChange}
+                        />
                     </div>
                     <div className="text-center">
                         <h1 className="text-2xl font-bold">@SahelUser</h1>
