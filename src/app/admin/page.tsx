@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { ArrowUpRight, Copy, DollarSign, Users, Shield } from 'lucide-react';
 import { AppLayout } from '@/components/AppLayout';
+import { useRouter } from 'next/navigation';
 
 const coreTeamWallet = {
     address: '0xSHELCORETEAM...a1b2c3d4e5f6',
@@ -20,6 +21,11 @@ const recentUsers = [
 ];
 
 export default function AdminPage() {
+    const router = useRouter();
+
+    const handleManageUser = (email: string) => {
+        router.push(`/verification?email=${encodeURIComponent(email)}`);
+    }
 
   return (
     <AppLayout>
@@ -102,7 +108,7 @@ export default function AdminPage() {
                                     </span>
                                 </TableCell>
                                 <TableCell className="text-right">
-                                    <Button variant="outline" size="sm">
+                                    <Button variant="outline" size="sm" onClick={() => handleManageUser(user.email)}>
                                         Gérer
                                         <ArrowUpRight className="h-4 w-4 ml-2" />
                                     </Button>

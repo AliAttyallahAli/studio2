@@ -12,6 +12,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { useToast } from "@/hooks/use-toast"
 import { Camera, Upload } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useSearchParams } from 'next/navigation';
 
 const africanCountries = [
     "Algérie", "Angola", "Bénin", "Botswana", "Burkina Faso", "Burundi", "Cabo Verde", "Cameroun", "République centrafricaine",
@@ -26,8 +27,17 @@ const africanCountries = [
 
 export default function VerificationPage() {
   const { toast } = useToast();
+  const searchParams = useSearchParams();
   const [hasCameraPermission, setHasCameraPermission] = useState<boolean | null>(null);
+  const [email, setEmail] = useState('');
   const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    const userEmail = searchParams.get('email');
+    if (userEmail) {
+      setEmail(userEmail);
+    }
+  }, [searchParams]);
 
    useEffect(() => {
     const getCameraPermission = async () => {
@@ -90,6 +100,12 @@ export default function VerificationPage() {
                         <CardDescription>Statut : <span className="text-yellow-400 font-semibold">Non vérifié</span></CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
+                        {email && (
+                             <div className="space-y-2">
+                                <Label htmlFor="email">Email de l'utilisateur</Label>
+                                <Input id="email" type="email" value={email} readOnly className="bg-secondary" />
+                            </div>
+                        )}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div className="space-y-2">
                                 <Label htmlFor="first-name">Prénom</Label>
@@ -190,7 +206,12 @@ export default function VerificationPage() {
                             </Button>
                         </div>
 
+                        <div className="flex gap-2">
+                             <Button className="w-full bg-green-600 hover:bg-green-700">Approuver</Button>
+                             <Button className="w-full" variant="destructive">Rejeter</Button>
+                        </div>
                         <Button className="w-full bg-accent hover:bg-accent/90">Soumettre pour vérification KYC</Button>
+
                     </CardContent>
                 </Card>
               </TabsContent>
