@@ -6,8 +6,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Handshake } from 'lucide-react';
+import { useState } from 'react';
 
 function AppLogo() {
   return (
@@ -17,8 +17,21 @@ function AppLogo() {
   );
 }
 
+const existingUsers = ['jean.dupont@exemple.com', 'test@gmail.com'];
+
 export default function AuthPage() {
   const router = useRouter();
+  const [step, setStep] = useState<'initial' | 'login' | 'signup'>('initial');
+  const [emailOrPhone, setEmailOrPhone] = useState('');
+  
+  const handleInitialSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (existingUsers.includes(emailOrPhone.toLowerCase())) {
+        setStep('login');
+    } else {
+        setStep('signup');
+    }
+  }
 
   const handleAuth = () => {
     // Logic to handle authentication would go here
@@ -35,30 +48,42 @@ export default function AuthPage() {
         <Card>
           <CardHeader className="text-center">
             <CardTitle className="text-2xl">Bienvenue sur SAHEL</CardTitle>
-            <CardDescription>Votre écosystème financier décentralisé.</CardDescription>
+            <CardDescription>
+                {step === 'initial' && 'Entrez votre email ou téléphone pour commencer.'}
+                {step === 'login' && `Content de vous revoir, ${emailOrPhone}!`}
+                {step === 'signup' && 'Créez votre compte pour continuer.'}
+            </CardDescription>
           </CardHeader>
           <CardContent>
-            <Tabs defaultValue="login" className="w-full">
-              <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="login">Connexion</TabsTrigger>
-                <TabsTrigger value="signup">Inscription</TabsTrigger>
-              </TabsList>
-              <TabsContent value="login">
-                <form onSubmit={(e) => { e.preventDefault(); handleAuth(); }} className="space-y-4 pt-4">
+            {step === 'initial' && (
+                 <form onSubmit={handleInitialSubmit} className="space-y-4 pt-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="email-initial">Email ou numéro de téléphone</Label>
+                    <Input id="email-initial" type="email" placeholder="email@exemple.com" required value={emailOrPhone} onChange={(e) => setEmailOrPhone(e.target.value)} />
+                  </div>
+                  <Button type="submit" className="w-full">
+                    Continuer
+                  </Button>
+                </form>
+            )}
+
+            {step === 'login' && (
+                 <form onSubmit={(e) => { e.preventDefault(); handleAuth(); }} className="space-y-4 pt-4">
                   <div className="space-y-2">
                     <Label htmlFor="email-login">Email</Label>
-                    <Input id="email-login" type="email" placeholder="email@exemple.com" required />
+                    <Input id="email-login" type="email" value={emailOrPhone} readOnly />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="password-login">Mot de passe</Label>
-                    <Input id="password-login" type="password" required />
+                    <Input id="password-login" type="password" required autoFocus />
                   </div>
                   <Button type="submit" className="w-full">
                     Se connecter
                   </Button>
                 </form>
-              </TabsContent>
-              <TabsContent value="signup">
+            )}
+
+            {step === 'signup' && (
                 <form onSubmit={(e) => { e.preventDefault(); handleAuth(); }} className="space-y-4 pt-4">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-2">
@@ -72,7 +97,7 @@ export default function AuthPage() {
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="email-signup">Email</Label>
-                    <Input id="email-signup" type="email" placeholder="email@exemple.com" required />
+                    <Input id="email-signup" type="email" value={emailOrPhone} required readOnly />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="password-signup">Mot de passe</Label>
@@ -86,8 +111,8 @@ export default function AuthPage() {
                     S'inscrire
                   </Button>
                 </form>
-              </TabsContent>
-            </Tabs>
+            )}
+
           </CardContent>
         </Card>
       </div>
