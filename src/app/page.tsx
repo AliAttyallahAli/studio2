@@ -4,28 +4,10 @@
 import { AppLayout } from '@/components/AppLayout';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { AlertTriangle, CheckCircle2, ChevronRight, RefreshCw, Zap } from 'lucide-react';
-import { Bar, BarChart, CartesianGrid, ResponsiveContainer, XAxis, YAxis } from 'recharts';
-import { ChartTooltip, ChartTooltipContent, ChartContainer } from '@/components/ui/chart';
+import { AlertTriangle, CheckCircle2, ChevronRight, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Progress } from '@/components/ui/progress';
-
-const chartData = [
-  { date: '01/07', hashRate: 125 },
-  { date: '02/07', hashRate: 130 },
-  { date: '03/07', hashRate: 128 },
-  { date: '04/07', hashRate: 135 },
-  { date: '05/07', hashRate: 140 },
-  { date: '06/07', hashRate: 138 },
-  { date: '07/07', hashRate: 142 },
-];
-const chartConfig = {
-  hashRate: {
-    label: 'Hash Rate (TH/s)',
-    color: 'hsl(var(--primary))',
-  },
-} satisfies import('@/components/ui/chart').ChartConfig;
-
+import { useState, useEffect } from 'react';
+import { CircularProgress } from '@/components/ui/circular-progress';
 
 const workers = [
   { id: 'worker-001', name: 'RIG-01', status: 'En ligne', hashRate: '72 TH/s', temp: '65°C', uptime: '24h' },
@@ -40,6 +22,38 @@ const recentTransactions = [
 ]
 
 export default function MiningPage() {
+    const [timeRemaining, setTimeRemaining] = useState(15 * 3600 + 45 * 60 + 22); // 15h 45m 22s in seconds
+    const [progress, setProgress] = useState(0);
+
+    useEffect(() => {
+        const totalDuration = 24 * 3600; // 24 hours in seconds
+        const initialProgress = ((totalDuration - timeRemaining) / totalDuration) * 100;
+        setProgress(initialProgress);
+
+        const timer = setInterval(() => {
+            setTimeRemaining(prevTime => {
+                if (prevTime <= 1) {
+                    clearInterval(timer);
+                    return 0;
+                }
+                const newTime = prevTime - 1;
+                const newProgress = ((totalDuration - newTime) / totalDuration) * 100;
+                setProgress(newProgress);
+                return newTime;
+            });
+        }, 1000);
+
+        return () => clearInterval(timer);
+    }, [timeRemaining]);
+
+    const formatTime = (seconds: number) => {
+        const h = Math.floor(seconds / 3600);
+        const m = Math.floor((seconds % 3600) / 60);
+        const s = seconds % 60;
+        return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+    };
+
+
   return (
     <AppLayout>
       <div className="space-y-6">
@@ -47,18 +61,20 @@ export default function MiningPage() {
         <Card className="bg-primary/10 border-primary/20">
           <CardHeader>
             <CardTitle>Session de Minage Quotidienne</CardTitle>
-            <CardDescription>Votre session de minage se termine dans 15h 45m 22s.</CardDescription>
           </CardHeader>
-          <CardContent className="flex flex-col md:flex-row items-center gap-6">
-            <div className="relative">
-              <Zap className="w-24 h-24 text-primary animate-pulse"/>
+          <CardContent className="flex flex-col md:flex-row items-center justify-center gap-6 text-center md:text-left">
+            <div className="relative w-40 h-40">
+                <CircularProgress value={progress} strokeWidth={10} />
+                <div className="absolute inset-0 flex flex-col items-center justify-center">
+                    <p className="text-2xl font-bold text-primary">{formatTime(timeRemaining)}</p>
+                    <p className="text-xs text-muted-foreground">Restant</p>
+                </div>
             </div>
-            <div className="flex-grow w-full">
-              <p className="font-bold text-lg">Minage Actif</p>
-              <Progress value={35} className="mt-2 mb-1" />
-              <p className="text-sm text-muted-foreground">Taux de base : +0.1 SAHEL/h</p>
+            <div className="flex-grow">
+              <p className="font-bold text-2xl">Minage Actif</p>
+              <p className="text-muted-foreground">Taux de base : +0.1 SAHEL/h</p>
+               <Button size="lg" className="bg-primary hover:bg-primary/90 mt-4 w-full sm:w-auto">Arrêter le minage</Button>
             </div>
-            <Button size="lg" className="bg-primary hover:bg-primary/90 w-full md:w-auto">Arrêter le minage</Button>
           </CardContent>
         </Card>
 
