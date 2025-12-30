@@ -1,10 +1,11 @@
 
 export interface ChatMessage {
   id: string;
-  type: 'text' | 'image' | 'file';
+  type: 'text' | 'image' | 'file' | 'audio';
   content?: string;
   url?: string;
   hint?: string;
+  duration?: string;
   file?: {
     name: string;
     size: string;
@@ -29,7 +30,7 @@ export interface UserProfileData {
   details?: UserProfileDetails;
 }
 
-interface ChatData {
+export interface ChatData {
   id: string;
   contact: {
     id: string;
@@ -150,3 +151,5 @@ export const getChatData = (id: string): ChatData | undefined => {
 export const getUserProfile = (id: string): UserProfileData | undefined => {
     return userProfiles[id];
 }
+
+    
