@@ -12,6 +12,8 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useState } from 'react';
+import { PinDialog } from '@/components/PinDialog';
+import { useToast } from '@/hooks/use-toast';
 
 const initialTokens = [
     { name: "Z-Immo Token", ticker: "ZIM", description: "Token représentant une part d'un projet immobilier tokenisé, générant des revenus locatifs mensuels.", logo: "https://picsum.photos/seed/zim/48/48" },
@@ -25,6 +27,7 @@ const dexSwaps = [
 ]
 
 export default function DexPage() {
+    const { toast } = useToast();
     const [tokens, setTokens] = useState(initialTokens);
     const [openDialog, setOpenDialog] = useState(false);
     const [tokenName, setTokenName] = useState('');
@@ -46,6 +49,11 @@ export default function DexPage() {
         setTokenName('');
         setTokenTicker('');
         setSahelAmount(100);
+        toast({ title: 'Token Créé', description: `Le token ${newToken.ticker} a été ajouté à votre portefeuille.` });
+    }
+
+    const handleSwap = () => {
+        toast({ title: 'Échange Réussi', description: 'Vos actifs ont été échangés avec succès.' });
     }
 
   return (
@@ -88,7 +96,9 @@ export default function DexPage() {
                             <p className="text-2xl font-bold text-primary">{new Intl.NumberFormat().format(sahelAmount * 100)} {tokenTicker.toUpperCase()}</p>
                             <p className="text-xs">(Basé sur {sahelAmount} SAHEL)</p>
                         </div>
-                        <Button className="w-full bg-accent hover:bg-accent/90" onClick={handleAddNewToken}>Créer le Token</Button>
+                        <PinDialog onPinSuccess={handleAddNewToken}>
+                            <Button className="w-full bg-accent hover:bg-accent/90">Créer le Token</Button>
+                        </PinDialog>
                     </div>
                 </DialogContent>
             </Dialog>
@@ -138,7 +148,9 @@ export default function DexPage() {
                             </div>
                         </div>
                         <p className="text-sm text-center text-muted-foreground">Taux de conversion : 1 SAHEL = 10 ZIM</p>
-                        <Button className="w-full" size="lg">Échanger</Button>
+                        <PinDialog onPinSuccess={handleSwap}>
+                           <Button className="w-full" size="lg">Échanger</Button>
+                        </PinDialog>
                     </CardContent>
                 </Card>
                  <div className="mt-6">
@@ -182,5 +194,3 @@ export default function DexPage() {
     </AppLayout>
   );
 }
-
-    

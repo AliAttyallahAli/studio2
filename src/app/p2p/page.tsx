@@ -9,6 +9,8 @@ import { Label } from '@/components/ui/label';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { PinDialog } from '@/components/PinDialog';
+import { useToast } from '@/hooks/use-toast';
 
 const buyOffers = [
     { user: 'CryptoKing', rate: '1.05 USD / SAHEL', available: '500 SAHEL', limits: '50 - 500 USD' },
@@ -23,6 +25,15 @@ const sellOffers = [
 
 
 export default function P2PPage() {
+    const { toast } = useToast();
+
+    const handleTransaction = (type: 'Acheter' | 'Vendre') => {
+        toast({
+            title: 'Transaction Confirmée',
+            description: `Votre ordre pour ${type.toLowerCase()} a été placé.`,
+        });
+    }
+
   return (
     <AppLayout>
       <div className="space-y-6">
@@ -75,7 +86,9 @@ export default function P2PPage() {
                                             <div className="text-xs text-muted-foreground">{offer.limits}</div>
                                         </TableCell>
                                         <TableCell className="text-right">
-                                            <Button size="sm" variant="secondary">Acheter</Button>
+                                            <PinDialog onPinSuccess={() => handleTransaction('Acheter')}>
+                                                <Button size="sm" variant="secondary">Acheter</Button>
+                                            </PinDialog>
                                         </TableCell>
                                     </TableRow>
                                 ))}
@@ -102,7 +115,9 @@ export default function P2PPage() {
                                             <div className="text-xs text-muted-foreground">{offer.limits}</div>
                                         </TableCell>
                                         <TableCell className="text-right">
-                                            <Button size="sm" variant="destructive">Vendre</Button>
+                                            <PinDialog onPinSuccess={() => handleTransaction('Vendre')}>
+                                                <Button size="sm" variant="destructive">Vendre</Button>
+                                            </PinDialog>
                                         </TableCell>
                                     </TableRow>
                                 ))}

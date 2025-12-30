@@ -14,6 +14,8 @@ import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@
 import Link from 'next/link';
 import { useState } from 'react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { PinDialog } from '@/components/PinDialog';
+import { useToast } from '@/hooks/use-toast';
 
 const initialMarketplaceItems = [
   { name: "Casque VR dernière génération", price: '150 SAHEL', image: 'https://picsum.photos/seed/vr/400/400', hint: 'vr headset', seller: '@user123', sellerAvatar: 'https://picsum.photos/seed/user123/100/100' },
@@ -23,6 +25,7 @@ const initialMarketplaceItems = [
 ];
 
 export default function MarketplacePage() {
+    const { toast } = useToast();
     const [marketplaceItems, setMarketplaceItems] = useState(initialMarketplaceItems);
     const [openDialog, setOpenDialog] = useState(false);
     
@@ -62,7 +65,12 @@ export default function MarketplacePage() {
         setCurrency('SAHEL');
         setImage(null);
         setImagePreview(null);
+        toast({ title: 'Article Mis en Vente', description: 'Votre article est maintenant visible sur le marché.' });
     };
+
+    const handleBuyItem = (itemName: string) => {
+        toast({ title: 'Achat Réussi', description: `Vous avez acheté : ${itemName}.` });
+    }
 
   return (
     <AppLayout>
@@ -125,7 +133,9 @@ export default function MarketplacePage() {
                                 Des frais uniques de <span className="font-bold text-primary">50 SAHEL</span> seront déduits de votre portefeuille pour l'activation de votre compte vendeur.
                             </AlertDescription>
                         </Alert>
-                        <Button className="w-full bg-accent hover:bg-accent/90" onClick={handleAddNewItem}>Mettre en vente et Payer les frais</Button>
+                        <PinDialog onPinSuccess={handleAddNewItem}>
+                            <Button className="w-full bg-accent hover:bg-accent/90">Mettre en vente et Payer les frais</Button>
+                        </PinDialog>
                     </div>
                 </DialogContent>
             </Dialog>
@@ -144,7 +154,9 @@ export default function MarketplacePage() {
                                 <p className="text-sm text-muted-foreground hover:underline">Vendu par {item.seller}</p>
                              </Link>
                             <CardDescription className="text-base font-semibold text-primary">{item.price}</CardDescription>
-                            <Button className="w-full bg-accent hover:bg-accent/90">Acheter</Button>
+                             <PinDialog onPinSuccess={() => handleBuyItem(item.name)}>
+                                <Button className="w-full bg-accent hover:bg-accent/90">Acheter</Button>
+                            </PinDialog>
                         </CardContent>
                     </Card>
                 ))}
