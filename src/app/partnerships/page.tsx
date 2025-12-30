@@ -45,26 +45,26 @@ export default function PartnershipsPage() {
     // Form state
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
-    const [image, setImage] = useState<File | null>(null);
-    const [imagePreview, setImagePreview] = useState<string | null>(null);
+    const [institution, setInstitution] = useState('');
+    const [projectObject, setProjectObject] = useState('');
+    const [contactAddress, setContactAddress] = useState('');
+    const [attachedFile, setAttachedFile] = useState<File | null>(null);
 
-    const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         if (event.target.files && event.target.files[0]) {
-            const file = event.target.files[0];
-            setImage(file);
-            setImagePreview(URL.createObjectURL(file));
+            setAttachedFile(event.target.files[0]);
         }
     };
 
     const handleAddNewPost = () => {
-        if (!title || !content || !imagePreview) return;
+        if (!title || !content) return;
 
         const newPost = {
             id: `blog-${Date.now()}`,
             title: title,
             description: content.substring(0, 100) + '...',
-            author: { name: "SahelUser", username: "saheluser", avatar: "https://picsum.photos/seed/zoudou/100/100" },
-            image: imagePreview,
+            author: { name: institution || "SahelUser", username: "saheluser", avatar: "https://picsum.photos/seed/zoudou/100/100" },
+            image: "https://picsum.photos/seed/newpost/800/400",
             imageHint: "user blog post",
             category: "Communauté",
             readTime: "5 min de lecture"
@@ -74,8 +74,10 @@ export default function PartnershipsPage() {
         // Reset form
         setTitle('');
         setContent('');
-        setImage(null);
-        setImagePreview(null);
+        setInstitution('');
+        setProjectObject('');
+        setContactAddress('');
+        setAttachedFile(null);
     };
 
   return (
@@ -86,35 +88,43 @@ export default function PartnershipsPage() {
                 <h1 className="text-3xl font-bold">Partenariats & Blog</h1>
                 <p className="text-muted-foreground">Découvrez les projets de l'écosystème et partagez vos connaissances.</p>
             </div>
-             <Dialog open={openDialog} onOpenChange={setOpenDialog}>
+            <Dialog open={openDialog} onOpenChange={setOpenDialog}>
                 <DialogTrigger asChild>
                      <Button>
                         <PlusCircle className="mr-2 h-5 w-5"/>
-                        Publier un article
+                        Proposer un Partenariat
                     </Button>
                 </DialogTrigger>
-                <DialogContent>
+                <DialogContent className="max-w-2xl">
                     <DialogHeader>
-                        <DialogTitle>Publier un article de blog</DialogTitle>
+                        <DialogTitle>Proposer un Partenariat ou Publier un Article</DialogTitle>
                         <DialogDescription>
-                            Partagez votre expertise avec la communauté. Votre article sera publié après examen.
+                            Partagez votre projet ou votre expertise avec la communauté. Votre soumission sera examinée.
                         </DialogDescription>
                     </DialogHeader>
-                    <div className="space-y-4 py-4">
+                    <div className="space-y-4 py-4 max-h-[70vh] overflow-y-auto pr-4">
                         <div className="space-y-2">
-                            <Label htmlFor="post-title">Titre de l'article</Label>
+                            <Label htmlFor="institution-name">Nom de l'auteur ou de l'institution</Label>
+                            <Input id="institution-name" placeholder="Ex: Sahel Ventures" value={institution} onChange={e => setInstitution(e.target.value)} />
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="post-title">Titre de l'article / Objet du projet</Label>
                             <Input id="post-title" placeholder="Ex: L'avenir du Web3 en Afrique" value={title} onChange={e => setTitle(e.target.value)} />
                         </div>
                         <div className="space-y-2">
-                            <Label htmlFor="post-content">Contenu</Label>
-                            <Textarea id="post-content" placeholder="Rédigez votre article ici..." className="min-h-[200px]" value={content} onChange={e => setContent(e.target.value)} />
+                            <Label htmlFor="post-content">Détails du projet / Contenu de l'article</Label>
+                            <Textarea id="post-content" placeholder="Rédigez votre proposition ou votre article ici..." className="min-h-[150px]" value={content} onChange={e => setContent(e.target.value)} />
                         </div>
                          <div className="space-y-2">
-                            <Label htmlFor="post-image">Image de couverture</Label>
-                            <Input id="post-image" type="file" onChange={handleImageChange} accept="image/*" />
-                             {imagePreview && <Image src={imagePreview} alt="Aperçu" width={150} height={75} className="rounded-md mt-2 object-cover" />}
+                            <Label htmlFor="post-image">Fichiers joints (optionnel)</Label>
+                            <Input id="post-image" type="file" onChange={handleFileChange} />
+                             {attachedFile && <p className="text-sm text-muted-foreground">Fichier sélectionné : {attachedFile.name}</p>}
                         </div>
-                         <Button className="w-full bg-accent hover:bg-accent/90" onClick={handleAddNewPost}>Soumettre pour publication</Button>
+                        <div className="space-y-2">
+                            <Label htmlFor="contact-address">Adresse de contact (email ou téléphone)</Label>
+                            <Input id="contact-address" placeholder="contact@exemple.com" value={contactAddress} onChange={e => setContactAddress(e.target.value)} />
+                        </div>
+                         <Button className="w-full bg-accent hover:bg-accent/90" onClick={handleAddNewPost}>Soumettre</Button>
                     </div>
                 </DialogContent>
             </Dialog>
@@ -148,5 +158,3 @@ export default function PartnershipsPage() {
     </AppLayout>
   );
 }
-
-    

@@ -1,3 +1,4 @@
+
 'use client';
 
 import { AppLayout } from '@/components/AppLayout';
@@ -59,7 +60,17 @@ export default function ProfilePage() {
                 </CardHeader>
                 <CardContent>
                     <form className="space-y-4">
-                         <div className="space-y-2">
+                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                                <Label htmlFor="first-name">Prénom</Label>
+                                <Input id="first-name" defaultValue="Sahel" />
+                            </div>
+                             <div className="space-y-2">
+                                <Label htmlFor="last-name">Nom de famille</Label>
+                                <Input id="last-name" defaultValue="User" />
+                            </div>
+                        </div>
+                        <div className="space-y-2">
                             <Label htmlFor="username">Nom d'utilisateur</Label>
                             <Input id="username" defaultValue="@SahelUser" />
                         </div>

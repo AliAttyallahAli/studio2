@@ -13,6 +13,7 @@ import { PlusCircle } from 'lucide-react';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
 import Link from 'next/link';
 import { useState } from 'react';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 const initialMarketplaceItems = [
   { name: "Casque VR dernière génération", price: '150 SAHEL', image: 'https://picsum.photos/seed/vr/400/400', hint: 'vr headset', seller: '@user123', sellerAvatar: 'https://picsum.photos/seed/user123/100/100' },
@@ -71,18 +72,18 @@ export default function MarketplacePage() {
                 <h1 className="text-3xl font-bold">Marché</h1>
                 <p className="text-muted-foreground">Échangez vos coins et tokens contre des biens et services.</p>
             </div>
-             <Dialog open={openDialog} onOpenChange={setOpenDialog}>
+            <Dialog open={openDialog} onOpenChange={setOpenDialog}>
                 <DialogTrigger asChild>
                     <Button>
                         <PlusCircle className="mr-2 h-5 w-5"/>
-                        Devenir vendeur
+                        Mettre un article en vente
                     </Button>
                 </DialogTrigger>
                 <DialogContent>
                     <DialogHeader>
                         <DialogTitle>Mettre un article en vente</DialogTitle>
                         <DialogDescription>
-                            Remplissez les détails de votre article pour le vendre sur le marché.
+                            Remplissez les détails de votre article. Des frais de 50 SAHEL seront appliqués pour devenir vendeur.
                         </DialogDescription>
                     </DialogHeader>
                     <div className="space-y-4 py-4">
@@ -118,7 +119,13 @@ export default function MarketplacePage() {
                             <Input id="item-image" type="file" onChange={handleImageChange} accept="image/*" />
                             {imagePreview && <Image src={imagePreview} alt="Aperçu" width={100} height={100} className="rounded-md mt-2 object-cover" />}
                         </div>
-                         <Button className="w-full bg-accent hover:bg-accent/90" onClick={handleAddNewItem}>Mettre en vente</Button>
+                        <Alert>
+                            <AlertTitle>Frais de publication</AlertTitle>
+                            <AlertDescription>
+                                Des frais uniques de <span className="font-bold text-primary">50 SAHEL</span> seront déduits de votre portefeuille pour l'activation de votre compte vendeur.
+                            </AlertDescription>
+                        </Alert>
+                        <Button className="w-full bg-accent hover:bg-accent/90" onClick={handleAddNewItem}>Mettre en vente et Payer les frais</Button>
                     </div>
                 </DialogContent>
             </Dialog>
@@ -147,5 +154,3 @@ export default function MarketplacePage() {
     </AppLayout>
   );
 }
-
-    

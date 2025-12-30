@@ -60,6 +60,16 @@ export default function AuthPage() {
               </TabsContent>
               <TabsContent value="signup">
                 <form onSubmit={(e) => { e.preventDefault(); handleAuth(); }} className="space-y-4 pt-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="first-name-signup">Prénom</Label>
+                      <Input id="first-name-signup" placeholder="Jean" required />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="last-name-signup">Nom de famille</Label>
+                      <Input id="last-name-signup" placeholder="Dupont" required />
+                    </div>
+                  </div>
                   <div className="space-y-2">
                     <Label htmlFor="email-signup">Email</Label>
                     <Input id="email-signup" type="email" placeholder="email@exemple.com" required />
