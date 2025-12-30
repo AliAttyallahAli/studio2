@@ -62,72 +62,71 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="flex h-screen bg-muted/20">
-       <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
-          <SheetContent side="left" className="w-[280px] p-0 flex flex-col bg-background">
-              <SheetHeader className="p-4 border-b">
-                  <SheetTitle>
-                      <div className="flex items-center">
-                          <Handshake className="h-6 w-6 text-primary mr-2"/>
-                          <span>Zoudou</span>
-                      </div>
-                  </SheetTitle>
-              </SheetHeader>
-              <div className="py-4 px-4 space-y-2 overflow-y-auto flex-grow">
-                  {navItems.map((item) => (
-                      <SheetClose asChild key={item.label}>
-                      <Button
-                          variant={pathname.startsWith(item.href) && (item.href !== '/' || pathname === '/') ? 'secondary' : 'ghost'}
-                          className="justify-start w-full"
-                          onClick={() => router.push(item.href)}
-                      >
-                          <item.icon className="mr-2 h-5 w-5" />
-                          {item.label}
-                      </Button>
-                      </SheetClose>
-                  ))}
-                   <Separator className="my-4"/>
-                  {adminNavItems.map((item) => (
-                      <SheetClose asChild key={item.label}>
-                          <Button
-                              variant={pathname.startsWith(item.href) ? 'secondary' : 'ghost'}
-                              className="justify-start w-full"
-                              onClick={() => router.push(item.href)}
-                          >
-                              <item.icon className="mr-2 h-5 w-5" />
-                              {item.label}
-                          </Button>
-                      </SheetClose>
-                  ))}
-              </div>
-               <div className="p-4 border-t mt-auto">
-                   <SheetClose asChild>
-                       <Button variant="ghost" className="w-full justify-start mb-2" onClick={() => router.push('/profile')}>
-                          <Avatar className="w-8 h-8 mr-2">
-                              <AvatarImage src="https://picsum.photos/seed/zoudou/100/100" alt="@SahelUser" data-ai-hint="profile avatar"/>
-                              <AvatarFallback>SU</AvatarFallback>
-                          </Avatar>
-                          <span>@SahelUser</span>
-                      </Button>
-                  </SheetClose>
-                  <SheetClose asChild>
-                       <Button variant="ghost" className="w-full justify-start" onClick={() => router.push('/auth')}>
-                          <LogOut className="mr-2 h-5 w-5" />
-                          Se déconnecter
-                      </Button>
-                  </SheetClose>
-              </div>
-          </SheetContent>
-      </Sheet>
-
        <div className="flex flex-col flex-1 min-w-0">
           <header className="flex items-center justify-between h-16 px-4 border-b shrink-0 bg-background sticky top-0 z-30">
             <div className="flex items-center gap-2">
-                <SheetTrigger asChild>
-                    <Button variant="ghost" size="icon">
-                    <Menu className="w-6 h-6" />
-                    <span className="sr-only">Ouvrir le menu</span>
-                    </Button>
-                </SheetTrigger>
+                <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
+                    <SheetTrigger asChild>
+                        <Button variant="ghost" size="icon">
+                        <Menu className="w-6 h-6" />
+                        <span className="sr-only">Ouvrir le menu</span>
+                        </Button>
+                    </SheetTrigger>
+                     <SheetContent side="left" className="w-[280px] p-0 flex flex-col bg-background">
+                        <SheetHeader className="p-4 border-b">
+                            <SheetTitle>
+                                <div className="flex items-center">
+                                    <Handshake className="h-6 w-6 text-primary mr-2"/>
+                                    <span>Zoudou</span>
+                                </div>
+                            </SheetTitle>
+                        </SheetHeader>
+                        <div className="py-4 px-4 space-y-2 overflow-y-auto flex-grow">
+                            {navItems.map((item) => (
+                                <SheetClose asChild key={item.label}>
+                                <Button
+                                    variant={pathname.startsWith(item.href) && (item.href !== '/' || pathname === '/') ? 'secondary' : 'ghost'}
+                                    className="justify-start w-full"
+                                    onClick={() => router.push(item.href)}
+                                >
+                                    <item.icon className="mr-2 h-5 w-5" />
+                                    {item.label}
+                                </Button>
+                                </SheetClose>
+                            ))}
+                            <Separator className="my-4"/>
+                            {adminNavItems.map((item) => (
+                                <SheetClose asChild key={item.label}>
+                                    <Button
+                                        variant={pathname.startsWith(item.href) ? 'secondary' : 'ghost'}
+                                        className="justify-start w-full"
+                                        onClick={() => router.push(item.href)}
+                                    >
+                                        <item.icon className="mr-2 h-5 w-5" />
+                                        {item.label}
+                                    </Button>
+                                </SheetClose>
+                            ))}
+                        </div>
+                        <div className="p-4 border-t mt-auto">
+                            <SheetClose asChild>
+                                <Button variant="ghost" className="w-full justify-start mb-2" onClick={() => router.push('/profile')}>
+                                    <Avatar className="w-8 h-8 mr-2">
+                                        <AvatarImage src="https://picsum.photos/seed/zoudou/100/100" alt="@SahelUser" data-ai-hint="profile avatar"/>
+                                        <AvatarFallback>SU</AvatarFallback>
+                                    </Avatar>
+                                    <span>@SahelUser</span>
+                                </Button>
+                            </SheetClose>
+                            <SheetClose asChild>
+                                <Button variant="ghost" className="w-full justify-start" onClick={() => router.push('/auth')}>
+                                    <LogOut className="mr-2 h-5 w-5" />
+                                    Se déconnecter
+                                </Button>
+                            </SheetClose>
+                        </div>
+                    </SheetContent>
+                </Sheet>
                 <h1 className="font-semibold truncate">{pageTitle}</h1>
             </div>
              <div className="w-10 flex justify-end">
