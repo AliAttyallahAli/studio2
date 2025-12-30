@@ -17,17 +17,8 @@ import { PinSetup } from '@/components/PinSetup';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import Link from 'next/link';
 import { useToast } from '@/hooks/use-toast';
+import { walletData } from '@/lib/chat-data';
 
-
-const walletData = {
-    sahel: { balance: '1250.75 SAHEL', address: '0xSHEL123abc456def789ghi012jkl345mno' },
-    privateKey: '0xprivkey_a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6',
-    accessKey: 'zoudou-access-key-gamma-7-zeta-9',
-    tokens: [
-        { name: 'Z-Immo', balance: '50.00 ZIM', address: '0xZIM456def789ghi012jkl345mno456def' },
-        { name: 'EcoToken', balance: '10,000.00 ECO', address: '0xECO789ghi012jkl345mno456def789ghi' },
-    ]
-};
 
 const transactions = [
     { id: 'tx1', type: 'reçu', amount: '+ 50.25 SAHEL', from: 'de @user123', date: 'Aujourd\'hui', icon: ArrowDown },
@@ -59,6 +50,9 @@ export default function WalletPage() {
   const [showSensitiveInfo, setShowSensitiveInfo] = useState(false);
   const { toast } = useToast();
   
+  // Use a state to be able to re-render when balance changes
+  const [currentWalletData, setCurrentWalletData] = useState(walletData);
+
   useEffect(() => {
     const pinIsSet = localStorage.getItem('pin_is_set') === 'true';
     if (pinIsSet) {
@@ -67,6 +61,15 @@ export default function WalletPage() {
       setPinState('setup');
     }
   }, []);
+  
+   // This effect will re-sync the component state if the global data changes
+   // This is a simple way to propagate state changes without a full state management library
+   useEffect(() => {
+     const interval = setInterval(() => {
+       setCurrentWalletData({...walletData});
+     }, 500); // Check for updates periodically
+     return () => clearInterval(interval);
+   }, []);
 
   const handlePinSuccess = () => {
     setPinState('unlocked');
@@ -135,7 +138,7 @@ export default function WalletPage() {
                           <CardTitle>Mon Portefeuille Multichain</CardTitle>
                           <CardDescription>Solde total estimé : <span className="font-bold text-primary">$1,850.50 USD</span></CardDescription>
                       </div>
-                      <div className="flex gap-2 w-full md:w-auto">
+                       <div className="flex gap-2 w-full md:w-auto">
                            <Dialog open={showSendDialog} onOpenChange={setShowSendDialog}>
                                <DialogTrigger asChild>
                                    <Button className="flex-1 md:flex-auto">
@@ -173,7 +176,7 @@ export default function WalletPage() {
                                             <Button className="w-full">Confirmer l'envoi</Button>
                                         </PinDialog>
                                     </div>
-                                </DialogContent>
+                               </DialogContent>
                            </Dialog>
 
                            <Dialog>
@@ -187,11 +190,11 @@ export default function WalletPage() {
                                         <DialogTitle>QR Code de Réception</DialogTitle>
                                         <DialogDescription>
                                             Scannez ce code pour envoyer des fonds à l'adresse : <br />
-                                            <span className="font-mono text-xs break-all">{walletData.sahel.address}</span>
+                                            <span className="font-mono text-xs break-all">{currentWalletData.sahel.address}</span>
                                         </DialogDescription>
                                     </DialogHeader>
                                     <div className="flex justify-center p-4">
-                                         <Link href={`/p2p?address=${walletData.sahel.address}`}>
+                                         <Link href={`/p2p?address=${currentWalletData.sahel.address}`}>
                                             <div className="w-48 h-48 bg-white flex items-center justify-center cursor-pointer" data-ai-hint="QR code">
                                                 <QrCode className="w-40 h-40 text-black" />
                                             </div>
@@ -215,16 +218,16 @@ export default function WalletPage() {
                                   <CardDescription>Le coin principal de l'écosystème</CardDescription>
                               </CardHeader>
                               <CardContent>
-                                  <p className="text-2xl font-bold text-primary">{walletData.sahel.balance}</p>
+                                  <p className="text-2xl font-bold text-primary">{currentWalletData.sahel.balance.toFixed(2)} SAHEL</p>
                                   <div className="mt-2">
                                       <Label className="text-xs">Votre adresse SAHEL</Label>
-                                      <AddressRow address={walletData.sahel.address} />
+                                      <AddressRow address={currentWalletData.sahel.address} />
                                   </div>
                               </CardContent>
                           </Card>
                       </TabsContent>
                       <TabsContent value="tokens" className="mt-4 space-y-4">
-                         {walletData.tokens.map(token => (
+                         {currentWalletData.tokens.map(token => (
                               <Card key={token.name} className="bg-secondary">
                                   <CardHeader>
                                       <CardTitle className="text-lg">{token.name}</CardTitle>
@@ -261,15 +264,15 @@ export default function WalletPage() {
 
                          <div>
                             <Label>Adresse du Portefeuille</Label>
-                            <AddressRow address={walletData.sahel.address} />
+                            <AddressRow address={currentWalletData.sahel.address} />
                         </div>
                         <div>
                             <Label>Clé Privée</Label>
-                            <AddressRow address={walletData.privateKey} />
+                            <AddressRow address={currentWalletData.privateKey} />
                         </div>
                         <div>
                             <Label>Clé d'Accès (Mot de passe de récupération)</Label>
-                            <AddressRow address={walletData.accessKey} />
+                            <AddressRow address={currentWalletData.accessKey} />
                         </div>
 
                         <Button variant="outline" onClick={() => setShowSensitiveInfo(false)}>Cacher les informations</Button>

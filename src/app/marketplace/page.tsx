@@ -16,6 +16,7 @@ import { useState } from 'react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { PinDialog } from '@/components/PinDialog';
 import { useToast } from '@/hooks/use-toast';
+import { updateSahelBalance } from '@/lib/chat-data';
 
 const initialMarketplaceItems = [
   { name: "Casque VR dernière génération", price: '150 SAHEL', image: 'https://picsum.photos/seed/vr/400/400', hint: 'vr headset', seller: '@user123', sellerAvatar: 'https://picsum.photos/seed/user123/100/100' },
@@ -37,6 +38,8 @@ export default function MarketplacePage() {
     const [image, setImage] = useState<File | null>(null);
     const [imagePreview, setImagePreview] = useState<string | null>(null);
 
+    const [isSellerActivated, setIsSellerActivated] = useState(false);
+
     const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         if (event.target.files && event.target.files[0]) {
             const file = event.target.files[0];
@@ -45,8 +48,8 @@ export default function MarketplacePage() {
         }
     };
 
-    const handleAddNewItem = () => {
-        if (!name || !price || !image || !imagePreview) return;
+    const handleListNewItem = () => {
+         if (!name || !price || !image || !imagePreview) return;
 
         const newItem = {
             name: name,
@@ -66,6 +69,22 @@ export default function MarketplacePage() {
         setImage(null);
         setImagePreview(null);
         toast({ title: 'Article Mis en Vente', description: 'Votre article est maintenant visible sur le marché.' });
+    }
+
+    const handlePayFeeAndList = () => {
+        updateSahelBalance(-50);
+        setIsSellerActivated(true);
+        toast({ title: 'Compte vendeur activé!', description: '50 SAHEL ont été déduits de votre solde.' });
+        handleListNewItem();
+    };
+
+    const handleAddNewItem = () => {
+        if (isSellerActivated) {
+            handleListNewItem();
+        } else {
+            // This will now be handled by the PinDialog logic which calls handlePayFeeAndList on success
+            // For clarity, the function to call is handlePayFeeAndList
+        }
     };
 
     const handleBuyItem = (itemName: string) => {
@@ -90,9 +109,11 @@ export default function MarketplacePage() {
                 <DialogContent>
                     <DialogHeader>
                         <DialogTitle>Mettre un article en vente</DialogTitle>
-                        <DialogDescription>
-                            Remplissez les détails de votre article. Des frais de 50 SAHEL seront appliqués pour devenir vendeur.
-                        </DialogDescription>
+                        {!isSellerActivated && (
+                            <DialogDescription>
+                                Remplissez les détails de votre article. Des frais de 50 SAHEL seront appliqués pour devenir vendeur.
+                            </DialogDescription>
+                        )}
                     </DialogHeader>
                     <div className="space-y-4 py-4">
                         <div className="space-y-2">
@@ -127,15 +148,24 @@ export default function MarketplacePage() {
                             <Input id="item-image" type="file" onChange={handleImageChange} accept="image/*" />
                             {imagePreview && <Image src={imagePreview} alt="Aperçu" width={100} height={100} className="rounded-md mt-2 object-cover" />}
                         </div>
-                        <Alert>
-                            <AlertTitle>Frais de publication</AlertTitle>
-                            <AlertDescription>
-                                Des frais uniques de <span className="font-bold text-primary">50 SAHEL</span> seront déduits de votre portefeuille pour l'activation de votre compte vendeur.
-                            </AlertDescription>
-                        </Alert>
-                        <PinDialog onPinSuccess={handleAddNewItem}>
-                            <Button className="w-full bg-accent hover:bg-accent/90">Mettre en vente et Payer les frais</Button>
-                        </PinDialog>
+                        
+                        {!isSellerActivated && (
+                            <Alert>
+                                <AlertTitle>Frais de publication</AlertTitle>
+                                <AlertDescription>
+                                    Des frais uniques de <span className="font-bold text-primary">50 SAHEL</span> seront déduits de votre portefeuille pour l'activation de votre compte vendeur.
+                                </AlertDescription>
+                            </Alert>
+                        )}
+                        
+                        {isSellerActivated ? (
+                            <Button className="w-full bg-accent hover:bg-accent/90" onClick={handleAddNewItem}>Mettre en vente</Button>
+                        ) : (
+                            <PinDialog onPinSuccess={handlePayFeeAndList}>
+                                <Button className="w-full bg-accent hover:bg-accent/90">Mettre en vente et Payer les frais</Button>
+                            </PinDialog>
+                        )}
+
                     </div>
                 </DialogContent>
             </Dialog>

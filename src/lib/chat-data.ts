@@ -1,4 +1,5 @@
 
+
 export interface ChatMessage {
   id: string;
   type: 'text' | 'image' | 'file' | 'audio';
@@ -90,6 +91,20 @@ export interface BlogPost {
       url: string;
       size: string;
   }
+}
+
+export const walletData = {
+    sahel: { balance: 1250.75, address: '0xSHEL123abc456def789ghi012jkl345mno' },
+    privateKey: '0xprivkey_a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6',
+    accessKey: 'zoudou-access-key-gamma-7-zeta-9',
+    tokens: [
+        { name: 'Z-Immo', balance: '50.00 ZIM', address: '0xZIM456def789ghi012jkl345mno456def' },
+        { name: 'EcoToken', balance: '10,000.00 ECO', address: '0xECO789ghi012jkl345mno456def789ghi' },
+    ]
+};
+
+export const updateSahelBalance = (amount: number) => {
+    walletData.sahel.balance += amount;
 }
 
 
@@ -185,6 +200,8 @@ export let allChats: ChatData[] = [
       { id: 'msg2-4', type: 'image', url: 'https://picsum.photos/seed/abstract/600/400', hint: 'abstract design', sender: 'other', time: '14:32' },
       { id: 'msg2-5', type: 'text', content: 'Bienvenue ! C\'est une super plateforme.', sender: 'me', time: '14:31' },
       { id: 'msg2-6', type: 'file', file: { name: 'whitepaper_sahel.pdf', size: '1.2 MB' }, sender: 'me', time: '14:35' },
+      { id: 'msg2-7', type: 'audio', duration: '00:12', sender: 'me', time: '14:38'},
+      { id: 'msg2-8', type: 'audio', duration: '00:25', sender: 'other', time: '14:40'},
     ]
   },
   { 
