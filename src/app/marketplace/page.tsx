@@ -21,7 +21,11 @@ const initialMarketplaceItems = [
   { name: "T-shirt 'Zoudou'", price: '25 ECO', image: 'https://picsum.photos/seed/tshirt/400/400', hint: 'branded t-shirt', seller: '@z_fashion', sellerAvatar: 'https://picsum.photos/seed/fashion/100/100' },
 ];
 
-function SellItemDialog({ onSellItem }: { onSellItem: (item: any) => void }) {
+export default function MarketplacePage() {
+    const [marketplaceItems, setMarketplaceItems] = useState(initialMarketplaceItems);
+    const [openDialog, setOpenDialog] = useState(false);
+    
+    // State for the sell item form
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');
     const [price, setPrice] = useState('');
@@ -37,7 +41,7 @@ function SellItemDialog({ onSellItem }: { onSellItem: (item: any) => void }) {
         }
     };
 
-    const handleSell = () => {
+    const handleAddNewItem = () => {
         if (!name || !price || !image || !imagePreview) return;
 
         const newItem = {
@@ -48,66 +52,16 @@ function SellItemDialog({ onSellItem }: { onSellItem: (item: any) => void }) {
             seller: '@SahelUser',
             sellerAvatar: 'https://picsum.photos/seed/zoudou/100/100'
         };
-        onSellItem(newItem);
-    };
-
-    return (
-        <DialogContent>
-            <DialogHeader>
-                <DialogTitle>Mettre un article en vente</DialogTitle>
-                <DialogDescription>
-                    Remplissez les détails de votre article pour le vendre sur le marché.
-                </DialogDescription>
-            </DialogHeader>
-            <div className="space-y-4 py-4">
-                <div className="space-y-2">
-                    <Label htmlFor="item-name">Nom de l'article</Label>
-                    <Input id="item-name" placeholder="Ex: Casque Audio Pro" value={name} onChange={e => setName(e.target.value)} />
-                </div>
-                <div className="space-y-2">
-                    <Label htmlFor="item-description">Description</Label>
-                    <Textarea id="item-description" placeholder="Décrivez votre article en quelques mots." value={description} onChange={e => setDescription(e.target.value)} />
-                </div>
-                 <div className="grid grid-cols-3 gap-4">
-                    <div className="space-y-2 col-span-2">
-                        <Label htmlFor="item-price">Prix</Label>
-                        <Input id="item-price" type="number" placeholder="0.00" value={price} onChange={e => setPrice(e.target.value)} />
-                    </div>
-                     <div className="space-y-2">
-                        <Label htmlFor="item-currency">Devise</Label>
-                         <Select value={currency} onValueChange={setCurrency}>
-                            <SelectTrigger id="item-currency">
-                                <SelectValue placeholder="Devise" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="SAHEL">SAHEL</SelectItem>
-                                <SelectItem value="ZIM">ZIM</SelectItem>
-                                <SelectItem value="ECO">ECO</SelectItem>
-                            </SelectContent>
-                        </Select>
-                    </div>
-                </div>
-                <div className="space-y-2">
-                    <Label htmlFor="item-image">Image de l'article</Label>
-                    <Input id="item-image" type="file" onChange={handleImageChange} />
-                    {imagePreview && <Image src={imagePreview} alt="Aperçu" width={100} height={100} className="rounded-md mt-2" />}
-                </div>
-                 <DialogTrigger asChild>
-                    <Button className="w-full bg-accent hover:bg-accent/90" onClick={handleSell}>Mettre en vente</Button>
-                </DialogTrigger>
-            </div>
-        </DialogContent>
-    );
-}
-
-export default function MarketplacePage() {
-    const [marketplaceItems, setMarketplaceItems] = useState(initialMarketplaceItems);
-    const [openDialog, setOpenDialog] = useState(false);
-
-    const handleAddNewItem = (newItem: any) => {
         setMarketplaceItems(prev => [newItem, ...prev]);
         setOpenDialog(false);
-    }
+        // Reset form
+        setName('');
+        setDescription('');
+        setPrice('');
+        setCurrency('SAHEL');
+        setImage(null);
+        setImagePreview(null);
+    };
 
   return (
     <AppLayout>
@@ -124,7 +78,49 @@ export default function MarketplacePage() {
                         Devenir vendeur
                     </Button>
                 </DialogTrigger>
-                <SellItemDialog onSellItem={handleAddNewItem} />
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Mettre un article en vente</DialogTitle>
+                        <DialogDescription>
+                            Remplissez les détails de votre article pour le vendre sur le marché.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <div className="space-y-4 py-4">
+                        <div className="space-y-2">
+                            <Label htmlFor="item-name">Nom de l'article</Label>
+                            <Input id="item-name" placeholder="Ex: Casque Audio Pro" value={name} onChange={e => setName(e.target.value)} />
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="item-description">Description</Label>
+                            <Textarea id="item-description" placeholder="Décrivez votre article en quelques mots." value={description} onChange={e => setDescription(e.target.value)} />
+                        </div>
+                         <div className="grid grid-cols-3 gap-4">
+                            <div className="space-y-2 col-span-2">
+                                <Label htmlFor="item-price">Prix</Label>
+                                <Input id="item-price" type="number" placeholder="0.00" value={price} onChange={e => setPrice(e.target.value)} />
+                            </div>
+                             <div className="space-y-2">
+                                <Label htmlFor="item-currency">Devise</Label>
+                                 <Select value={currency} onValueChange={setCurrency}>
+                                    <SelectTrigger id="item-currency">
+                                        <SelectValue placeholder="Devise" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="SAHEL">SAHEL</SelectItem>
+                                        <SelectItem value="ZIM">ZIM</SelectItem>
+                                        <SelectItem value="ECO">ECO</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="item-image">Image de l'article</Label>
+                            <Input id="item-image" type="file" onChange={handleImageChange} accept="image/*" />
+                            {imagePreview && <Image src={imagePreview} alt="Aperçu" width={100} height={100} className="rounded-md mt-2 object-cover" />}
+                        </div>
+                         <Button className="w-full bg-accent hover:bg-accent/90" onClick={handleAddNewItem}>Mettre en vente</Button>
+                    </div>
+                </DialogContent>
             </Dialog>
         </div>
 
@@ -151,3 +147,5 @@ export default function MarketplacePage() {
     </AppLayout>
   );
 }
+
+    

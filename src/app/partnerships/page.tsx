@@ -37,7 +37,12 @@ const initialBlogPosts = [
     },
 ];
 
-function PostBlogDialog({ onPostCreate }: { onPostCreate: (post: any) => void }) {
+
+export default function PartnershipsPage() {
+    const [blogPosts, setBlogPosts] = useState(initialBlogPosts);
+    const [openDialog, setOpenDialog] = useState(false);
+    
+    // Form state
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
     const [image, setImage] = useState<File | null>(null);
@@ -51,7 +56,7 @@ function PostBlogDialog({ onPostCreate }: { onPostCreate: (post: any) => void })
         }
     };
 
-    const handlePost = () => {
+    const handleAddNewPost = () => {
         if (!title || !content || !imagePreview) return;
 
         const newPost = {
@@ -64,47 +69,14 @@ function PostBlogDialog({ onPostCreate }: { onPostCreate: (post: any) => void })
             category: "Communauté",
             readTime: "5 min de lecture"
         };
-        onPostCreate(newPost);
-    };
-
-    return (
-        <DialogContent>
-            <DialogHeader>
-                <DialogTitle>Publier un article de blog</DialogTitle>
-                <DialogDescription>
-                    Partagez votre expertise avec la communauté. Votre article sera publié après examen.
-                </DialogDescription>
-            </DialogHeader>
-            <div className="space-y-4 py-4">
-                <div className="space-y-2">
-                    <Label htmlFor="post-title">Titre de l'article</Label>
-                    <Input id="post-title" placeholder="Ex: L'avenir du Web3 en Afrique" value={title} onChange={e => setTitle(e.target.value)} />
-                </div>
-                <div className="space-y-2">
-                    <Label htmlFor="post-content">Contenu</Label>
-                    <Textarea id="post-content" placeholder="Rédigez votre article ici..." className="min-h-[200px]" value={content} onChange={e => setContent(e.target.value)} />
-                </div>
-                 <div className="space-y-2">
-                    <Label htmlFor="post-image">Image de couverture</Label>
-                    <Input id="post-image" type="file" onChange={handleImageChange} />
-                     {imagePreview && <Image src={imagePreview} alt="Aperçu" width={150} height={75} className="rounded-md mt-2 object-cover" />}
-                </div>
-                 <DialogTrigger asChild>
-                    <Button className="w-full bg-accent hover:bg-accent/90" onClick={handlePost}>Soumettre pour publication</Button>
-                 </DialogTrigger>
-            </div>
-        </DialogContent>
-    );
-}
-
-export default function PartnershipsPage() {
-    const [blogPosts, setBlogPosts] = useState(initialBlogPosts);
-    const [openDialog, setOpenDialog] = useState(false);
-
-    const handleAddNewPost = (newPost: any) => {
         setBlogPosts(prev => [newPost, ...prev]);
         setOpenDialog(false);
-    }
+        // Reset form
+        setTitle('');
+        setContent('');
+        setImage(null);
+        setImagePreview(null);
+    };
 
   return (
     <AppLayout>
@@ -121,7 +93,30 @@ export default function PartnershipsPage() {
                         Publier un article
                     </Button>
                 </DialogTrigger>
-                <PostBlogDialog onPostCreate={handleAddNewPost} />
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Publier un article de blog</DialogTitle>
+                        <DialogDescription>
+                            Partagez votre expertise avec la communauté. Votre article sera publié après examen.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <div className="space-y-4 py-4">
+                        <div className="space-y-2">
+                            <Label htmlFor="post-title">Titre de l'article</Label>
+                            <Input id="post-title" placeholder="Ex: L'avenir du Web3 en Afrique" value={title} onChange={e => setTitle(e.target.value)} />
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="post-content">Contenu</Label>
+                            <Textarea id="post-content" placeholder="Rédigez votre article ici..." className="min-h-[200px]" value={content} onChange={e => setContent(e.target.value)} />
+                        </div>
+                         <div className="space-y-2">
+                            <Label htmlFor="post-image">Image de couverture</Label>
+                            <Input id="post-image" type="file" onChange={handleImageChange} accept="image/*" />
+                             {imagePreview && <Image src={imagePreview} alt="Aperçu" width={150} height={75} className="rounded-md mt-2 object-cover" />}
+                        </div>
+                         <Button className="w-full bg-accent hover:bg-accent/90" onClick={handleAddNewPost}>Soumettre pour publication</Button>
+                    </div>
+                </DialogContent>
             </Dialog>
         </div>
 
@@ -153,3 +148,5 @@ export default function PartnershipsPage() {
     </AppLayout>
   );
 }
+
+    

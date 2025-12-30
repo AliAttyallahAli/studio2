@@ -47,170 +47,149 @@ function AddressRow({ address }: { address: string }) {
     );
 }
 
-
-function QrDialog({ address }: { address: string }) {
-    return (
-        <>
-            <DialogHeader>
-                <DialogTitle>QR Code de Réception</DialogTitle>
-                <DialogDescription>
-                    Scannez ce code pour envoyer des fonds à l'adresse : <br />
-                    <span className="font-mono text-xs break-all">{address}</span>
-                </DialogDescription>
-            </DialogHeader>
-            <div className="flex justify-center p-4">
-                 <div className="w-48 h-48 bg-white flex items-center justify-center" data-ai-hint="QR code">
-                    <QrCode className="w-40 h-40 text-black" />
-                 </div>
-            </div>
-        </>
-    );
-}
-
-function SendDialog() {
-    return (
-        <>
-            <DialogHeader>
-                <DialogTitle>Envoyer des Actifs</DialogTitle>
-                <DialogDescription>Envoyer des SAHEL ou des tokens.</DialogDescription>
-            </DialogHeader>
-            <div className="space-y-4 py-4">
-                 <div className="space-y-2">
-                    <Label htmlFor="asset-select">Actif à envoyer</Label>
-                    <Select>
-                        <SelectTrigger id="asset-select">
-                            <SelectValue placeholder="Sélectionnez un actif" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="sahel">SAHEL Coin</SelectItem>
-                            <SelectItem value="z-immo">Z-Immo Token</SelectItem>
-                            <SelectItem value="eco">EcoToken</SelectItem>
-                        </SelectContent>
-                    </Select>
-                </div>
-                <div className="space-y-2">
-                    <Label htmlFor="recipient">Adresse ou @utilisateur du destinataire</Label>
-                    <Input id="recipient" placeholder="@utilisateur ou 0x..." />
-                </div>
-                <div className="space-y-2">
-                    <Label htmlFor="amount">Montant</Label>
-                    <Input id="amount" type="number" placeholder="0.00" />
-                </div>
-                <DialogTrigger asChild>
-                    <Button className="w-full">Envoyer</Button>
-                </DialogTrigger>
-            </div>
-        </>
-    );
-}
-
-
 export default function WalletPage() {
-  const [dialogType, setDialogType] = useState<'send' | 'receive' | null>(null);
-
-  const renderDialogContent = () => {
-    switch(dialogType) {
-        case 'send':
-            return <SendDialog />;
-        case 'receive':
-            return <QrDialog address={walletData.sahel.address} />;
-        default:
-            return null;
-    }
-  }
 
   return (
     <AppLayout>
-      <Dialog open={!!dialogType} onOpenChange={(open) => !open && setDialogType(null)}>
-        <div className="space-y-6">
-            <Card>
-                <CardHeader>
-                    <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                        <div>
-                            <CardTitle>Mon Portefeuille Multichain</CardTitle>
-                            <CardDescription>Solde total estimé : <span className="font-bold text-primary">$1,850.50 USD</span></CardDescription>
-                        </div>
-                        <div className="flex gap-2 w-full md:w-auto">
-                            <Button className="flex-1 md:flex-auto" onClick={() => setDialogType('send')}>
-                                <ArrowUp className="mr-2 h-4 w-4"/>Envoyer
-                            </Button>
-                             <Button className="flex-1 md:flex-auto" variant="outline" onClick={() => setDialogType('receive')}>
-                                <ArrowDown className="mr-2 h-4 w-4"/>Recevoir
-                            </Button>
-                        </div>
-                    </div>
-                </CardHeader>
-                <CardContent>
-                    <Tabs defaultValue="coins" className="w-full">
-                        <TabsList className="grid w-full grid-cols-2">
-                            <TabsTrigger value="coins">Coins</TabsTrigger>
-                            <TabsTrigger value="tokens">Tokens</TabsTrigger>
-                        </TabsList>
-                        <TabsContent value="coins" className="mt-4">
-                            <Card className="bg-secondary">
-                                <CardHeader>
-                                    <CardTitle className="text-lg">SAHEL Coin</CardTitle>
-                                    <CardDescription>Le coin principal de l'écosystème</CardDescription>
-                                </CardHeader>
-                                <CardContent>
-                                    <p className="text-2xl font-bold text-primary">{walletData.sahel.balance}</p>
-                                    <div className="mt-2">
-                                        <Label className="text-xs">Votre adresse SAHEL</Label>
-                                        <AddressRow address={walletData.sahel.address} />
-                                    </div>
-                                </CardContent>
-                            </Card>
-                        </TabsContent>
-                        <TabsContent value="tokens" className="mt-4 space-y-4">
-                           {walletData.tokens.map(token => (
-                                <Card key={token.name} className="bg-secondary">
-                                    <CardHeader>
-                                        <CardTitle className="text-lg">{token.name}</CardTitle>
-                                    </CardHeader>
-                                    <CardContent>
-                                        <p className="text-2xl font-bold">{token.balance}</p>
-                                         <div className="mt-2">
-                                            <Label className="text-xs">Votre adresse {token.name}</Label>
-                                            <AddressRow address={token.address} />
+      <div className="space-y-6">
+          <Card>
+              <CardHeader>
+                  <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                      <div>
+                          <CardTitle>Mon Portefeuille Multichain</CardTitle>
+                          <CardDescription>Solde total estimé : <span className="font-bold text-primary">$1,850.50 USD</span></CardDescription>
+                      </div>
+                      <div className="flex gap-2 w-full md:w-auto">
+                           <Dialog>
+                                <DialogTrigger asChild>
+                                    <Button className="flex-1 md:flex-auto">
+                                        <ArrowUp className="mr-2 h-4 w-4"/>Envoyer
+                                    </Button>
+                                </DialogTrigger>
+                                <DialogContent>
+                                    <DialogHeader>
+                                        <DialogTitle>Envoyer des Actifs</DialogTitle>
+                                        <DialogDescription>Envoyer des SAHEL ou des tokens.</DialogDescription>
+                                    </DialogHeader>
+                                    <div className="space-y-4 py-4">
+                                         <div className="space-y-2">
+                                            <Label htmlFor="asset-select">Actif à envoyer</Label>
+                                            <Select>
+                                                <SelectTrigger id="asset-select">
+                                                    <SelectValue placeholder="Sélectionnez un actif" />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    <SelectItem value="sahel">SAHEL Coin</SelectItem>
+                                                    <SelectItem value="z-immo">Z-Immo Token</SelectItem>
+                                                    <SelectItem value="eco">EcoToken</SelectItem>
+                                                </SelectContent>
+                                            </Select>
                                         </div>
-                                    </CardContent>
-                                </Card>
-                           ))}
-                        </TabsContent>
-                    </Tabs>
-                </CardContent>
-            </Card>
+                                        <div className="space-y-2">
+                                            <Label htmlFor="recipient">Adresse ou @utilisateur du destinataire</Label>
+                                            <Input id="recipient" placeholder="@utilisateur ou 0x..." />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label htmlFor="amount">Montant</Label>
+                                            <Input id="amount" type="number" placeholder="0.00" />
+                                        </div>
+                                        <Button className="w-full">Envoyer</Button>
+                                    </div>
+                                </DialogContent>
+                           </Dialog>
+                           <Dialog>
+                                <DialogTrigger asChild>
+                                     <Button className="flex-1 md:flex-auto" variant="outline">
+                                        <ArrowDown className="mr-2 h-4 w-4"/>Recevoir
+                                    </Button>
+                                </DialogTrigger>
+                                <DialogContent>
+                                    <DialogHeader>
+                                        <DialogTitle>QR Code de Réception</DialogTitle>
+                                        <DialogDescription>
+                                            Scannez ce code pour envoyer des fonds à l'adresse : <br />
+                                            <span className="font-mono text-xs break-all">{walletData.sahel.address}</span>
+                                        </DialogDescription>
+                                    </DialogHeader>
+                                    <div className="flex justify-center p-4">
+                                         <div className="w-48 h-48 bg-white flex items-center justify-center" data-ai-hint="QR code">
+                                            <QrCode className="w-40 h-40 text-black" />
+                                         </div>
+                                    </div>
+                                </DialogContent>
+                           </Dialog>
+                      </div>
+                  </div>
+              </CardHeader>
+              <CardContent>
+                  <Tabs defaultValue="coins" className="w-full">
+                      <TabsList className="grid w-full grid-cols-2">
+                          <TabsTrigger value="coins">Coins</TabsTrigger>
+                          <TabsTrigger value="tokens">Tokens</TabsTrigger>
+                      </TabsList>
+                      <TabsContent value="coins" className="mt-4">
+                          <Card className="bg-secondary">
+                              <CardHeader>
+                                  <CardTitle className="text-lg">SAHEL Coin</CardTitle>
+                                  <CardDescription>Le coin principal de l'écosystème</CardDescription>
+                              </CardHeader>
+                              <CardContent>
+                                  <p className="text-2xl font-bold text-primary">{walletData.sahel.balance}</p>
+                                  <div className="mt-2">
+                                      <Label className="text-xs">Votre adresse SAHEL</Label>
+                                      <AddressRow address={walletData.sahel.address} />
+                                  </div>
+                              </CardContent>
+                          </Card>
+                      </TabsContent>
+                      <TabsContent value="tokens" className="mt-4 space-y-4">
+                         {walletData.tokens.map(token => (
+                              <Card key={token.name} className="bg-secondary">
+                                  <CardHeader>
+                                      <CardTitle className="text-lg">{token.name}</CardTitle>
+                                  </CardHeader>
+                                  <CardContent>
+                                      <p className="text-2xl font-bold">{token.balance}</p>
+                                       <div className="mt-2">
+                                          <Label className="text-xs">Votre adresse {token.name}</Label>
+                                          <AddressRow address={token.address} />
+                                      </div>
+                                  </CardContent>
+                              </Card>
+                         ))}
+                      </TabsContent>
+                  </Tabs>
+              </CardContent>
+          </Card>
 
-            <div>
-                <h2 className="text-lg font-semibold mb-2">Historique des transactions</h2>
-                <Card>
-                    <CardContent className="p-0">
-                        <ScrollArea className="h-64">
-                        <div className="divide-y divide-border">
-                            {transactions.map((tx) => (
-                                <div key={tx.id} className="flex items-center p-4">
-                                    <div className={`flex items-center justify-center w-10 h-10 rounded-full mr-4 ${tx.amount.startsWith('+') ? 'bg-green-900/50 text-green-400' : 'bg-red-900/50 text-red-400'}`}>
-                                        <tx.icon className="w-5 h-5" />
-                                    </div>
-                                    <div className="flex-grow">
-                                        <p className="font-semibold">{tx.amount}</p>
-                                        <p className="text-sm text-muted-foreground">{tx.from}</p>
-                                    </div>
-                                    <div className="text-right">
-                                        <p className="text-xs text-muted-foreground">{tx.date}</p>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                        </ScrollArea>
-                    </CardContent>
-                </Card>
-            </div>
-        </div>
-        <DialogContent>
-            {renderDialogContent()}
-        </DialogContent>
-      </Dialog>
+          <div>
+              <h2 className="text-lg font-semibold mb-2">Historique des transactions</h2>
+              <Card>
+                  <CardContent className="p-0">
+                      <ScrollArea className="h-64">
+                      <div className="divide-y divide-border">
+                          {transactions.map((tx) => (
+                              <div key={tx.id} className="flex items-center p-4">
+                                  <div className={`flex items-center justify-center w-10 h-10 rounded-full mr-4 ${tx.amount.startsWith('+') ? 'bg-green-900/50 text-green-400' : 'bg-red-900/50 text-red-400'}`}>
+                                      <tx.icon className="w-5 h-5" />
+                                  </div>
+                                  <div className="flex-grow">
+                                      <p className="font-semibold">{tx.amount}</p>
+                                      <p className="text-sm text-muted-foreground">{tx.from}</p>
+                                  </div>
+                                  <div className="text-right">
+                                      <p className="text-xs text-muted-foreground">{tx.date}</p>
+                                  </div>
+                              </div>
+                          ))}
+                      </div>
+                      </ScrollArea>
+                  </CardContent>
+              </Card>
+          </div>
+      </div>
     </AppLayout>
   );
 }
+
+    

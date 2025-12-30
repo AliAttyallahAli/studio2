@@ -6,6 +6,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useRouter } from 'next/navigation';
 import { MessageSquare } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 
 const chats = [
   { id: '1', name: 'Zoudou Annonces', lastMessage: 'Bienvenue sur Zoudou !', time: '14:32', avatar: 'https://picsum.photos/seed/announce/100/100', type: 'group' },
@@ -21,7 +22,7 @@ const ChatList = () => {
     };
 
     return (
-        <div className="h-full">
+        <div className="h-full flex flex-col">
             <div className="p-4 border-b">
                 <Button className="w-full" onClick={() => router.push('/chat/new')}>
                     Nouveau Message
@@ -55,17 +56,8 @@ const ChatList = () => {
 export default function ChatListPage() {
 
   return (
-    <AppLayout>
-        <div className="h-full flex flex-col">
-           <div className="md:hidden">
-             <ChatList />
-           </div>
-            <div className="h-full flex-col items-center justify-center text-center hidden md:flex">
-                <MessageSquare size={64} className="text-muted-foreground" />
-                <h2 className="mt-4 text-2xl font-semibold">Sélectionnez une conversation</h2>
-                <p className="text-muted-foreground">Choisissez parmi vos conversations existantes pour commencer à chatter.</p>
-            </div>
-        </div>
-    </AppLayout>
+    <div className="h-full flex flex-col">
+        <ChatList />
+    </div>
   );
 }

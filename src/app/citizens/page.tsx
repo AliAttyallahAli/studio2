@@ -24,12 +24,14 @@ const dexSwaps = [
     { from: "ZIM", to: "ECO", rate: "1 ZIM = 10 ECO" },
 ]
 
-function CreateTokenDialog({ onTokenCreate }: { onTokenCreate: (token: any) => void }) {
+export default function DexPage() {
+    const [tokens, setTokens] = useState(initialTokens);
+    const [openDialog, setOpenDialog] = useState(false);
     const [tokenName, setTokenName] = useState('');
     const [tokenTicker, setTokenTicker] = useState('');
     const [sahelAmount, setSahelAmount] = useState(100);
 
-    const handleCreate = () => {
+    const handleAddNewToken = () => {
         if (!tokenName || !tokenTicker) return;
 
         const newToken = {
@@ -38,51 +40,12 @@ function CreateTokenDialog({ onTokenCreate }: { onTokenCreate: (token: any) => v
             description: `Token personnalisé adossé à ${sahelAmount} SAHEL.`,
             logo: `https://picsum.photos/seed/${tokenTicker.toLowerCase()}/48/48`
         };
-        onTokenCreate(newToken);
-    };
-    
-    return (
-        <DialogContent>
-            <DialogHeader>
-                <DialogTitle>Créer un nouveau Token</DialogTitle>
-                <DialogDescription>
-                    Créez votre propre token adossé au SAHEL coin. 1 SAHEL = 100 de votre nouveau token.
-                </DialogDescription>
-            </DialogHeader>
-            <div className="space-y-4 py-4">
-                 <div className="space-y-2">
-                    <Label htmlFor="token-name">Nom du Token</Label>
-                    <Input id="token-name" placeholder="Ex: MonProjetToken" value={tokenName} onChange={e => setTokenName(e.target.value)} />
-                </div>
-                 <div className="space-y-2">
-                    <Label htmlFor="token-ticker">Symbole (Ticker)</Label>
-                    <Input id="token-ticker" placeholder="Ex: MPT" value={tokenTicker} onChange={e => setTokenTicker(e.target.value)} />
-                </div>
-                <div className="space-y-2">
-                    <Label htmlFor="sahel-amount">Montant de SAHEL à adosser</Label>
-                    <Input id="sahel-amount" type="number" placeholder="100" value={sahelAmount} onChange={e => setSahelAmount(parseInt(e.target.value))} />
-                </div>
-                 <div className="text-center text-muted-foreground p-4 bg-secondary rounded-md">
-                    <p>Vous recevrez</p>
-                    <p className="text-2xl font-bold text-primary">{new Intl.NumberFormat().format(sahelAmount * 100)} {tokenTicker.toUpperCase()}</p>
-                    <p className="text-xs">(Basé sur {sahelAmount} SAHEL)</p>
-                </div>
-                <DialogTrigger asChild>
-                    <Button className="w-full bg-accent hover:bg-accent/90" onClick={handleCreate}>Créer le Token</Button>
-                </DialogTrigger>
-            </div>
-        </DialogContent>
-    );
-}
-
-
-export default function DexPage() {
-    const [tokens, setTokens] = useState(initialTokens);
-    const [openDialog, setOpenDialog] = useState(false);
-
-    const handleAddNewToken = (newToken: any) => {
         setTokens(prev => [newToken, ...prev]);
-        setOpenDialog(false);
+        setOpenDialog(false); // Close dialog
+        // Reset form
+        setTokenName('');
+        setTokenTicker('');
+        setSahelAmount(100);
     }
 
   return (
@@ -100,7 +63,34 @@ export default function DexPage() {
                         Créer un Token
                     </Button>
                 </DialogTrigger>
-                <CreateTokenDialog onTokenCreate={handleAddNewToken} />
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Créer un nouveau Token</DialogTitle>
+                        <DialogDescription>
+                            Créez votre propre token adossé au SAHEL coin. 1 SAHEL = 100 de votre nouveau token.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <div className="space-y-4 py-4">
+                         <div className="space-y-2">
+                            <Label htmlFor="token-name">Nom du Token</Label>
+                            <Input id="token-name" placeholder="Ex: MonProjetToken" value={tokenName} onChange={e => setTokenName(e.target.value)} />
+                        </div>
+                         <div className="space-y-2">
+                            <Label htmlFor="token-ticker">Symbole (Ticker)</Label>
+                            <Input id="token-ticker" placeholder="Ex: MPT" value={tokenTicker} onChange={e => setTokenTicker(e.target.value)} />
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="sahel-amount">Montant de SAHEL à adosser</Label>
+                            <Input id="sahel-amount" type="number" placeholder="100" value={sahelAmount} onChange={e => setSahelAmount(parseInt(e.target.value))} />
+                        </div>
+                         <div className="text-center text-muted-foreground p-4 bg-secondary rounded-md">
+                            <p>Vous recevrez</p>
+                            <p className="text-2xl font-bold text-primary">{new Intl.NumberFormat().format(sahelAmount * 100)} {tokenTicker.toUpperCase()}</p>
+                            <p className="text-xs">(Basé sur {sahelAmount} SAHEL)</p>
+                        </div>
+                        <Button className="w-full bg-accent hover:bg-accent/90" onClick={handleAddNewToken}>Créer le Token</Button>
+                    </div>
+                </DialogContent>
             </Dialog>
         </div>
 
@@ -192,3 +182,5 @@ export default function DexPage() {
     </AppLayout>
   );
 }
+
+    
