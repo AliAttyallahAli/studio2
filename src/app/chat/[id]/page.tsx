@@ -5,7 +5,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
-import { ArrowLeft, Mic, MoreVertical, Paperclip, Phone, Send, Video, FileText, Download, PhoneOff, MicOff, VideoOff, Volume2 } from 'lucide-react';
+import { ArrowLeft, Mic, MoreVertical, Paperclip, Phone, Send, Video, FileText, Download, PhoneOff, MicOff, VideoOff, Volume2, Play, Pause } from 'lucide-react';
 import { useRouter, usePathname } from 'next/navigation';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import Image from 'next/image';
@@ -25,18 +25,60 @@ const FileAttachmentCard = ({ file }: { file: { name: string, size: string } }) 
     </div>
 );
 
-const AudioPlayer = ({ duration }: { duration: string }) => (
-  <div className="flex items-center gap-2">
-    <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center">
-      <Mic className="h-4 w-4" />
+const AudioPlayer = ({ duration }: { duration: string }) => {
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const totalSeconds = parseInt(duration.split(':')[0]) * 60 + parseInt(duration.split(':')[1]);
+
+  useEffect(() => {
+      if (isPlaying) {
+          intervalRef.current = setInterval(() => {
+              setProgress(prev => {
+                  if (prev >= 100) {
+                      clearInterval(intervalRef.current!);
+                      setIsPlaying(false);
+                      return 100;
+                  }
+                  return prev + (100 / totalSeconds);
+              });
+          }, 1000);
+      } else {
+          if (intervalRef.current) {
+              clearInterval(intervalRef.current);
+          }
+      }
+      return () => {
+          if (intervalRef.current) {
+              clearInterval(intervalRef.current);
+          }
+      };
+  }, [isPlaying, totalSeconds]);
+  
+  useEffect(() => {
+    if (progress >= 100) {
+      setIsPlaying(false);
+      setProgress(0);
+    }
+  }, [progress]);
+
+  const togglePlay = () => {
+      setIsPlaying(!isPlaying);
+  }
+
+  return (
+    <div className="flex items-center gap-2">
+      <Button variant="ghost" size="icon" className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center" onClick={togglePlay}>
+        {isPlaying ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
+      </Button>
+      <div className="flex-grow h-1 bg-primary/30 rounded-full relative">
+          <div className="absolute left-0 top-0 h-1 bg-primary rounded-full" style={{width: `${progress}%`}}></div>
+          <div className="absolute top-1/2 -translate-y-1/2 h-3 w-3 bg-primary rounded-full" style={{left: `${progress}%`}}></div>
+      </div>
+      <span className="text-xs opacity-80">{duration}</span>
     </div>
-    <div className="flex-grow h-1 bg-primary/30 rounded-full relative">
-        <div className="absolute left-0 top-0 h-1 bg-primary rounded-full" style={{width: '70%'}}></div>
-        <div className="absolute left-[70%] top-1/2 -translate-y-1/2 h-3 w-3 bg-primary rounded-full"></div>
-    </div>
-    <span className="text-xs opacity-80">{duration}</span>
-  </div>
-);
+  );
+};
 
 const CallView = ({ contact, type, onHangUp }: { contact: ChatData['contact'], type: 'audio' | 'video', onHangUp: () => void }) => {
     const [callTime, setCallTime] = useState(0);
@@ -101,6 +143,7 @@ export default function ChatPage({ params }: { params: { id: string } }) {
   const [callState, setCallState] = useState<{ active: boolean, type: 'audio' | 'video' }>({ active: false, type: 'audio' });
 
   const [isRecording, setIsRecording] = useState(false);
+  const [recordingTime, setRecordingTime] = useState(0);
   const recordingTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
@@ -167,23 +210,40 @@ export default function ChatPage({ params }: { params: { id: string } }) {
     setNewMessage('');
   };
   
-    const handleStartRecording = () => {
-        setIsRecording(true);
-        // Simulate recording start
-    };
+  const formatRecordingTime = (seconds: number) => {
+    const m = Math.floor(seconds / 60);
+    const s = seconds % 60;
+    return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+  };
 
-    const handleStopRecording = () => {
-        setIsRecording(false);
-        const time = new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
-        const voiceMessage: ChatMessage = {
-            id: `msg-${Date.now()}`,
-            sender: 'me',
-            time: time,
-            type: 'audio',
-            duration: '0:07', // Simulated duration
-        };
-        setMessages(prev => [...prev, voiceMessage]);
-    };
+  const handleStartRecording = () => {
+      setIsRecording(true);
+      setRecordingTime(0);
+      recordingTimerRef.current = setInterval(() => {
+          setRecordingTime(prev => prev + 1);
+      }, 1000);
+  };
+
+  const handleStopRecording = () => {
+      setIsRecording(false);
+      if (recordingTimerRef.current) {
+          clearInterval(recordingTimerRef.current);
+      }
+      
+      if (recordingTime > 0) {
+          const time = new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+          const voiceMessage: ChatMessage = {
+              id: `msg-${Date.now()}`,
+              sender: 'me',
+              time: time,
+              type: 'audio',
+              duration: formatRecordingTime(recordingTime),
+          };
+          setMessages(prev => [...prev, voiceMessage]);
+      }
+      setRecordingTime(0);
+  };
+
 
   useEffect(() => {
     // Scroll to bottom when messages change
@@ -279,49 +339,51 @@ export default function ChatPage({ params }: { params: { id: string } }) {
           ))}
         </div>
       </ScrollArea>
-      {isRecording && (
-        <div className="p-3 border-t shrink-0 bg-background flex items-center justify-between">
-            <Mic className="h-5 w-5 text-destructive animate-pulse" />
-            <p className="text-sm text-muted-foreground">Enregistrement en cours...</p>
-            <Button size="sm" onClick={handleStopRecording}>Envoyer</Button>
-        </div>
-      )}
+      
       <footer className="p-3 border-t shrink-0 bg-background">
-        <form 
-            className="flex items-center gap-2"
-            onSubmit={(e) => { e.preventDefault(); handleSendMessage(); }}
-        >
-            <input 
-                type="file" 
-                ref={fileInputRef}
-                onChange={handleFileChange}
-                className="hidden" 
-                accept="image/*,application/pdf"
-            />
-          <Button type="button" variant="ghost" size="icon" onClick={handleAttachmentClick}>
-            <Paperclip className="h-5 w-5" />
-          </Button>
-          <Input 
-            placeholder="Message..." 
-            className="flex-grow" 
-            value={newMessage}
-            onChange={(e) => setNewMessage(e.target.value)}
-          />
-           <Button 
-                type="button" 
-                variant="ghost" 
-                size="icon" 
-                onMouseDown={handleStartRecording}
-                onMouseUp={handleStopRecording}
-                onTouchStart={handleStartRecording}
-                onTouchEnd={handleStopRecording}
+        {isRecording ? (
+            <div className="flex items-center justify-between">
+                <Mic className="h-5 w-5 text-destructive animate-pulse" />
+                <p className="text-sm text-muted-foreground font-mono">{formatRecordingTime(recordingTime)}</p>
+                <Button size="sm" onClick={handleStopRecording}>Envoyer</Button>
+            </div>
+        ) : (
+            <form 
+                className="flex items-center gap-2"
+                onSubmit={(e) => { e.preventDefault(); handleSendMessage(); }}
             >
-            <Mic className="h-5 w-5" />
-          </Button>
-          <Button type="submit" size="icon" className="bg-primary hover:bg-primary/90">
-            <Send className="h-5 w-5" />
-          </Button>
-        </form>
+                <input 
+                    type="file" 
+                    ref={fileInputRef}
+                    onChange={handleFileChange}
+                    className="hidden" 
+                    accept="image/*,application/pdf"
+                />
+              <Button type="button" variant="ghost" size="icon" onClick={handleAttachmentClick}>
+                <Paperclip className="h-5 w-5" />
+              </Button>
+              <Input 
+                placeholder="Message..." 
+                className="flex-grow" 
+                value={newMessage}
+                onChange={(e) => setNewMessage(e.target.value)}
+              />
+               <Button 
+                    type="button" 
+                    variant="ghost" 
+                    size="icon" 
+                    onMouseDown={handleStartRecording}
+                    onMouseUp={handleStopRecording}
+                    onTouchStart={handleStartRecording}
+                    onTouchEnd={handleStopRecording}
+                >
+                <Mic className="h-5 w-5" />
+              </Button>
+              <Button type="submit" size="icon" className="bg-primary hover:bg-primary/90">
+                <Send className="h-5 w-5" />
+              </Button>
+            </form>
+        )}
       </footer>
     </div>
   );
