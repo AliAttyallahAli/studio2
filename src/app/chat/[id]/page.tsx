@@ -10,7 +10,7 @@ import { useRouter } from 'next/navigation';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import Image from 'next/image';
 import React, { useState, useRef, useEffect } from 'react';
-import { getChatData, type ChatMessage } from '@/lib/chat-data';
+import { getChatData, type ChatMessage, type ChatData } from '@/lib/chat-data';
 
 const FileAttachmentCard = ({ file }: { file: { name: string, size: string } }) => (
     <div className="flex items-center p-3 rounded-lg bg-background/20 mt-2">
@@ -31,19 +31,19 @@ export default function ChatPage({ params }: { params: { id: string } }) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   
-  const chatData = getChatData(params.id);
-
-  const [messages, setMessages] = useState<ChatMessage[]>(chatData?.messages || []);
+  const [chatData, setChatData] = useState<ChatData | null>(null);
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [newMessage, setNewMessage] = useState('');
 
   useEffect(() => {
-    // If chat data doesn't exist, redirect to chat list
-    if (!chatData) {
+    const data = getChatData(params.id);
+    if (!data) {
       router.push('/chat');
-      return;
+    } else {
+      setChatData(data);
+      setMessages(data.messages);
     }
-    setMessages(chatData.messages);
-  }, [params.id, chatData, router]);
+  }, [params.id, router]);
 
 
   const handleAttachmentClick = () => {
@@ -57,7 +57,7 @@ export default function ChatPage({ params }: { params: { id: string } }) {
       
       const messageBase = {
         id: `msg-${Date.now()}`,
-        sender: 'me',
+        sender: 'me' as 'me',
         time: time,
       };
 
@@ -108,7 +108,11 @@ export default function ChatPage({ params }: { params: { id: string } }) {
   }, [messages]);
 
   if (!chatData) {
-    return null; // Or a loading spinner
+    return (
+       <div className="flex flex-col h-full bg-card md:border-l items-center justify-center">
+            <p>Chargement de la discussion...</p>
+       </div>
+    );
   }
 
   const { name: chatName, avatar: chatAvatar } = chatData.contact;
