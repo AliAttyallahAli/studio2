@@ -79,11 +79,17 @@ export interface BlogPost {
   id: string;
   title: string;
   description: string;
+  content: string;
   author: { name: string; username: string; avatar: string };
   image: string;
   imageHint: string;
   category: string;
   readTime: string;
+  attachment?: {
+      name: string;
+      url: string;
+      size: string;
+  }
 }
 
 
@@ -257,7 +263,7 @@ export let allFeedPosts: FeedPost[] = [
         url: 'https://example-web3-news.com/article',
         title: 'Le futur du Web3 : décentralisation et tokens',
         description: 'Un aperçu des tendances qui façonneront la prochaine génération d\'internet, de la DeFi aux DAO en passant par les identités décentralisées.',
-        image: 'https://picsum.photos/seed/web3news/600/315',
+        image: 'https://i.ytimg.com/vi/m15kRt_Bqpw/maxresdefault.jpg',
     },
     likes: 42,
     comments: []
@@ -280,16 +286,23 @@ export let allBlogPosts: BlogPost[] = [
         id: 'blog-1',
         title: "L'impact de la tokenisation sur l'immobilier en Afrique",
         description: "Découvrez comment la blockchain et la tokenisation, via des projets comme Z-Immo, peuvent révolutionner l'accès à la propriété sur le continent.",
+        content: "La tokenisation immobilière représente une opportunité sans précédent pour démocratiser l'investissement immobilier en Afrique. En divisant des actifs de grande valeur en plus petites parts numériques (tokens), elle abaisse considérablement le seuil d'entrée pour les investisseurs. \n\nLes avantages sont multiples : liquidité accrue, transparence des transactions grâce à la blockchain, et accès à un marché plus large. Des projets pionniers comme Z-Immo montrent la voie en proposant des fractions de propriétés résidentielles et commerciales, permettant aux petits épargnants de percevoir des revenus locatifs et de participer à la plus-value des biens. \n\nCependant, des défis réglementaires et d'éducation du marché subsistent. Une collaboration étroite entre les innovateurs technologiques et les régulateurs sera cruciale pour libérer tout le potentiel de cette révolution.",
         author: { name: "ImmoToken", username: "immotoken", avatar: "https://picsum.photos/seed/immo/100/100" },
         image: "https://picsum.photos/seed/building/800/400",
         imageHint: "modern architecture",
         category: "Technologie",
-        readTime: "8 min de lecture"
+        readTime: "8 min de lecture",
+        attachment: {
+            name: "Analyse_Immo_Token.pdf",
+            url: "/downloads/analyse_immo_token.pdf",
+            size: "2.5 MB"
+        }
     },
     { 
         id: 'blog-2',
         title: "Agriculture Durable : Le rôle des EcoTokens",
         description: "Les EcoTokens ne sont pas juste une monnaie, c'est un mouvement. Voici comment ils financent des projets à impact positif pour notre environnement.",
+        content: "Face aux défis climatiques et alimentaires, les EcoTokens émergent comme un outil de financement innovant pour l'agriculture durable. Chaque token représente un investissement dans un projet écologique concret, comme une ferme urbaine, un projet de reforestation ou une initiative d'agriculture biologique. \n\nCe mécanisme permet non seulement de lever des fonds en dehors des circuits traditionnels, mais aussi de créer une communauté engagée autour de projets à fort impact. Les détenteurs de tokens peuvent suivre la progression des projets en temps réel, participer aux décisions et même recevoir une partie des récoltes ou des bénéfices. \n\nEn liant directement l'investissement à des résultats environnementaux mesurables, les EcoTokens favorisent la transparence et la responsabilité, tout en offrant une nouvelle classe d'actifs pour les investisseurs soucieux de leur impact.",
         author: { name: "EcoVille", username: "ecoville", avatar: "https://picsum.photos/seed/eco/100/100" },
         image: "https://picsum.photos/seed/farm/800/400",
         imageHint: "vertical farm",
@@ -322,3 +335,7 @@ export const getUserProfile = (id: string): UserProfileData | undefined => {
 export const getStoryData = (id: string): Story | undefined => {
     return allStories.find(story => story.id === id);
 };
+
+export const getBlogPost = (id: string): BlogPost | undefined => {
+    return allBlogPosts.find(post => post.id === id);
+}

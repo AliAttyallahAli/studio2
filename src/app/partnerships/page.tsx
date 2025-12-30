@@ -41,6 +41,7 @@ export default function PartnershipsPage() {
             id: `blog-${Date.now()}`,
             title: title,
             description: content.substring(0, 100) + '...',
+            content: content,
             author: { name: institution || "SahelUser", username: "saheluser", avatar: "https://picsum.photos/seed/zoudou/100/100" },
             image: "https://picsum.photos/seed/newpost/800/400",
             imageHint: "user blog post",
@@ -111,26 +112,30 @@ export default function PartnershipsPage() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {blogPosts.map((post) => (
-                <Card key={post.id} className="overflow-hidden">
-                    <CardHeader className="p-0">
-                        <Image src={post.image} alt={post.title} width={800} height={400} className="object-cover" data-ai-hint={post.imageHint} />
-                    </CardHeader>
-                    <CardContent className="p-6">
-                        <p className="text-sm font-semibold text-primary mb-2">{post.category}</p>
-                        <CardTitle className="text-xl mb-2 line-clamp-2 h-14">{post.title}</CardTitle>
-                        <CardDescription className="mb-4 h-10 line-clamp-2">{post.description}</CardDescription>
-                        <div className="flex items-center justify-between text-sm text-muted-foreground">
-                            <Link href={`/profile/${post.author.username}`} className="flex items-center gap-2 group">
-                                <Avatar className="h-8 w-8">
-                                    <AvatarImage src={post.author.avatar} alt={post.author.name} data-ai-hint="profile avatar" />
-                                    <AvatarFallback>{post.author.name.charAt(0)}</AvatarFallback>
-                                </Avatar>
-                                <span className="group-hover:underline">Par {post.author.name}</span>
-                            </Link>
-                            <span>{post.readTime}</span>
-                        </div>
-                    </CardContent>
-                </Card>
+                <Link href={`/partnerships/${post.id}`} key={post.id} className="group">
+                    <Card className="overflow-hidden h-full flex flex-col group-hover:border-primary transition-all">
+                        <CardHeader className="p-0">
+                            <div className="aspect-video relative">
+                                <Image src={post.image} alt={post.title} fill className="object-cover" data-ai-hint={post.imageHint} />
+                            </div>
+                        </CardHeader>
+                        <CardContent className="p-6 flex flex-col flex-grow">
+                            <p className="text-sm font-semibold text-primary mb-2">{post.category}</p>
+                            <CardTitle className="text-xl mb-2 line-clamp-2 h-14 group-hover:text-primary transition-colors">{post.title}</CardTitle>
+                            <CardDescription className="mb-4 h-10 line-clamp-2">{post.description}</CardDescription>
+                            <div className="flex items-center justify-between text-sm text-muted-foreground mt-auto">
+                                <div className="flex items-center gap-2">
+                                    <Avatar className="h-8 w-8">
+                                        <AvatarImage src={post.author.avatar} alt={post.author.name} data-ai-hint="profile avatar" />
+                                        <AvatarFallback>{post.author.name.charAt(0)}</AvatarFallback>
+                                    </Avatar>
+                                    <span>Par {post.author.name}</span>
+                                </div>
+                                <span>{post.readTime}</span>
+                            </div>
+                        </CardContent>
+                    </Card>
+                </Link>
             ))}
         </div>
       </div>
