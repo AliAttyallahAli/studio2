@@ -58,11 +58,14 @@ const userProfiles: Record<string, UserProfile> = {
   }
 };
 
-export default function UserProfilePage({ params }: { params: { username: string } }) {
-    const userProfile = userProfiles[params.username] || {
-        name: `@${params.username}`,
-        avatar: 'https://picsum.photos/seed/random/100/100',
-        email: `${params.username}@exemple.com`,
+export default function UserProfilePage() {
+    const pathname = usePathname();
+    const username = pathname.split('/').pop() || '';
+    
+    const userProfile = userProfiles[username] || {
+        name: `@${username}`,
+        avatar: `https://picsum.photos/seed/${username}/100/100`,
+        email: `${username}@exemple.com`,
         bio: "Ce profil est généré dynamiquement.",
         parcours: "N/A",
         interests: "N/A",
