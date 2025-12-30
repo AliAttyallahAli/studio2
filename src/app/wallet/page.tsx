@@ -16,6 +16,7 @@ import { PinDialog } from '@/components/PinDialog';
 import { PinSetup } from '@/components/PinSetup';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import Link from 'next/link';
+import { useToast } from '@/hooks/use-toast';
 
 
 const walletData = {
@@ -37,11 +38,10 @@ const transactions = [
 
 
 function AddressRow({ address }: { address: string }) {
-    const [copied, setCopied] = useState(false);
+    const { toast } = useToast();
     const copyAddress = () => {
         navigator.clipboard.writeText(address);
-        setCopied(true);
-        setTimeout(() => setCopied(false), 2000);
+        toast({ title: 'Copié!', description: 'L\'adresse a été copiée dans le presse-papiers.'});
     }
     return (
         <div className="flex items-center space-x-2 p-2 bg-secondary rounded-md">
@@ -49,7 +49,6 @@ function AddressRow({ address }: { address: string }) {
             <Button variant="ghost" size="icon" onClick={copyAddress}>
                 <Copy className="h-4 w-4" />
             </Button>
-            {copied && <span className="text-xs text-muted-foreground">Copié!</span>}
         </div>
     );
 }
@@ -58,6 +57,7 @@ export default function WalletPage() {
   const [pinState, setPinState] = useState<'checking' | 'setup' | 'locked' | 'unlocked'>('checking');
   const [showSendDialog, setShowSendDialog] = useState(false);
   const [showSensitiveInfo, setShowSensitiveInfo] = useState(false);
+  const { toast } = useToast();
   
   useEffect(() => {
     const pinIsSet = localStorage.getItem('pin_is_set') === 'true';
@@ -81,6 +81,14 @@ export default function WalletPage() {
     setShowSendDialog(true);
   }
   
+  const handleConfirmSend = () => {
+    setShowSendDialog(false);
+    toast({
+        title: 'Envoi Confirmé',
+        description: 'Votre transaction a été soumise au réseau.'
+    });
+  }
+
   const handleRevealInfo = () => {
     setShowSensitiveInfo(true);
   }
@@ -109,7 +117,7 @@ export default function WalletPage() {
                         <CardDescription>Veuillez entrer votre code PIN pour accéder à votre portefeuille.</CardDescription>
                     </CardHeader>
                     <CardContent>
-                       <Dialog open={true}>
+                       <Dialog open={true} onOpenChange={() => {}}>
                           <DialogContent onInteractOutside={(e) => e.preventDefault()} className="sm:max-w-sm">
                                <PinDialog onPinSuccess={handlePinSuccess} isTrigger={false} />
                           </DialogContent>
@@ -233,7 +241,9 @@ export default function WalletPage() {
                         <Label htmlFor="amount">Montant</Label>
                         <Input id="amount" type="number" placeholder="0.00" />
                     </div>
-                    <Button className="w-full" onClick={() => setShowSendDialog(false)}>Confirmer l'envoi</Button>
+                    <PinDialog onPinSuccess={handleConfirmSend}>
+                        <Button className="w-full">Confirmer l'envoi</Button>
+                    </PinDialog>
                 </div>
             </DialogContent>
           </Dialog>

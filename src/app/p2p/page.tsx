@@ -31,8 +31,7 @@ type Offer = typeof buyOffers[0];
 const P2PTransactionDialog = ({ offer, type, onTransactionSuccess }: { offer: Offer, type: 'Acheter' | 'Vendre', onTransactionSuccess: (type: 'Acheter' | 'Vendre') => void }) => {
     const [fiatAmount, setFiatAmount] = useState('');
     const [sahelAmount, setSahelAmount] = useState('');
-    const [openPin, setOpenPin] = useState(false);
-
+    
     const handleFiatChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
         setFiatAmount(value);
