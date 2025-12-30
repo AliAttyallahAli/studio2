@@ -34,8 +34,8 @@ export default function AuthPage() {
   }
 
   const handleAuth = () => {
-    // Logic to handle authentication would go here
-    // For now, just navigate to the dashboard
+    // La logique pour gérer l'authentification irait ici
+    // Pour l'instant, on navigue simplement vers la page principale
     router.push('/');
   };
 
@@ -50,7 +50,7 @@ export default function AuthPage() {
             <CardTitle className="text-2xl">Bienvenue sur SAHEL</CardTitle>
             <CardDescription>
                 {step === 'initial' && 'Entrez votre email ou téléphone pour commencer.'}
-                {step === 'login' && `Content de vous revoir, ${emailOrPhone}!`}
+                {step === 'login' && `Content de vous revoir !`}
                 {step === 'signup' && 'Créez votre compte pour continuer.'}
             </CardDescription>
           </CardHeader>
@@ -59,7 +59,7 @@ export default function AuthPage() {
                  <form onSubmit={handleInitialSubmit} className="space-y-4 pt-4">
                   <div className="space-y-2">
                     <Label htmlFor="email-initial">Email ou numéro de téléphone</Label>
-                    <Input id="email-initial" type="email" placeholder="email@exemple.com" required value={emailOrPhone} onChange={(e) => setEmailOrPhone(e.target.value)} />
+                    <Input id="email-initial" type="text" placeholder="email@exemple.com" required value={emailOrPhone} onChange={(e) => setEmailOrPhone(e.target.value)} />
                   </div>
                   <Button type="submit" className="w-full">
                     Continuer
@@ -71,7 +71,7 @@ export default function AuthPage() {
                  <form onSubmit={(e) => { e.preventDefault(); handleAuth(); }} className="space-y-4 pt-4">
                   <div className="space-y-2">
                     <Label htmlFor="email-login">Email</Label>
-                    <Input id="email-login" type="email" value={emailOrPhone} readOnly />
+                    <Input id="email-login" type="email" value={emailOrPhone} readOnly className="bg-secondary" />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="password-login">Mot de passe</Label>
@@ -79,6 +79,9 @@ export default function AuthPage() {
                   </div>
                   <Button type="submit" className="w-full">
                     Se connecter
+                  </Button>
+                   <Button variant="link" size="sm" className="w-full" onClick={() => setStep('initial')}>
+                    Utiliser un autre compte
                   </Button>
                 </form>
             )}
@@ -88,7 +91,7 @@ export default function AuthPage() {
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="first-name-signup">Prénom</Label>
-                      <Input id="first-name-signup" placeholder="Jean" required />
+                      <Input id="first-name-signup" placeholder="Jean" required autoFocus/>
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="last-name-signup">Nom de famille</Label>
@@ -96,8 +99,8 @@ export default function AuthPage() {
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="email-signup">Email</Label>
-                    <Input id="email-signup" type="email" value={emailOrPhone} required readOnly />
+                    <Label htmlFor="email-signup">Email ou téléphone</Label>
+                    <Input id="email-signup" type="text" value={emailOrPhone} required readOnly className="bg-secondary"/>
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="password-signup">Mot de passe</Label>
@@ -108,7 +111,10 @@ export default function AuthPage() {
                     <Input id="password-confirm" type="password" required />
                   </div>
                   <Button type="submit" className="w-full">
-                    S'inscrire
+                    Créer le compte
+                  </Button>
+                   <Button variant="link" size="sm" className="w-full" onClick={() => setStep('initial')}>
+                    Vous avez déjà un compte ? Se connecter
                   </Button>
                 </form>
             )}
