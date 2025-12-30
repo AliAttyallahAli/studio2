@@ -8,6 +8,7 @@ import { ArrowLeft, Search, UserPlus, Users } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent } from '@/components/ui/card';
 import { getUserProfile } from '@/lib/chat-data';
+import Link from 'next/link';
 
 
 const suggestedUserIds = ['2', '3', '5'];
@@ -36,12 +37,14 @@ export default function NewChatPage() {
 
         <Card>
             <CardContent className="p-0">
-                <Button variant="ghost" className="w-full justify-start p-4 h-auto text-base">
-                    <div className="flex items-center justify-center w-10 h-10 rounded-full bg-accent text-accent-foreground mr-4">
-                        <Users className="h-5 w-5" />
-                    </div>
-                    Nouveau groupe
-                </Button>
+                <Link href="/chat/new/group" className="block">
+                    <Button variant="ghost" className="w-full justify-start p-4 h-auto text-base">
+                        <div className="flex items-center justify-center w-10 h-10 rounded-full bg-accent text-accent-foreground mr-4">
+                            <Users className="h-5 w-5" />
+                        </div>
+                        Nouveau groupe
+                    </Button>
+                </Link>
             </CardContent>
         </Card>
 
