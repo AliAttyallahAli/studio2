@@ -61,7 +61,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
     if (pathname.startsWith('/chat/')) return 'Chat';
     if (pathname.startsWith('/story/')) return 'Statut';
 
-    return 'Zoudou';
+    return 'SAHEL';
   }
   
   const pageTitle = getPageTitle();
@@ -83,7 +83,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                             <SheetTitle>
                                 <div className="flex items-center">
                                     <Handshake className="h-6 w-6 text-primary mr-2"/>
-                                    <span>Zoudou</span>
+                                    <span>SAHEL</span>
                                 </div>
                             </SheetTitle>
                         </SheetHeader>
@@ -122,7 +122,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                             <SheetClose asChild>
                                 <Button variant="ghost" className="w-full justify-start" onClick={() => router.push('/profile')}>
                                     <Avatar className="w-8 h-8 mr-2">
-                                        <AvatarImage src="https://picsum.photos/seed/zoudou/100/100" alt="@SahelUser" data-ai-hint="profile avatar"/>
+                                        <AvatarImage src="https://picsum.photos/seed/sahel/100/100" alt="@SahelUser" data-ai-hint="profile avatar"/>
                                         <AvatarFallback>SU</AvatarFallback>
                                     </Avatar>
                                     <span>@SahelUser</span>
@@ -142,7 +142,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
              <div className="w-10 flex justify-end">
                 <Button variant="ghost" size="icon" onClick={() => router.push('/profile')}>
                      <Avatar className="w-8 h-8">
-                        <AvatarImage src="https://picsum.photos/seed/zoudou/100/100" alt="@SahelUser" data-ai-hint="profile avatar"/>
+                        <AvatarImage src="https://picsum.photos/seed/sahel/100/100" alt="@SahelUser" data-ai-hint="profile avatar"/>
                         <AvatarFallback>SU</AvatarFallback>
                     </Avatar>
                 </Button>

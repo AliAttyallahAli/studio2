@@ -56,7 +56,7 @@ const PostCard = ({ post }: { post: any }) => {
         if(newComment.trim() === '') return;
         const newCommentObj = {
             id: `comment-${Date.now()}`,
-            user: { name: '@SahelUser', avatar: 'https://picsum.photos/seed/zoudou/100/100' },
+            user: { name: '@SahelUser', avatar: 'https://picsum.photos/seed/sahel/100/100' },
             content: newComment,
             time: 'À l\'instant',
         };
@@ -80,7 +80,7 @@ const PostCard = ({ post }: { post: any }) => {
     ];
     
     const shareOn = (platform: 'facebook' | 'whatsapp' | 'copy') => {
-        const url = encodeURIComponent(`https://zoudou.app/post/${post.id}`);
+        const url = encodeURIComponent(`https://sahel.app/post/${post.id}`);
         const text = encodeURIComponent(post.content);
 
         switch(platform) {
@@ -91,7 +91,7 @@ const PostCard = ({ post }: { post: any }) => {
                 window.open(`https://api.whatsapp.com/send?text=${text}%20${url}`, '_blank');
                 break;
             case 'copy':
-                navigator.clipboard.writeText(`https://zoudou.app/post/${post.id}`);
+                navigator.clipboard.writeText(`https://sahel.app/post/${post.id}`);
                 // You can add a toast notification here
                 break;
         }
@@ -176,7 +176,7 @@ const PostCard = ({ post }: { post: any }) => {
                 <div className="pt-4 mt-4 border-t">
                     <div className="flex gap-2">
                          <Avatar className="w-8 h-8">
-                            <AvatarImage src="https://picsum.photos/seed/zoudou/100/100" alt="@SahelUser" data-ai-hint="profile avatar" />
+                            <AvatarImage src="https://picsum.photos/seed/sahel/100/100" alt="@SahelUser" data-ai-hint="profile avatar" />
                             <AvatarFallback>SU</AvatarFallback>
                         </Avatar>
                         <Textarea 
@@ -214,9 +214,9 @@ const PostCard = ({ post }: { post: any }) => {
 const initialFeedPosts = [
   {
     id: 'post-1',
-    user: { name: '@SahelUser', username: 'saheluser', avatar: 'https://picsum.photos/seed/zoudou/100/100' },
+    user: { name: '@SahelUser', username: 'saheluser', avatar: 'https://picsum.photos/seed/sahel/100/100' },
     time: 'Il y a 2 heures',
-    content: 'Heureux de rejoindre la communauté Zoudou ! Prêt à miner mes premiers SAHEL. 🚀',
+    content: 'Heureux de rejoindre la communauté SAHEL ! Prêt à miner mes premiers SAHEL. 🚀',
     image: 'https://picsum.photos/seed/rocket/600/400',
     imageHint: 'rocket launch',
     linkPreview: null,
@@ -280,7 +280,7 @@ export default function FeedPage() {
 
     const newPost = {
       id: `post-${Date.now()}`,
-      user: { name: '@SahelUser', username: 'saheluser', avatar: 'https://picsum.photos/seed/zoudou/100/100' },
+      user: { name: '@SahelUser', username: 'saheluser', avatar: 'https://picsum.photos/seed/sahel/100/100' },
       time: 'À l\'instant',
       content: newPostContent,
       image: imagePreview,
@@ -342,5 +342,3 @@ export default function FeedPage() {
     </AppLayout>
   );
 }
-
-    

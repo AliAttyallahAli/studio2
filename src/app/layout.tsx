@@ -1,3 +1,4 @@
+
 import type { Metadata } from 'next';
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
@@ -18,7 +19,7 @@ const spaceGrotesk = Space_Grotesk({
 
 
 export const metadata: Metadata = {
-  title: 'Zoudou',
+  title: 'SAHEL',
   description: 'Votre écosystème financier décentralisé.',
 };
 

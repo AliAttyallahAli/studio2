@@ -1,3 +1,4 @@
+
 'use client';
 
 import { AppLayout } from '@/components/AppLayout';
@@ -6,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Heart, ThumbsUp, MessageSquare, UserPlus } from 'lucide-react';
 import { usePathname } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
 // Type pour le profil utilisateur
 type UserProfile = {
@@ -24,7 +26,7 @@ const userProfiles: Record<string, UserProfile> = {
     name: '@user123',
     avatar: 'https://picsum.photos/seed/user123/100/100',
     email: 'user123@exemple.com',
-    bio: "Heureux de rejoindre la communauté Zoudou ! Prêt à miner mes premiers SAHEL. 🚀",
+    bio: "Heureux de rejoindre la communauté SAHEL ! Prêt à miner mes premiers SAHEL. 🚀",
     parcours: "Je m'intéresse à la crypto depuis 2020. J'ai participé à plusieurs projets communautaires.",
     interests: "Crypto, Gaming, Voyages",
     maritalStatus: "Célibataire",
@@ -49,7 +51,7 @@ const userProfiles: Record<string, UserProfile> = {
   },
   saheluser: {
     name: '@SahelUser',
-    avatar: 'https://picsum.photos/seed/zoudou/100/100',
+    avatar: 'https://picsum.photos/seed/sahel/100/100',
     email: `sahel.user@exemple.com`,
     bio: "Passionné par la révolution Web3 en Afrique. #SAHEL",
     parcours: "Développeur et entrepreneur, focus sur les solutions décentralisées pour les marchés émergents.",
@@ -60,7 +62,24 @@ const userProfiles: Record<string, UserProfile> = {
 
 export default function UserProfilePage() {
     const pathname = usePathname();
-    const username = pathname.split('/').pop() || '';
+    const [username, setUsername] = useState('');
+    
+    useEffect(() => {
+        if(pathname) {
+            const pathParts = pathname.split('/');
+            setUsername(pathParts[pathParts.length - 1]);
+        }
+    }, [pathname]);
+
+    if (!username) {
+        return (
+            <AppLayout>
+                <div className="flex justify-center items-center h-full">
+                    <p>Chargement du profil...</p>
+                </div>
+            </AppLayout>
+        );
+    }
     
     const userProfile = userProfiles[username] || {
         name: `@${username}`,

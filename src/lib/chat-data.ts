@@ -46,7 +46,7 @@ export interface ChatData {
 const userProfiles: Record<string, UserProfileData> = {
   '1': {
     id: '1',
-    name: 'Zoudou Annonces',
+    name: 'SAHEL Annonces',
     avatar: 'https://picsum.photos/seed/announce/100/100',
     description: '24 Membres',
     isGroup: true,
@@ -103,11 +103,11 @@ const userProfiles: Record<string, UserProfileData> = {
 export const allChats: ChatData[] = [
   { 
     id: '1', 
-    contact: { id: '1', name: 'Zoudou Annonces', avatar: 'https://picsum.photos/seed/announce/100/100', type: 'group' },
-    lastMessage: 'Bienvenue sur Zoudou !', 
+    contact: { id: '1', name: 'SAHEL Annonces', avatar: 'https://picsum.photos/seed/announce/100/100', type: 'group' },
+    lastMessage: 'Bienvenue sur SAHEL !', 
     time: '14:32', 
     messages: [
-      { id: 'msg1-1', type: 'text', content: 'Bienvenue sur Zoudou ! Découvrez les dernières nouveautés.', sender: 'other', time: '14:32' },
+      { id: 'msg1-1', type: 'text', content: 'Bienvenue sur SAHEL ! Découvrez les dernières nouveautés.', sender: 'other', time: '14:32' },
     ]
   },
   { 
@@ -118,10 +118,10 @@ export const allChats: ChatData[] = [
     messages: [
       { id: 'msg2-1', type: 'text', content: 'Salut ! Comment ça va ?', sender: 'other', time: '14:28' },
       { id: 'msg2-2', type: 'text', content: 'Ça va bien, merci ! Et toi ?', sender: 'me', time: '14:29' },
-      { id: 'msg2-3', type: 'text', content: 'Super ! Heureux de rejoindre la communauté Zoudou ! Prêt à miner mes premiers SAHEL. 🚀', sender: 'other', time: '14:30' },
+      { id: 'msg2-3', type: 'text', content: 'Super ! Heureux de rejoindre la communauté SAHEL ! Prêt à miner mes premiers SAHEL. 🚀', sender: 'other', time: '14:30' },
       { id: 'msg2-4', type: 'image', url: 'https://picsum.photos/seed/abstract/600/400', hint: 'abstract design', sender: 'other', time: '14:32' },
       { id: 'msg2-5', type: 'text', content: 'Bienvenue ! C\'est une super plateforme.', sender: 'me', time: '14:31' },
-      { id: 'msg2-6', type: 'file', file: { name: 'whitepaper_zoudou.pdf', size: '1.2 MB' }, sender: 'me', time: '14:35' },
+      { id: 'msg2-6', type: 'file', file: { name: 'whitepaper_sahel.pdf', size: '1.2 MB' }, sender: 'me', time: '14:35' },
     ]
   },
   { 
@@ -151,5 +151,3 @@ export const getChatData = (id: string): ChatData | undefined => {
 export const getUserProfile = (id: string): UserProfileData | undefined => {
     return userProfiles[id];
 }
-
-    

@@ -63,7 +63,7 @@ export function StoryCarousel() {
             <div className="flex flex-col items-center gap-2">
               <div className="relative">
                 <Avatar className="w-16 h-16 border-2 border-dashed border-muted-foreground">
-                  <AvatarImage src="https://picsum.photos/seed/zoudou/100/100" alt="Votre avatar" data-ai-hint="profile avatar" />
+                  <AvatarImage src="https://picsum.photos/seed/sahel/100/100" alt="Votre avatar" data-ai-hint="profile avatar" />
                   <AvatarFallback>Moi</AvatarFallback>
                 </Avatar>
                 <div className="absolute bottom-0 right-0 flex items-center justify-center w-6 h-6 rounded-full bg-primary border-2 border-background">

@@ -23,8 +23,8 @@ const leaderboard = [
 
 export default function ProfilePage() {
     const router = useRouter();
-    const referralLink = "https://zoudou.app/join/SahelUser";
-    const [imagePreview, setImagePreview] = useState<string>("https://picsum.photos/seed/zoudou/100/100");
+    const referralLink = "https://sahel.app/join/SahelUser";
+    const [imagePreview, setImagePreview] = useState<string>("https://picsum.photos/seed/sahel/100/100");
     const imageInputRef = useRef<HTMLInputElement>(null);
 
 

@@ -21,7 +21,7 @@ const initialMarketplaceItems = [
   { name: "Casque VR dernière génération", price: '150 SAHEL', image: 'https://picsum.photos/seed/vr/400/400', hint: 'vr headset', seller: '@user123', sellerAvatar: 'https://picsum.photos/seed/user123/100/100' },
   { name: "Formation Web3 complète", price: '85 SAHEL', image: 'https://picsum.photos/seed/web3/400/400', hint: 'online course', seller: '@tech_guru', sellerAvatar: 'https://picsum.photos/seed/guru/100/100' },
   { name: "Artwork NFT 'Sahel Spirit'", price: '500 ZIM', image: 'https://picsum.photos/seed/nftart/400/400', hint: 'abstract art', seller: '@crypto_queen', sellerAvatar: 'https://picsum.photos/seed/queen/100/100' },
-  { name: "T-shirt 'Zoudou'", price: '25 ECO', image: 'https://picsum.photos/seed/tshirt/400/400', hint: 'branded t-shirt', seller: '@z_fashion', sellerAvatar: 'https://picsum.photos/seed/fashion/100/100' },
+  { name: "T-shirt 'SAHEL'", price: '25 ECO', image: 'https://picsum.photos/seed/tshirt/400/400', hint: 'branded t-shirt', seller: '@z_fashion', sellerAvatar: 'https://picsum.photos/seed/fashion/100/100' },
 ];
 
 export default function MarketplacePage() {
@@ -54,7 +54,7 @@ export default function MarketplacePage() {
             image: imagePreview,
             hint: 'user item',
             seller: '@SahelUser',
-            sellerAvatar: 'https://picsum.photos/seed/zoudou/100/100'
+            sellerAvatar: 'https://picsum.photos/seed/sahel/100/100'
         };
         setMarketplaceItems(prev => [newItem, ...prev]);
         setOpenDialog(false);

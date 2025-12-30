@@ -34,7 +34,7 @@ export default function AuthPage() {
         </div>
         <Card>
           <CardHeader className="text-center">
-            <CardTitle className="text-2xl">Bienvenue sur Zoudou</CardTitle>
+            <CardTitle className="text-2xl">Bienvenue sur SAHEL</CardTitle>
             <CardDescription>Votre écosystème financier décentralisé.</CardDescription>
           </CardHeader>
           <CardContent>

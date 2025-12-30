@@ -18,7 +18,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 const buyOffers = [
     { user: 'CryptoKing', rate: 1.05, available: 500, limits: {min: 50, max: 500} },
     { user: 'SahelTrader', rate: 1.04, available: 1200, limits: {min: 100, max: 1200} },
-    { user: 'ZoudouFan', rate: 1.03, available: 250, limits: {min: 20, max: 250} },
+    { user: 'SahelFan', rate: 1.03, available: 250, limits: {min: 20, max: 250} },
 ]
 
 const sellOffers = [
