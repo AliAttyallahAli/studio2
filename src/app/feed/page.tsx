@@ -13,6 +13,7 @@ import { StoryCarousel } from '@/components/StoryCarousel';
 import React, { useState, useRef } from 'react';
 import Link from 'next/link';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { extractLinkPreview, type LinkPreview } from '@/ai/flows/extract-link-preview-flow';
 
 const urlRegex = /(https?:\/\/[^\s]+)/g;
 
@@ -127,7 +128,7 @@ const PostCard = ({ post }: { post: any }) => {
                 <span>{comments.length > 0 ? `${comments.length} commentaires` : ''}</span>
             </div>
 
-            <Separator className="mt-2" />
+            <Separator className="my-2" />
             <div className="flex justify-around pt-2">
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
@@ -275,8 +276,19 @@ export default function FeedPage() {
     }
   }
 
-  const handlePublish = () => {
+  const handlePublish = async () => {
     if (newPostContent.trim() === '' && !imagePreview) return;
+
+    let linkPreview: LinkPreview | null = null;
+    const urls = newPostContent.match(urlRegex);
+    if (urls && urls[0]) {
+        try {
+            linkPreview = await extractLinkPreview({ url: urls[0] });
+        } catch (error) {
+            console.error("Could not extract link preview", error);
+        }
+    }
+
 
     const newPost = {
       id: `post-${Date.now()}`,
@@ -285,7 +297,7 @@ export default function FeedPage() {
       content: newPostContent,
       image: imagePreview,
       imageHint: 'user content',
-      linkPreview: null,
+      linkPreview: linkPreview,
       likes: 0,
       comments: [],
     };
