@@ -5,24 +5,34 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
-import { ArrowLeft, Block, FileImage, Heart, LogOut, Milestone, ThumbsUp, Trash2, Users, Bell } from 'lucide-react';
+import { ArrowLeft, Block, FileImage, Heart, Bell, LogOut, Trash2, Users, ThumbsUp } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { getUserProfile, type UserProfileData } from '@/lib/chat-data';
+import { useEffect, useState } from 'react';
 
 export default function ChatSettingsPage({ params }: { params: { id: string } }) {
     const router = useRouter();
+    const [profile, setProfile] = useState<UserProfileData | null>(null);
 
-    // In a real app, you'd fetch chat details based on params.id
-    const isGroup = params.id === '1' || params.id === '4';
-    const chatName = isGroup ? "Zoudou Annonces" : "Alice";
-    const chatAvatar = `https://picsum.photos/seed/${isGroup ? 'announce' : 'alice'}/100/100`;
-    const chatDescription = isGroup ? "24 Membres" : "@alice_crypto";
+    useEffect(() => {
+        const userProfile = getUserProfile(params.id);
+        if (userProfile) {
+            setProfile(userProfile);
+        } else {
+            // Handle case where profile is not found, maybe redirect
+            // For now, we'll just let it be null and the component will show a loading state
+        }
+    }, [params.id]);
 
-    const userProfile = {
-        bio: "Passionnée de crypto et de voyages. J'explore le web3 un bloc à la fois. 🚀",
-        parcours: "Développeuse Blockchain depuis 5 ans, spécialisée dans les contrats intelligents sur Ethereum. A travaillé sur plusieurs projets DeFi et NFT.",
-        interests: "Blockchain, Randonnée, Photographie, Musique électronique",
-        maritalStatus: "Célibataire"
-    };
+    if (!profile) {
+        return (
+            <div className="flex flex-col h-full bg-background md:border-l items-center justify-center">
+                 <p>Chargement du profil...</p>
+            </div>
+        );
+    }
+    
+    const { isGroup, name, avatar, description, details } = profile;
 
     return (
         <div className="flex flex-col h-full bg-background md:border-l">
@@ -35,16 +45,16 @@ export default function ChatSettingsPage({ params }: { params: { id: string } })
             <div className="flex-grow p-4 space-y-6 overflow-y-auto">
                 <div className="flex flex-col items-center space-y-4">
                     <Avatar className="w-24 h-24">
-                        <AvatarImage src={chatAvatar} alt={chatName} data-ai-hint="profile avatar" />
-                        <AvatarFallback>{chatName.charAt(0)}</AvatarFallback>
+                        <AvatarImage src={avatar} alt={name} data-ai-hint="profile avatar" />
+                        <AvatarFallback>{name.charAt(0)}</AvatarFallback>
                     </Avatar>
                     <div className="text-center">
-                        <h1 className="text-2xl font-bold">{chatName}</h1>
-                        <p className="text-muted-foreground">{chatDescription}</p>
+                        <h1 className="text-2xl font-bold">{name}</h1>
+                        <p className="text-muted-foreground">{description}</p>
                     </div>
                 </div>
 
-                {!isGroup && (
+                {!isGroup && details && (
                     <>
                          <Card>
                             <CardHeader>
@@ -53,19 +63,19 @@ export default function ChatSettingsPage({ params }: { params: { id: string } })
                             <CardContent className="space-y-4">
                                 <div>
                                     <h4 className="font-semibold mb-1">Biographie</h4>
-                                    <p className="text-sm text-muted-foreground">{userProfile.bio}</p>
+                                    <p className="text-sm text-muted-foreground">{details.bio}</p>
                                 </div>
                                  <div>
                                     <h4 className="font-semibold mb-1">Parcours</h4>
-                                    <p className="text-sm text-muted-foreground">{userProfile.parcours}</p>
+                                    <p className="text-sm text-muted-foreground">{details.parcours}</p>
                                 </div>
                                 <div className="flex items-center">
                                     <Heart className="mr-2 h-4 w-4 text-muted-foreground"/>
-                                    <p className="text-sm">{userProfile.maritalStatus}</p>
+                                    <p className="text-sm">{details.maritalStatus}</p>
                                 </div>
                                 <div className="flex items-center">
                                     <ThumbsUp className="mr-2 h-4 w-4 text-muted-foreground"/>
-                                    <p className="text-sm">{userProfile.interests}</p>
+                                    <p className="text-sm">{details.interests}</p>
                                 </div>
                             </CardContent>
                         </Card>
@@ -105,7 +115,7 @@ export default function ChatSettingsPage({ params }: { params: { id: string } })
                         {!isGroup && (
                              <Button variant="ghost" className="w-full justify-start p-4 h-auto text-base text-destructive hover:text-destructive">
                                 <Block className="mr-4 h-5 w-5" />
-                                Bloquer {chatName}
+                                Bloquer {name}
                             </Button>
                         )}
                         <Button variant="ghost" className="w-full justify-start p-4 h-auto text-base text-destructive hover:text-destructive">

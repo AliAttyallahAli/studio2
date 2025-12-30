@@ -6,19 +6,11 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import { ArrowLeft, Mic, MoreVertical, Paperclip, Phone, Send, Video, FileText, Download } from 'lucide-react';
-import { useRouter, usePathname } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import Image from 'next/image';
 import React, { useState, useRef, useEffect } from 'react';
-
-const initialMessages = [
-  { id: 1, content: 'Salut ! Comment ça va ?', sender: 'other', time: '14:28' },
-  { id: 2, content: 'Ça va bien, merci ! Et toi ?', sender: 'me', time: '14:29' },
-  { id: 3, content: 'Super ! Heureux de rejoindre la communauté Zoudou ! Prêt à miner mes premiers SAHEL. 🚀', sender: 'other', time: '14:30' },
-  { id: 'img-1', type: 'image', url: 'https://picsum.photos/seed/abstract/600/400', hint: 'abstract design', sender: 'other', time: '14:32' },
-  { id: 4, content: 'Bienvenue ! C\'est une super plateforme.', sender: 'me', time: '14:31' },
-  { id: 'file-1', type: 'file', file: { name: 'whitepaper_zoudou.pdf', size: '1.2 MB' }, sender: 'me', time: '14:35' },
-];
+import { getChatData, type ChatMessage } from '@/lib/chat-data';
 
 const FileAttachmentCard = ({ file }: { file: { name: string, size: string } }) => (
     <div className="flex items-center p-3 rounded-lg bg-background/20 mt-2">
@@ -38,13 +30,21 @@ export default function ChatPage({ params }: { params: { id: string } }) {
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
+  
+  const chatData = getChatData(params.id);
 
-  const [messages, setMessages] = useState(initialMessages);
+  const [messages, setMessages] = useState<ChatMessage[]>(chatData?.messages || []);
   const [newMessage, setNewMessage] = useState('');
 
-  // In a real app, you'd fetch chat details based on params.id
-  const chatName = "Alice";
-  const chatAvatar = "https://picsum.photos/seed/alice/100/100";
+  useEffect(() => {
+    // If chat data doesn't exist, redirect to chat list
+    if (!chatData) {
+      router.push('/chat');
+      return;
+    }
+    setMessages(chatData.messages);
+  }, [params.id, chatData, router]);
+
 
   const handleAttachmentClick = () => {
     fileInputRef.current?.click();
@@ -53,18 +53,31 @@ export default function ChatPage({ params }: { params: { id: string } }) {
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      console.log('Fichier sélectionné:', file.name);
-      // Here you would handle the file upload
-      // For demo, let's add a file message
       const time = new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
-      const fileMessage = {
-        id: `file-${Date.now()}`,
-        type: 'file',
-        file: { name: file.name, size: `${(file.size / 1024 / 1024).toFixed(2)} MB` },
+      
+      const messageBase = {
+        id: `msg-${Date.now()}`,
         sender: 'me',
-        time: time
+        time: time,
       };
-      setMessages(prev => [...prev, fileMessage]);
+
+      if (file.type.startsWith('image/')) {
+        const imageUrl = URL.createObjectURL(file);
+        const imageMessage: ChatMessage = {
+          ...messageBase,
+          type: 'image',
+          url: imageUrl,
+          hint: 'user attachment',
+        };
+        setMessages(prev => [...prev, imageMessage]);
+      } else {
+        const fileMessage: ChatMessage = {
+          ...messageBase,
+          type: 'file',
+          file: { name: file.name, size: `${(file.size / 1024 / 1024).toFixed(2)} MB` },
+        };
+        setMessages(prev => [...prev, fileMessage]);
+      }
     }
   };
 
@@ -72,11 +85,12 @@ export default function ChatPage({ params }: { params: { id: string } }) {
     if (newMessage.trim() === '') return;
 
     const time = new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
-    const message = {
-        id: Date.now(),
+    const message: ChatMessage = {
+        id: `msg-${Date.now()}`,
         content: newMessage,
         sender: 'me',
-        time: time
+        time: time,
+        type: 'text'
     };
 
     setMessages(prev => [...prev, message]);
@@ -86,13 +100,18 @@ export default function ChatPage({ params }: { params: { id: string } }) {
   useEffect(() => {
     // Scroll to bottom when messages change
     if (scrollAreaRef.current) {
-        const viewport = scrollAreaRef.current.querySelector('div');
+        const viewport = scrollAreaRef.current.querySelector('div:first-child > div');
         if (viewport) {
             viewport.scrollTop = viewport.scrollHeight;
         }
     }
   }, [messages]);
 
+  if (!chatData) {
+    return null; // Or a loading spinner
+  }
+
+  const { name: chatName, avatar: chatAvatar } = chatData.contact;
 
   return (
     <div className="flex flex-col h-full bg-card md:border-l">
@@ -139,13 +158,13 @@ export default function ChatPage({ params }: { params: { id: string } }) {
                    (message.type === 'image' || message.type === 'file') && 'p-2'
                 )}
               >
-                {'content' in message && <p>{message.content}</p>}
+                {message.type === 'text' && <p>{message.content}</p>}
                 
-                {message.type === 'image' && 'url' in message && (
+                {message.type === 'image' && (
                     <Image src={message.url as string} alt="Pièce jointe" width={300} height={200} className="rounded-md object-cover" data-ai-hint={message.hint} />
                 )}
 
-                {message.type === 'file' && 'file' in message && (
+                {message.type === 'file' && (
                     <FileAttachmentCard file={message.file as {name: string, size: string}} />
                 )}
 
@@ -166,6 +185,7 @@ export default function ChatPage({ params }: { params: { id: string } }) {
                 ref={fileInputRef}
                 onChange={handleFileChange}
                 className="hidden" 
+                accept="image/*,application/pdf"
             />
           <Button type="button" variant="ghost" size="icon" onClick={handleAttachmentClick}>
             <Paperclip className="h-5 w-5" />

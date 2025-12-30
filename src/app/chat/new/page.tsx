@@ -7,13 +7,11 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { ArrowLeft, Search, UserPlus, Users } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent } from '@/components/ui/card';
+import { getUserProfile } from '@/lib/chat-data';
 
 
-const suggestedUsers = [
-  { id: '2', name: 'Alice', avatar: 'https://picsum.photos/seed/alice/100/100' },
-  { id: '3', name: 'Bob', avatar: 'https://picsum.photos/seed/bob/100/100' },
-  { id: '5', name: 'Charlie', avatar: 'https://picsum.photos/seed/charlie/100/100' },
-];
+const suggestedUserIds = ['2', '3', '5'];
+const suggestedUsers = suggestedUserIds.map(id => getUserProfile(id)).filter(Boolean);
 
 export default function NewChatPage() {
   const router = useRouter();
@@ -52,6 +50,7 @@ export default function NewChatPage() {
              <Card>
                 <CardContent className="p-0 divide-y divide-border">
                     {suggestedUsers.map((user) => (
+                      user && (
                         <div
                             key={user.id}
                             className="flex items-center p-3 cursor-pointer hover:bg-secondary"
@@ -66,6 +65,7 @@ export default function NewChatPage() {
                                 <UserPlus className="h-5 w-5 text-muted-foreground" />
                             </Button>
                         </div>
+                      )
                     ))}
                 </CardContent>
             </Card>
