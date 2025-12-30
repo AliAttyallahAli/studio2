@@ -4,19 +4,16 @@
 import { AppLayout } from '@/components/AppLayout';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import Image from 'next/image';
-import { ArrowRight, Briefcase, Handshake, Lightbulb, PiggyBank, PlusCircle, Repeat } from 'lucide-react';
-import Link from 'next/link';
+import { PiggyBank, PlusCircle, Repeat } from 'lucide-react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useState } from 'react';
 
-const tokens = [
+const initialTokens = [
     { name: "Z-Immo Token", ticker: "ZIM", description: "Token représentant une part d'un projet immobilier tokenisé, générant des revenus locatifs mensuels.", logo: "https://picsum.photos/seed/zim/48/48" },
     { name: "EcoToken", ticker: "ECO", description: "Token pour financer et participer à des projets écologiques locaux, comme les fermes urbaines.", logo: "https://picsum.photos/seed/eco/48/48" },
 ];
@@ -27,7 +24,23 @@ const dexSwaps = [
     { from: "ZIM", to: "ECO", rate: "1 ZIM = 10 ECO" },
 ]
 
-function CreateTokenDialog() {
+function CreateTokenDialog({ onTokenCreate }: { onTokenCreate: (token: any) => void }) {
+    const [tokenName, setTokenName] = useState('');
+    const [tokenTicker, setTokenTicker] = useState('');
+    const [sahelAmount, setSahelAmount] = useState(100);
+
+    const handleCreate = () => {
+        if (!tokenName || !tokenTicker) return;
+
+        const newToken = {
+            name: tokenName,
+            ticker: tokenTicker.toUpperCase(),
+            description: `Token personnalisé adossé à ${sahelAmount} SAHEL.`,
+            logo: `https://picsum.photos/seed/${tokenTicker.toLowerCase()}/48/48`
+        };
+        onTokenCreate(newToken);
+    };
+    
     return (
         <DialogContent>
             <DialogHeader>
@@ -39,22 +52,24 @@ function CreateTokenDialog() {
             <div className="space-y-4 py-4">
                  <div className="space-y-2">
                     <Label htmlFor="token-name">Nom du Token</Label>
-                    <Input id="token-name" placeholder="Ex: MonProjetToken" />
+                    <Input id="token-name" placeholder="Ex: MonProjetToken" value={tokenName} onChange={e => setTokenName(e.target.value)} />
                 </div>
                  <div className="space-y-2">
                     <Label htmlFor="token-ticker">Symbole (Ticker)</Label>
-                    <Input id="token-ticker" placeholder="Ex: MPT" />
+                    <Input id="token-ticker" placeholder="Ex: MPT" value={tokenTicker} onChange={e => setTokenTicker(e.target.value)} />
                 </div>
                 <div className="space-y-2">
                     <Label htmlFor="sahel-amount">Montant de SAHEL à adosser</Label>
-                    <Input id="sahel-amount" type="number" placeholder="100" />
+                    <Input id="sahel-amount" type="number" placeholder="100" value={sahelAmount} onChange={e => setSahelAmount(parseInt(e.target.value))} />
                 </div>
                  <div className="text-center text-muted-foreground p-4 bg-secondary rounded-md">
                     <p>Vous recevrez</p>
-                    <p className="text-2xl font-bold text-primary">10,000 MPT</p>
-                    <p className="text-xs">(Basé sur 100 SAHEL)</p>
+                    <p className="text-2xl font-bold text-primary">{new Intl.NumberFormat().format(sahelAmount * 100)} {tokenTicker.toUpperCase()}</p>
+                    <p className="text-xs">(Basé sur {sahelAmount} SAHEL)</p>
                 </div>
-                <Button className="w-full bg-accent hover:bg-accent/90">Créer le Token</Button>
+                <DialogTrigger asChild>
+                    <Button className="w-full bg-accent hover:bg-accent/90" onClick={handleCreate}>Créer le Token</Button>
+                </DialogTrigger>
             </div>
         </DialogContent>
     );
@@ -62,6 +77,14 @@ function CreateTokenDialog() {
 
 
 export default function DexPage() {
+    const [tokens, setTokens] = useState(initialTokens);
+    const [openDialog, setOpenDialog] = useState(false);
+
+    const handleAddNewToken = (newToken: any) => {
+        setTokens(prev => [newToken, ...prev]);
+        setOpenDialog(false);
+    }
+
   return (
     <AppLayout>
       <div className="space-y-6">
@@ -70,14 +93,14 @@ export default function DexPage() {
                 <h1 className="text-3xl font-bold">DEX & Tokenisation</h1>
                 <p className="text-muted-foreground">Échangez des actifs et créez vos propres tokens.</p>
             </div>
-             <Dialog>
+             <Dialog open={openDialog} onOpenChange={setOpenDialog}>
                 <DialogTrigger asChild>
                      <Button>
                         <PlusCircle className="mr-2 h-5 w-5"/>
                         Créer un Token
                     </Button>
                 </DialogTrigger>
-                <CreateTokenDialog />
+                <CreateTokenDialog onTokenCreate={handleAddNewToken} />
             </Dialog>
         </div>
 

@@ -5,13 +5,12 @@ import { useState } from 'react';
 import { AppLayout } from '@/components/AppLayout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { ArrowDown, ArrowUp, QrCode, Repeat, KeyRound, Copy, Eye, EyeOff, AlertTriangle, PlusCircle } from 'lucide-react';
+import { ArrowDown, ArrowUp, QrCode, Repeat, Copy } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 const walletData = {
@@ -23,20 +22,27 @@ const walletData = {
 };
 
 const transactions = [
-    { type: 'reçu', amount: '+ 50.25 SAHEL', from: 'de @user123', date: 'Aujourd\'hui', icon: ArrowDown },
-    { type: 'swap', amount: '- 100.00 SAHEL', from: 'pour 10000.00 ECO', date: 'Hier', icon: Repeat },
-    { type: 'envoyé', amount: '- 10.00 ZIM', from: 'à @market', date: 'Hier', icon: ArrowUp },
-    { type: 'récompense', amount: '+ 2.50 SAHEL', from: 'Minage quotidien', date: 'Hier', icon: ArrowDown },
+    { id: 'tx1', type: 'reçu', amount: '+ 50.25 SAHEL', from: 'de @user123', date: 'Aujourd\'hui', icon: ArrowDown },
+    { id: 'tx2', type: 'swap', amount: '- 100.00 SAHEL', from: 'pour 10000.00 ECO', date: 'Hier', icon: Repeat },
+    { id: 'tx3', type: 'envoyé', amount: '- 10.00 ZIM', from: 'à @market', date: 'Hier', icon: ArrowUp },
+    { id: 'tx4', type: 'récompense', amount: '+ 2.50 SAHEL', from: 'Minage quotidien', date: 'Hier', icon: ArrowDown },
 ];
 
 
 function AddressRow({ address }: { address: string }) {
+    const [copied, setCopied] = useState(false);
+    const copyAddress = () => {
+        navigator.clipboard.writeText(address);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+    }
     return (
         <div className="flex items-center space-x-2 p-2 bg-secondary rounded-md">
             <p className="text-sm font-mono text-primary flex-grow truncate">{address}</p>
-            <Button variant="ghost" size="icon" onClick={() => navigator.clipboard.writeText(address)}>
+            <Button variant="ghost" size="icon" onClick={copyAddress}>
                 <Copy className="h-4 w-4" />
             </Button>
+            {copied && <span className="text-xs text-muted-foreground">Copié!</span>}
         </div>
     );
 }
@@ -44,7 +50,7 @@ function AddressRow({ address }: { address: string }) {
 
 function QrDialog({ address }: { address: string }) {
     return (
-        <DialogContent>
+        <>
             <DialogHeader>
                 <DialogTitle>QR Code de Réception</DialogTitle>
                 <DialogDescription>
@@ -57,13 +63,13 @@ function QrDialog({ address }: { address: string }) {
                     <QrCode className="w-40 h-40 text-black" />
                  </div>
             </div>
-        </DialogContent>
+        </>
     );
 }
 
 function SendDialog() {
     return (
-        <DialogContent>
+        <>
             <DialogHeader>
                 <DialogTitle>Envoyer des Actifs</DialogTitle>
                 <DialogDescription>Envoyer des SAHEL ou des tokens.</DialogDescription>
@@ -90,39 +96,47 @@ function SendDialog() {
                     <Label htmlFor="amount">Montant</Label>
                     <Input id="amount" type="number" placeholder="0.00" />
                 </div>
-                <Button className="w-full">Envoyer</Button>
+                <DialogTrigger asChild>
+                    <Button className="w-full">Envoyer</Button>
+                </DialogTrigger>
             </div>
-        </DialogContent>
+        </>
     );
 }
 
 
 export default function WalletPage() {
-  const [dialogContent, setDialogContent] = useState<React.ReactNode | null>(null);
+  const [dialogType, setDialogType] = useState<'send' | 'receive' | null>(null);
+
+  const renderDialogContent = () => {
+    switch(dialogType) {
+        case 'send':
+            return <SendDialog />;
+        case 'receive':
+            return <QrDialog address={walletData.sahel.address} />;
+        default:
+            return null;
+    }
+  }
 
   return (
     <AppLayout>
-      <Dialog onOpenChange={(open) => !open && setDialogContent(null)}>
+      <Dialog open={!!dialogType} onOpenChange={(open) => !open && setDialogType(null)}>
         <div className="space-y-6">
-            
             <Card>
                 <CardHeader>
-                    <div className="flex justify-between items-start">
+                    <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                         <div>
                             <CardTitle>Mon Portefeuille Multichain</CardTitle>
                             <CardDescription>Solde total estimé : <span className="font-bold text-primary">$1,850.50 USD</span></CardDescription>
                         </div>
-                        <div className="flex gap-2">
-                            <DialogTrigger asChild>
-                                <Button onClick={() => setDialogContent(<SendDialog />)}>
-                                    <ArrowUp className="mr-2 h-4 w-4"/>Envoyer
-                                </Button>
-                            </DialogTrigger>
-                             <DialogTrigger asChild>
-                                <Button variant="outline" onClick={() => setDialogContent(<QrDialog address={walletData.sahel.address} />)}>
-                                    <ArrowDown className="mr-2 h-4 w-4"/>Recevoir
-                                </Button>
-                            </DialogTrigger>
+                        <div className="flex gap-2 w-full md:w-auto">
+                            <Button className="flex-1 md:flex-auto" onClick={() => setDialogType('send')}>
+                                <ArrowUp className="mr-2 h-4 w-4"/>Envoyer
+                            </Button>
+                             <Button className="flex-1 md:flex-auto" variant="outline" onClick={() => setDialogType('receive')}>
+                                <ArrowDown className="mr-2 h-4 w-4"/>Recevoir
+                            </Button>
                         </div>
                     </div>
                 </CardHeader>
@@ -173,8 +187,8 @@ export default function WalletPage() {
                     <CardContent className="p-0">
                         <ScrollArea className="h-64">
                         <div className="divide-y divide-border">
-                            {transactions.map((tx, index) => (
-                                <div key={index} className="flex items-center p-4">
+                            {transactions.map((tx) => (
+                                <div key={tx.id} className="flex items-center p-4">
                                     <div className={`flex items-center justify-center w-10 h-10 rounded-full mr-4 ${tx.amount.startsWith('+') ? 'bg-green-900/50 text-green-400' : 'bg-red-900/50 text-red-400'}`}>
                                         <tx.icon className="w-5 h-5" />
                                     </div>
@@ -193,7 +207,9 @@ export default function WalletPage() {
                 </Card>
             </div>
         </div>
-        {dialogContent}
+        <DialogContent>
+            {renderDialogContent()}
+        </DialogContent>
       </Dialog>
     </AppLayout>
   );

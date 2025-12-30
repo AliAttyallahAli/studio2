@@ -8,7 +8,6 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import Image from 'next/image';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 
 export default function CreateStoryPage() {
   const router = useRouter();
@@ -26,6 +25,7 @@ export default function CreateStoryPage() {
 
   const handlePublish = () => {
     // Logic to upload image and caption would go here
+    if (!imageFile) return;
     console.log('Publishing story:', { image: imageFile, caption });
     router.push('/feed'); // Redirect to feed after publishing
   };
@@ -45,7 +45,7 @@ export default function CreateStoryPage() {
       <div className="flex-grow flex flex-col items-center justify-center p-4 space-y-4">
         <label
             htmlFor="story-upload"
-            className="w-full max-w-sm aspect-[9/16] border-2 border-dashed border-muted-foreground rounded-lg cursor-pointer hover:bg-muted flex items-center justify-center overflow-hidden"
+            className="w-full max-w-sm aspect-[9/16] border-2 border-dashed border-muted-foreground rounded-lg cursor-pointer hover:bg-muted flex items-center justify-center overflow-hidden relative bg-secondary"
         >
             {imagePreview ? (
                  <Image

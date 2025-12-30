@@ -79,6 +79,7 @@ const PostCard = ({ post }: { post: any }) => {
 
 const initialFeedPosts = [
   {
+    id: 'post-1',
     user: { name: '@SahelUser', username: 'saheluser', avatar: 'https://picsum.photos/seed/zoudou/100/100' },
     time: 'Il y a 2 heures',
     content: 'Heureux de rejoindre la communauté Zoudou ! Prêt à miner mes premiers SAHEL. 🚀',
@@ -87,6 +88,7 @@ const initialFeedPosts = [
     linkPreview: null,
   },
   {
+    id: 'post-2',
     user: { name: '@tech_news', username: 'tech_news', avatar: 'https://picsum.photos/seed/guru/100/100' },
     time: 'Il y a 4 heures',
     content: 'Article intéressant sur le futur du Web3 : https://example-web3-news.com/article',
@@ -100,6 +102,7 @@ const initialFeedPosts = [
     }
   },
   {
+    id: 'post-3',
     user: { name: '@crypto_queen', username: 'crypto_queen', avatar: 'https://picsum.photos/seed/queen/100/100' },
     time: 'Il y a 5 heures',
     content: "Le marché est en pleine effervescence aujourd'hui. J'ai échangé quelques SAHEL contre un bon d'achat. C'est tellement pratique !",
@@ -123,10 +126,18 @@ export default function FeedPage() {
     }
   };
 
+  const removeImage = () => {
+    setImagePreview(null);
+    if(imageInputRef.current) {
+        imageInputRef.current.value = '';
+    }
+  }
+
   const handlePublish = () => {
     if (newPostContent.trim() === '' && !imagePreview) return;
 
     const newPost = {
+      id: `post-${Date.now()}`,
       user: { name: '@SahelUser', username: 'saheluser', avatar: 'https://picsum.photos/seed/zoudou/100/100' },
       time: 'À l\'instant',
       content: newPostContent,
@@ -137,10 +148,7 @@ export default function FeedPage() {
 
     setPosts([newPost, ...posts]);
     setNewPostContent('');
-    setImagePreview(null);
-    if(imageInputRef.current) {
-      imageInputRef.current.value = '';
-    }
+    removeImage();
   };
 
 
@@ -160,7 +168,7 @@ export default function FeedPage() {
                 {imagePreview && (
                     <div className="relative w-24 h-24">
                         <Image src={imagePreview} alt="Aperçu" layout="fill" objectFit="cover" className="rounded-md" />
-                        <Button variant="ghost" size="icon" className="absolute -top-2 -right-2 bg-black/50 hover:bg-black/70 rounded-full h-6 w-6" onClick={() => setImagePreview(null)}>
+                        <Button variant="ghost" size="icon" className="absolute -top-2 -right-2 bg-black/50 hover:bg-black/70 rounded-full h-6 w-6" onClick={removeImage}>
                             <X className="h-4 w-4 text-white"/>
                         </Button>
                     </div>
@@ -182,8 +190,8 @@ export default function FeedPage() {
             </Card>
 
             <div className="space-y-4">
-                {posts.map((post, index) => (
-                    <PostCard key={index} post={post} />
+                {posts.map((post) => (
+                    <PostCard key={post.id} post={post} />
                 ))}
             </div>
       </div>

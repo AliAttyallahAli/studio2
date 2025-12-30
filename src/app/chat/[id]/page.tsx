@@ -9,9 +9,9 @@ import { ArrowLeft, Mic, MoreVertical, Paperclip, Phone, Send, Video, FileText, 
 import { useRouter, usePathname } from 'next/navigation';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import Image from 'next/image';
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 
-const messages = [
+const initialMessages = [
   { id: 1, content: 'Salut ! Comment ça va ?', sender: 'other', time: '14:28' },
   { id: 2, content: 'Ça va bien, merci ! Et toi ?', sender: 'me', time: '14:29' },
   { id: 3, content: 'Super ! Heureux de rejoindre la communauté Zoudou ! Prêt à miner mes premiers SAHEL. 🚀', sender: 'other', time: '14:30' },
@@ -36,8 +36,11 @@ const FileAttachmentCard = ({ file }: { file: { name: string, size: string } }) 
 
 export default function ChatPage({ params }: { params: { id: string } }) {
   const router = useRouter();
-  const pathname = usePathname();
-  const fileInputRef = React.useRef<HTMLInputElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const scrollAreaRef = useRef<HTMLDivElement>(null);
+
+  const [messages, setMessages] = useState(initialMessages);
+  const [newMessage, setNewMessage] = useState('');
 
   // In a real app, you'd fetch chat details based on params.id
   const chatName = "Alice";
@@ -52,8 +55,43 @@ export default function ChatPage({ params }: { params: { id: string } }) {
     if (file) {
       console.log('Fichier sélectionné:', file.name);
       // Here you would handle the file upload
+      // For demo, let's add a file message
+      const time = new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+      const fileMessage = {
+        id: `file-${Date.now()}`,
+        type: 'file',
+        file: { name: file.name, size: `${(file.size / 1024 / 1024).toFixed(2)} MB` },
+        sender: 'me',
+        time: time
+      };
+      setMessages(prev => [...prev, fileMessage]);
     }
   };
+
+  const handleSendMessage = () => {
+    if (newMessage.trim() === '') return;
+
+    const time = new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+    const message = {
+        id: Date.now(),
+        content: newMessage,
+        sender: 'me',
+        time: time
+    };
+
+    setMessages(prev => [...prev, message]);
+    setNewMessage('');
+  };
+  
+  useEffect(() => {
+    // Scroll to bottom when messages change
+    if (scrollAreaRef.current) {
+        const viewport = scrollAreaRef.current.querySelector('div');
+        if (viewport) {
+            viewport.scrollTop = viewport.scrollHeight;
+        }
+    }
+  }, [messages]);
 
 
   return (
@@ -82,7 +120,7 @@ export default function ChatPage({ params }: { params: { id: string } }) {
         </div>
       </header>
       
-      <ScrollArea className="flex-grow p-4">
+      <ScrollArea className="flex-grow p-4" ref={scrollAreaRef}>
         <div className="space-y-4">
           {messages.map((message) => (
             <div
@@ -101,14 +139,14 @@ export default function ChatPage({ params }: { params: { id: string } }) {
                    (message.type === 'image' || message.type === 'file') && 'p-2'
                 )}
               >
-                {message.content && <p>{message.content}</p>}
+                {'content' in message && <p>{message.content}</p>}
                 
-                {message.type === 'image' && message.url && (
-                    <Image src={message.url} alt="Pièce jointe" width={300} height={200} className="rounded-md object-cover" data-ai-hint={message.hint} />
+                {message.type === 'image' && 'url' in message && (
+                    <Image src={message.url as string} alt="Pièce jointe" width={300} height={200} className="rounded-md object-cover" data-ai-hint={message.hint} />
                 )}
 
-                {message.type === 'file' && message.file && (
-                    <FileAttachmentCard file={message.file} />
+                {message.type === 'file' && 'file' in message && (
+                    <FileAttachmentCard file={message.file as {name: string, size: string}} />
                 )}
 
                 <p className="text-xs text-right mt-1 opacity-70">{message.time}</p>
@@ -119,24 +157,32 @@ export default function ChatPage({ params }: { params: { id: string } }) {
       </ScrollArea>
 
       <footer className="p-3 border-t shrink-0 bg-background">
-        <div className="flex items-center gap-2">
+        <form 
+            className="flex items-center gap-2"
+            onSubmit={(e) => { e.preventDefault(); handleSendMessage(); }}
+        >
             <input 
                 type="file" 
                 ref={fileInputRef}
                 onChange={handleFileChange}
                 className="hidden" 
             />
-          <Button variant="ghost" size="icon" onClick={handleAttachmentClick}>
+          <Button type="button" variant="ghost" size="icon" onClick={handleAttachmentClick}>
             <Paperclip className="h-5 w-5" />
           </Button>
-          <Input placeholder="Message..." className="flex-grow" />
-           <Button variant="ghost" size="icon">
+          <Input 
+            placeholder="Message..." 
+            className="flex-grow" 
+            value={newMessage}
+            onChange={(e) => setNewMessage(e.target.value)}
+          />
+           <Button type="button" variant="ghost" size="icon">
             <Mic className="h-5 w-5" />
           </Button>
-          <Button size="icon" className="bg-primary hover:bg-primary/90">
+          <Button type="submit" size="icon" className="bg-primary hover:bg-primary/90">
             <Send className="h-5 w-5" />
           </Button>
-        </div>
+        </form>
       </footer>
     </div>
   );

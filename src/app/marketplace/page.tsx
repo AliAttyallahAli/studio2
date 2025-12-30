@@ -12,16 +12,45 @@ import { Textarea } from '@/components/ui/textarea';
 import { PlusCircle } from 'lucide-react';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
 import Link from 'next/link';
+import { useState } from 'react';
 
-const marketplaceItems = [
+const initialMarketplaceItems = [
   { name: "Casque VR dernière génération", price: '150 SAHEL', image: 'https://picsum.photos/seed/vr/400/400', hint: 'vr headset', seller: '@user123', sellerAvatar: 'https://picsum.photos/seed/user123/100/100' },
   { name: "Formation Web3 complète", price: '85 SAHEL', image: 'https://picsum.photos/seed/web3/400/400', hint: 'online course', seller: '@tech_guru', sellerAvatar: 'https://picsum.photos/seed/guru/100/100' },
   { name: "Artwork NFT 'Sahel Spirit'", price: '500 ZIM', image: 'https://picsum.photos/seed/nftart/400/400', hint: 'abstract art', seller: '@crypto_queen', sellerAvatar: 'https://picsum.photos/seed/queen/100/100' },
   { name: "T-shirt 'Zoudou'", price: '25 ECO', image: 'https://picsum.photos/seed/tshirt/400/400', hint: 'branded t-shirt', seller: '@z_fashion', sellerAvatar: 'https://picsum.photos/seed/fashion/100/100' },
-
 ];
 
-function SellItemDialog() {
+function SellItemDialog({ onSellItem }: { onSellItem: (item: any) => void }) {
+    const [name, setName] = useState('');
+    const [description, setDescription] = useState('');
+    const [price, setPrice] = useState('');
+    const [currency, setCurrency] = useState('SAHEL');
+    const [image, setImage] = useState<File | null>(null);
+    const [imagePreview, setImagePreview] = useState<string | null>(null);
+
+    const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        if (event.target.files && event.target.files[0]) {
+            const file = event.target.files[0];
+            setImage(file);
+            setImagePreview(URL.createObjectURL(file));
+        }
+    };
+
+    const handleSell = () => {
+        if (!name || !price || !image || !imagePreview) return;
+
+        const newItem = {
+            name: name,
+            price: `${price} ${currency}`,
+            image: imagePreview,
+            hint: 'user item',
+            seller: '@SahelUser',
+            sellerAvatar: 'https://picsum.photos/seed/zoudou/100/100'
+        };
+        onSellItem(newItem);
+    };
+
     return (
         <DialogContent>
             <DialogHeader>
@@ -33,42 +62,53 @@ function SellItemDialog() {
             <div className="space-y-4 py-4">
                 <div className="space-y-2">
                     <Label htmlFor="item-name">Nom de l'article</Label>
-                    <Input id="item-name" placeholder="Ex: Casque Audio Pro" />
+                    <Input id="item-name" placeholder="Ex: Casque Audio Pro" value={name} onChange={e => setName(e.target.value)} />
                 </div>
                 <div className="space-y-2">
                     <Label htmlFor="item-description">Description</Label>
-                    <Textarea id="item-description" placeholder="Décrivez votre article en quelques mots." />
+                    <Textarea id="item-description" placeholder="Décrivez votre article en quelques mots." value={description} onChange={e => setDescription(e.target.value)} />
                 </div>
                  <div className="grid grid-cols-3 gap-4">
                     <div className="space-y-2 col-span-2">
                         <Label htmlFor="item-price">Prix</Label>
-                        <Input id="item-price" type="number" placeholder="0.00" />
+                        <Input id="item-price" type="number" placeholder="0.00" value={price} onChange={e => setPrice(e.target.value)} />
                     </div>
                      <div className="space-y-2">
                         <Label htmlFor="item-currency">Devise</Label>
-                         <Select>
+                         <Select value={currency} onValueChange={setCurrency}>
                             <SelectTrigger id="item-currency">
                                 <SelectValue placeholder="Devise" />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="sahel">SAHEL</SelectItem>
-                                <SelectItem value="zim">ZIM</SelectItem>
-                                <SelectItem value="eco">ECO</SelectItem>
+                                <SelectItem value="SAHEL">SAHEL</SelectItem>
+                                <SelectItem value="ZIM">ZIM</SelectItem>
+                                <SelectItem value="ECO">ECO</SelectItem>
                             </SelectContent>
                         </Select>
                     </div>
                 </div>
                 <div className="space-y-2">
                     <Label htmlFor="item-image">Image de l'article</Label>
-                    <Input id="item-image" type="file" />
+                    <Input id="item-image" type="file" onChange={handleImageChange} />
+                    {imagePreview && <Image src={imagePreview} alt="Aperçu" width={100} height={100} className="rounded-md mt-2" />}
                 </div>
-                <Button className="w-full bg-accent hover:bg-accent/90">Mettre en vente</Button>
+                 <DialogTrigger asChild>
+                    <Button className="w-full bg-accent hover:bg-accent/90" onClick={handleSell}>Mettre en vente</Button>
+                </DialogTrigger>
             </div>
         </DialogContent>
     );
 }
 
 export default function MarketplacePage() {
+    const [marketplaceItems, setMarketplaceItems] = useState(initialMarketplaceItems);
+    const [openDialog, setOpenDialog] = useState(false);
+
+    const handleAddNewItem = (newItem: any) => {
+        setMarketplaceItems(prev => [newItem, ...prev]);
+        setOpenDialog(false);
+    }
+
   return (
     <AppLayout>
       <div className="space-y-6">
@@ -77,14 +117,14 @@ export default function MarketplacePage() {
                 <h1 className="text-3xl font-bold">Marché</h1>
                 <p className="text-muted-foreground">Échangez vos coins et tokens contre des biens et services.</p>
             </div>
-             <Dialog>
+             <Dialog open={openDialog} onOpenChange={setOpenDialog}>
                 <DialogTrigger asChild>
                     <Button>
                         <PlusCircle className="mr-2 h-5 w-5"/>
                         Devenir vendeur
                     </Button>
                 </DialogTrigger>
-                <SellItemDialog />
+                <SellItemDialog onSellItem={handleAddNewItem} />
             </Dialog>
         </div>
 

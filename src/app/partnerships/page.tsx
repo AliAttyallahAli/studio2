@@ -12,9 +12,11 @@ import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, Dialog
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { useState } from 'react';
 
-const blogPosts = [
+const initialBlogPosts = [
     { 
+        id: 'blog-1',
         title: "L'impact de la tokenisation sur l'immobilier en Afrique",
         description: "Découvrez comment la blockchain et la tokenisation, via des projets comme Z-Immo, peuvent révolutionner l'accès à la propriété sur le continent.",
         author: { name: "ImmoToken", username: "immotoken", avatar: "https://picsum.photos/seed/immo/100/100" },
@@ -24,6 +26,7 @@ const blogPosts = [
         readTime: "8 min de lecture"
     },
     { 
+        id: 'blog-2',
         title: "Agriculture Durable : Le rôle des EcoTokens",
         description: "Les EcoTokens ne sont pas juste une monnaie, c'est un mouvement. Voici comment ils financent des projets à impact positif pour notre environnement.",
         author: { name: "EcoVille", username: "ecoville", avatar: "https://picsum.photos/seed/eco/100/100" },
@@ -34,7 +37,36 @@ const blogPosts = [
     },
 ];
 
-function PostBlogDialog() {
+function PostBlogDialog({ onPostCreate }: { onPostCreate: (post: any) => void }) {
+    const [title, setTitle] = useState('');
+    const [content, setContent] = useState('');
+    const [image, setImage] = useState<File | null>(null);
+    const [imagePreview, setImagePreview] = useState<string | null>(null);
+
+    const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        if (event.target.files && event.target.files[0]) {
+            const file = event.target.files[0];
+            setImage(file);
+            setImagePreview(URL.createObjectURL(file));
+        }
+    };
+
+    const handlePost = () => {
+        if (!title || !content || !imagePreview) return;
+
+        const newPost = {
+            id: `blog-${Date.now()}`,
+            title: title,
+            description: content.substring(0, 100) + '...',
+            author: { name: "SahelUser", username: "saheluser", avatar: "https://picsum.photos/seed/zoudou/100/100" },
+            image: imagePreview,
+            imageHint: "user blog post",
+            category: "Communauté",
+            readTime: "5 min de lecture"
+        };
+        onPostCreate(newPost);
+    };
+
     return (
         <DialogContent>
             <DialogHeader>
@@ -46,23 +78,34 @@ function PostBlogDialog() {
             <div className="space-y-4 py-4">
                 <div className="space-y-2">
                     <Label htmlFor="post-title">Titre de l'article</Label>
-                    <Input id="post-title" placeholder="Ex: L'avenir du Web3 en Afrique" />
+                    <Input id="post-title" placeholder="Ex: L'avenir du Web3 en Afrique" value={title} onChange={e => setTitle(e.target.value)} />
                 </div>
                 <div className="space-y-2">
                     <Label htmlFor="post-content">Contenu</Label>
-                    <Textarea id="post-content" placeholder="Rédigez votre article ici..." className="min-h-[200px]" />
+                    <Textarea id="post-content" placeholder="Rédigez votre article ici..." className="min-h-[200px]" value={content} onChange={e => setContent(e.target.value)} />
                 </div>
                  <div className="space-y-2">
                     <Label htmlFor="post-image">Image de couverture</Label>
-                    <Input id="post-image" type="file" />
+                    <Input id="post-image" type="file" onChange={handleImageChange} />
+                     {imagePreview && <Image src={imagePreview} alt="Aperçu" width={150} height={75} className="rounded-md mt-2 object-cover" />}
                 </div>
-                <Button className="w-full bg-accent hover:bg-accent/90">Soumettre pour publication</Button>
+                 <DialogTrigger asChild>
+                    <Button className="w-full bg-accent hover:bg-accent/90" onClick={handlePost}>Soumettre pour publication</Button>
+                 </DialogTrigger>
             </div>
         </DialogContent>
     );
 }
 
 export default function PartnershipsPage() {
+    const [blogPosts, setBlogPosts] = useState(initialBlogPosts);
+    const [openDialog, setOpenDialog] = useState(false);
+
+    const handleAddNewPost = (newPost: any) => {
+        setBlogPosts(prev => [newPost, ...prev]);
+        setOpenDialog(false);
+    }
+
   return (
     <AppLayout>
       <div className="space-y-6">
@@ -71,20 +114,20 @@ export default function PartnershipsPage() {
                 <h1 className="text-3xl font-bold">Partenariats & Blog</h1>
                 <p className="text-muted-foreground">Découvrez les projets de l'écosystème et partagez vos connaissances.</p>
             </div>
-             <Dialog>
+             <Dialog open={openDialog} onOpenChange={setOpenDialog}>
                 <DialogTrigger asChild>
                      <Button>
                         <PlusCircle className="mr-2 h-5 w-5"/>
                         Publier un article
                     </Button>
                 </DialogTrigger>
-                <PostBlogDialog />
+                <PostBlogDialog onPostCreate={handleAddNewPost} />
             </Dialog>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {blogPosts.map((post, index) => (
-                <Card key={index} className="overflow-hidden">
+            {blogPosts.map((post) => (
+                <Card key={post.id} className="overflow-hidden">
                     <CardHeader className="p-0">
                         <Image src={post.image} alt={post.title} width={800} height={400} className="object-cover" data-ai-hint={post.imageHint} />
                     </CardHeader>
