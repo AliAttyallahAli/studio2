@@ -6,23 +6,25 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
 import { ArrowLeft, Block, FileImage, Heart, Bell, LogOut, Trash2, Users, ThumbsUp } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { getUserProfile, type UserProfileData } from '@/lib/chat-data';
 import { useEffect, useState } from 'react';
 
 export default function ChatSettingsPage({ params }: { params: { id: string } }) {
     const router = useRouter();
+    const pathname = usePathname();
     const [profile, setProfile] = useState<UserProfileData | null>(null);
 
     useEffect(() => {
-        const userProfile = getUserProfile(params.id);
+        const id = pathname.split('/').slice(-2, -1)[0];
+        const userProfile = getUserProfile(id);
         if (userProfile) {
             setProfile(userProfile);
         } else {
             // Handle case where profile is not found, maybe redirect
             // For now, we'll just let it be null and the component will show a loading state
         }
-    }, [params.id]);
+    }, [pathname]);
 
     if (!profile) {
         return (

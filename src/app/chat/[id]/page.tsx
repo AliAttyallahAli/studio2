@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import { ArrowLeft, Mic, MoreVertical, Paperclip, Phone, Send, Video, FileText, Download } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import Image from 'next/image';
 import React, { useState, useRef, useEffect } from 'react';
@@ -28,6 +28,7 @@ const FileAttachmentCard = ({ file }: { file: { name: string, size: string } }) 
 
 export default function ChatPage({ params }: { params: { id: string } }) {
   const router = useRouter();
+  const pathname = usePathname();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   
@@ -36,14 +37,15 @@ export default function ChatPage({ params }: { params: { id: string } }) {
   const [newMessage, setNewMessage] = useState('');
 
   useEffect(() => {
-    const data = getChatData(params.id);
+    const id = pathname.split('/').pop() || '';
+    const data = getChatData(id);
     if (!data) {
       router.push('/chat');
     } else {
       setChatData(data);
       setMessages(data.messages);
     }
-  }, [params.id, router]);
+  }, [pathname, router]);
 
 
   const handleAttachmentClick = () => {
