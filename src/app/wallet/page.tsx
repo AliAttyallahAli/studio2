@@ -100,9 +100,13 @@ export default function WalletPage() {
                         <CardDescription>Veuillez entrer votre code PIN pour accéder à votre portefeuille.</CardDescription>
                     </CardHeader>
                     <CardContent>
-                       <PinDialog onPinSuccess={handlePinSuccess} isTrigger={false}>
-                          {/* Le contenu de PinInput est maintenant directement dans le dialogue */}
-                       </PinDialog>
+                       <Dialog open={true}>
+                          <DialogContent onInteractOutside={(e) => e.preventDefault()} className="sm:max-w-sm">
+                              <PinDialog onPinSuccess={handlePinSuccess} isTrigger={false}>
+                                  {/* Le contenu de PinInput est maintenant directement dans le dialogue */}
+                              </PinDialog>
+                          </DialogContent>
+                       </Dialog>
                     </CardContent>
                 </Card>
             </div>
