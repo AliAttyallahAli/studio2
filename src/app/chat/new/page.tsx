@@ -10,16 +10,16 @@ import { Card, CardContent } from '@/components/ui/card';
 
 
 const suggestedUsers = [
-  { id: '2', name: 'Alice', avatar: 'https://placehold.co/100x100.png' },
-  { id: '3', name: 'Bob', avatar: 'https://placehold.co/100x100.png' },
-  { id: '5', name: 'Charlie', avatar: 'https://placehold.co/100x100.png' },
+  { id: '2', name: 'Alice', avatar: 'https://picsum.photos/seed/alice/100/100' },
+  { id: '3', name: 'Bob', avatar: 'https://picsum.photos/seed/bob/100/100' },
+  { id: '5', name: 'Charlie', avatar: 'https://picsum.photos/seed/charlie/100/100' },
 ];
 
 export default function NewChatPage() {
   const router = useRouter();
 
   return (
-    <div className="flex flex-col h-full bg-background absolute inset-0 z-20 md:relative">
+    <div className="flex flex-col h-full bg-background absolute inset-0 z-20 md:relative md:border-l">
       <header className="flex items-center p-3 border-b shrink-0 bg-background sticky top-0 z-10">
         <Button variant="ghost" size="icon" onClick={() => router.back()}>
           <ArrowLeft className="h-6 w-6" />

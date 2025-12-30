@@ -15,32 +15,32 @@ import { useRouter } from 'next/navigation';
 const stories = [
   {
     id: 'story-2',
-    user: { name: 'Alice', avatar: 'https://placehold.co/100x100.png' },
+    user: { name: 'Alice', avatar: 'https://picsum.photos/seed/alice/100/100' },
     seen: false,
   },
   {
     id: 'story-3',
-    user: { name: 'Bob', avatar: 'https://placehold.co/100x100.png' },
+    user: { name: 'Bob', avatar: 'https://picsum.photos/seed/bob/100/100' },
     seen: false,
   },
   {
     id: 'story-4',
-    user: { name: 'Charlie', avatar: 'https://placehold.co/100x100.png' },
+    user: { name: 'Charlie', avatar: 'https://picsum.photos/seed/charlie/100/100' },
     seen: true,
   },
   {
     id: 'story-5',
-    user: { name: 'David', avatar: 'https://placehold.co/100x100.png' },
+    user: { name: 'David', avatar: 'https://picsum.photos/seed/david/100/100' },
     seen: true,
   },
   {
     id: 'story-6',
-    user: { name: 'Eve', avatar: 'https://placehold.co/100x100.png' },
+    user: { name: 'Eve', avatar: 'https://picsum.photos/seed/eve/100/100' },
     seen: false,
   },
   {
     id: 'story-7',
-    user: { name: 'Frank', avatar: 'https://placehold.co/100x100.png' },
+    user: { name: 'Frank', avatar: 'https://picsum.photos/seed/frank/100/100' },
     seen: true,
   },
 ];
@@ -63,7 +63,7 @@ export function StoryCarousel() {
             <div className="flex flex-col items-center gap-2">
               <div className="relative">
                 <Avatar className="w-16 h-16 border-2 border-dashed border-muted-foreground">
-                  <AvatarImage src="https://placehold.co/100x100.png" alt="Votre avatar" data-ai-hint="profile avatar" />
+                  <AvatarImage src="https://picsum.photos/seed/zoudou/100/100" alt="Votre avatar" data-ai-hint="profile avatar" />
                   <AvatarFallback>Moi</AvatarFallback>
                 </Avatar>
                 <div className="absolute bottom-0 right-0 flex items-center justify-center w-6 h-6 rounded-full bg-primary border-2 border-background">

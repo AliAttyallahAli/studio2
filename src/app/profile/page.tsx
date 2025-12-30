@@ -6,15 +6,22 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Camera, LogOut, ShieldCheck, Copy, Gift } from 'lucide-react';
+import { Camera, Gift, Copy } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
+const leaderboard = [
+    { rank: 1, user: '@CryptoKing', referrals: 152, active: 140 },
+    { rank: 2, user: '@SahelUser', referrals: 128, active: 115 },
+    { rank: 3, user: '@ZoudouFan', referrals: 98, active: 80 },
+    { rank: 4, user: '@P2P_Master', referrals: 75, active: 75 },
+    { rank: 5, user: '@QueenOfCoins', referrals: 62, active: 50 },
+]
 
 export default function ProfilePage() {
     const router = useRouter();
-    const referralLink = "https://cryptosen.tinal/join/CryptoMiner";
+    const referralLink = "https://zoudou.app/join/SahelUser";
 
     const handleLogout = () => {
         // Logout logic here
@@ -32,16 +39,16 @@ export default function ProfilePage() {
                 <CardContent className="flex flex-col items-center pt-6 space-y-4">
                     <div className="relative">
                         <Avatar className="w-24 h-24">
-                            <AvatarImage src="https://placehold.co/100x100.png" alt="@username" data-ai-hint="profile avatar" />
-                            <AvatarFallback>CS</AvatarFallback>
+                            <AvatarImage src="https://picsum.photos/seed/zoudou/100/100" alt="@SahelUser" data-ai-hint="profile avatar" />
+                            <AvatarFallback>SU</AvatarFallback>
                         </Avatar>
                         <Button size="icon" className="absolute bottom-0 right-0 rounded-full">
                             <Camera className="h-4 w-4" />
                         </Button>
                     </div>
                     <div className="text-center">
-                        <h1 className="text-2xl font-bold">@CryptoMiner</h1>
-                        <p className="text-muted-foreground">miner@example.com</p>
+                        <h1 className="text-2xl font-bold">@SahelUser</h1>
+                        <p className="text-muted-foreground">sahel.user@exemple.com</p>
                     </div>
                 </CardContent>
             </Card>
@@ -54,15 +61,15 @@ export default function ProfilePage() {
                     <form className="space-y-4">
                          <div className="space-y-2">
                             <Label htmlFor="username">Nom d'utilisateur</Label>
-                            <Input id="username" defaultValue="@CryptoMiner" />
+                            <Input id="username" defaultValue="@SahelUser" />
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="email">Email</Label>
-                            <Input id="email" type="email" defaultValue="miner@example.com" />
+                            <Input id="email" type="email" defaultValue="sahel.user@exemple.com" />
                         </div>
                          <div className="space-y-2">
                             <Label htmlFor="bio">Biographie</Label>
-                            <Textarea id="bio" placeholder="Parlez-nous un peu de vous..." defaultValue="Passionné de crypto et d'optimisation de la performance."/>
+                            <Textarea id="bio" placeholder="Parlez-nous un peu de vous..." defaultValue="Passionné par la révolution Web3 en Afrique. #SAHEL"/>
                         </div>
                         <Button className="w-full">Sauvegarder</Button>
                     </form>
@@ -71,16 +78,42 @@ export default function ProfilePage() {
 
             <Card>
                 <CardHeader>
-                    <CardTitle>Parrainage</CardTitle>
-                    <CardDescription>Invitez des amis et gagnez des récompenses.</CardDescription>
+                    <CardTitle>Parrainage & Classement</CardTitle>
+                    <CardDescription>Invitez des amis, gagnez des bonus et montez dans le classement.</CardDescription>
                 </CardHeader>
-                <CardContent>
-                    <div className="flex items-center space-x-2 p-2 bg-secondary rounded-md">
-                        <Gift className="h-5 w-5 text-primary"/>
-                        <Input readOnly defaultValue={referralLink} className="flex-grow border-0 bg-transparent text-sm" />
-                        <Button variant="ghost" size="icon" onClick={() => navigator.clipboard.writeText(referralLink)}>
-                            <Copy className="h-4 w-4" />
-                        </Button>
+                <CardContent className="space-y-6">
+                    <div>
+                        <Label>Votre lien de parrainage</Label>
+                        <div className="flex items-center space-x-2 p-2 bg-secondary rounded-md mt-2">
+                            <Gift className="h-5 w-5 text-primary"/>
+                            <Input readOnly defaultValue={referralLink} className="flex-grow border-0 bg-transparent text-sm" />
+                            <Button variant="ghost" size="icon" onClick={() => navigator.clipboard.writeText(referralLink)}>
+                                <Copy className="h-4 w-4" />
+                            </Button>
+                        </div>
+                    </div>
+                    <div>
+                        <h4 className="font-semibold mb-2">Classement des parrains</h4>
+                         <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead>Rang</TableHead>
+                                    <TableHead>Utilisateur</TableHead>
+                                    <TableHead>Parrainages</TableHead>
+                                    <TableHead>Actifs</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {leaderboard.map(entry => (
+                                    <TableRow key={entry.rank} className={entry.user === '@SahelUser' ? 'bg-primary/10' : ''}>
+                                        <TableCell className="font-medium">{entry.rank}</TableCell>
+                                        <TableCell>{entry.user}</TableCell>
+                                        <TableCell>{entry.referrals}</TableCell>
+                                        <TableCell className="text-green-400">{entry.active}</TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
                     </div>
                 </CardContent>
             </Card>

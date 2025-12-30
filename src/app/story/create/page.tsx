@@ -42,45 +42,39 @@ export default function CreateStoryPage() {
         </Button>
       </header>
 
-      <div className="flex-grow flex flex-col p-4 space-y-4">
-        <div>
-            <Label htmlFor="story-upload" className="font-semibold">Image du statut</Label>
-            <div className="mt-2 flex items-center gap-4">
-                 <label
-                    htmlFor="story-upload"
-                    className="flex-shrink-0 flex flex-col items-center justify-center w-32 h-32 border-2 border-dashed border-muted-foreground rounded-lg cursor-pointer hover:bg-muted"
-                >
-                    {imagePreview ? (
-                         <Image
-                            src={imagePreview}
-                            alt="Aperçu"
-                            width={128}
-                            height={128}
-                            className="object-cover w-full h-full rounded-md"
-                        />
-                    ) : (
-                        <div className="text-center p-2">
-                             <ImageIcon className="h-8 w-8 text-muted-foreground mx-auto" />
-                             <p className="text-xs text-muted-foreground mt-1">Ajouter une photo</p>
-                        </div>
-                    )}
-                     <Input
-                        id="story-upload"
-                        type="file"
-                        className="hidden"
-                        accept="image/*"
-                        onChange={handleImageChange}
-                    />
-                </label>
-
-                <Textarea
-                    placeholder="Ajouter une légende..."
-                    value={caption}
-                    onChange={(e) => setCaption(e.target.value)}
-                    className="min-h-[128px] h-32 flex-grow"
+      <div className="flex-grow flex flex-col items-center justify-center p-4 space-y-4">
+        <label
+            htmlFor="story-upload"
+            className="w-full max-w-sm aspect-[9/16] border-2 border-dashed border-muted-foreground rounded-lg cursor-pointer hover:bg-muted flex items-center justify-center overflow-hidden"
+        >
+            {imagePreview ? (
+                 <Image
+                    src={imagePreview}
+                    alt="Aperçu"
+                    layout="fill"
+                    className="object-cover"
                 />
-            </div>
-        </div>
+            ) : (
+                <div className="text-center p-2">
+                     <ImageIcon className="h-12 w-12 text-muted-foreground mx-auto" />
+                     <p className="text-md text-muted-foreground mt-2">Ajouter une photo ou vidéo</p>
+                </div>
+            )}
+             <Input
+                id="story-upload"
+                type="file"
+                className="hidden"
+                accept="image/*,video/*"
+                onChange={handleImageChange}
+            />
+        </label>
+
+        <Textarea
+            placeholder="Ajouter une légende..."
+            value={caption}
+            onChange={(e) => setCaption(e.target.value)}
+            className="w-full max-w-sm"
+        />
       </div>
     </div>
   );

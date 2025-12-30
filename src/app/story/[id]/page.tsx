@@ -8,13 +8,14 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { ChevronLeft, ChevronRight, X } from 'lucide-react';
+import { Input } from '@/components/ui/input';
 
 // Mock data, in a real app this would be fetched
 const storyData = {
   id: 'story-2',
-  user: { name: 'Alice', avatar: 'https://placehold.co/100x100.png' },
+  user: { name: 'Alice', avatar: 'https://picsum.photos/seed/alice/100/100' },
   items: [
-    { type: 'image', url: 'https://placehold.co/1080x1920.png', hint: 'tropical beach' },
+    { type: 'image', url: 'https://picsum.photos/seed/beach/1080/1920', hint: 'tropical beach' },
   ],
   timestamp: 'Il y a 2h',
 };
@@ -41,12 +42,12 @@ export default function StoryViewerPage({ params }: { params: { id: string } }) 
   const currentItem = storyData.items[0]; // Assuming one item per story for now
 
   return (
-    <div className="fixed inset-0 bg-black z-50 flex items-center justify-center">
-      <div className="relative w-full max-w-lg h-full sm:h-[90vh] sm:max-h-[800px] flex flex-col bg-background rounded-none sm:rounded-lg overflow-hidden">
+    <div className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center">
+      <div className="relative w-full max-w-md h-full sm:h-[95vh] sm:max-h-[900px] flex flex-col bg-background rounded-none sm:rounded-lg overflow-hidden">
         
         {/* Progress Bar */}
         <div className="absolute top-2 left-2 right-2 z-20">
-            <Progress value={progress} className="h-1" />
+            <Progress value={progress} className="h-1 bg-white/30" />
         </div>
 
         {/* Header */}
@@ -61,7 +62,7 @@ export default function StoryViewerPage({ params }: { params: { id: string } }) 
               <p className="text-xs text-neutral-300 text-shadow">{storyData.timestamp}</p>
             </div>
           </div>
-          <Button variant="ghost" size="icon" className="text-white" onClick={() => router.back()}>
+          <Button variant="ghost" size="icon" className="text-white hover:bg-black/20" onClick={() => router.back()}>
             <X className="h-6 w-6" />
           </Button>
         </header>
@@ -77,16 +78,21 @@ export default function StoryViewerPage({ params }: { params: { id: string } }) 
               data-ai-hint={currentItem.hint}
             />
           )}
-           <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-black/30"></div>
+           <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-black/50"></div>
         </div>
 
+        {/* Reply Footer */}
+        <footer className="absolute bottom-4 left-4 right-4 z-20">
+            <Input placeholder={`Répondre à ${storyData.user.name}...`} className="bg-black/50 border-white/30 text-white placeholder:text-neutral-300"/>
+        </footer>
+
         {/* Navigation */}
-        <div className="absolute inset-y-0 left-0 w-1/3 z-10" title="Previous" />
-        <div className="absolute inset-y-0 right-0 w-1/3 z-10" title="Next" />
+        <div className="absolute inset-y-0 left-0 w-1/3 z-10" title="Précédent" />
+        <div className="absolute inset-y-0 right-0 w-1/3 z-10" title="Suivant" />
 
          <style jsx>{`
             .text-shadow {
-                text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+                text-shadow: 0 1px 3px rgba(0,0,0,0.7);
             }
         `}</style>
       </div>

@@ -2,7 +2,7 @@
 'use client';
 
 import { usePathname, useRouter } from 'next/navigation';
-import { User, Wallet, Menu, LogOut, Shield, Repeat, MessageSquare, Landmark, Pickaxe, UserCog, Rss } from 'lucide-react';
+import { User, Wallet, Menu, LogOut, Shield, Repeat, MessageSquare, Landmark, Pickaxe, UserCog, Rss, ShoppingBag, Handshake, Newspaper } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import {
@@ -18,12 +18,12 @@ import { Separator } from './ui/separator';
 
 const navItems = [
   { href: '/', label: 'Minage', icon: Pickaxe },
-  { href: '/feed', label: 'Fil d\'actualité', icon: Rss },
-  { href: '/chat', label: 'Messages', icon: MessageSquare },
+  { href: '/feed', label: 'Feed', icon: Rss },
+  { href: '/chat', label: 'Chat', icon: MessageSquare },
   { href: '/wallet', label: 'Portefeuille', icon: Wallet },
   { href: '/p2p', label: 'Échange P2P', icon: Repeat },
-  { href: '/marketplace', label: 'Marché', icon: MessageSquare },
-  { href: '/citizens', label: 'Citoyens', icon: Landmark },
+  { href: '/marketplace', label: 'Marché', icon: ShoppingBag },
+  { href: '/partnerships', label: 'Partenariats', icon: Newspaper },
   { href: '/verification', label: 'Vérification', icon: Shield },
   { href: '/profile', label: 'Profil', icon: User },
 ];
@@ -47,10 +47,10 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
 
     // Handle dynamic routes
     if (pathname.startsWith('/profile/')) return 'Profil';
-    if (pathname.startsWith('/chat/')) return 'Messages';
+    if (pathname.startsWith('/chat/')) return 'Chat';
     if (pathname.startsWith('/story/')) return 'Statut';
 
-    return 'Crypto Sentinel';
+    return 'Zoudou';
   }
   
   const pageTitle = getPageTitle();
@@ -59,11 +59,11 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
 
 
   return (
-    <div className="flex h-screen bg-background">
-       <aside className={cn("hidden md:flex flex-col border-r", isChatPage ? "w-80" : "w-64")}>
+    <div className="flex h-screen bg-muted/20">
+       <aside className={cn("hidden md:flex flex-col border-r bg-background", isChatPage ? "w-80" : "w-64")}>
           <div className="h-16 flex items-center px-4 border-b shrink-0">
-             <Shield className="h-6 w-6 text-primary mr-2"/>
-             <h1 className="text-xl font-semibold">Crypto Sentinel</h1>
+             <Handshake className="h-6 w-6 text-primary mr-2"/>
+             <h1 className="text-xl font-semibold">Zoudou</h1>
           </div>
            <nav className="flex-grow p-4 space-y-2 overflow-y-auto">
                 {navItems.map((item) => (
@@ -93,10 +93,10 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
             <div className="p-4 border-t shrink-0">
                  <Button variant="ghost" className="w-full justify-start" onClick={() => router.push('/profile')}>
                     <Avatar className="w-8 h-8 mr-2">
-                        <AvatarImage src="https://placehold.co/100x100.png" alt="@username" data-ai-hint="profile avatar"/>
-                        <AvatarFallback>CS</AvatarFallback>
+                        <AvatarImage src="https://picsum.photos/seed/zoudou/100/100" alt="@SahelUser" data-ai-hint="profile avatar"/>
+                        <AvatarFallback>SU</AvatarFallback>
                     </Avatar>
-                    <span>@CryptoMiner</span>
+                    <span>@SahelUser</span>
                 </Button>
                  <Separator className="my-2"/>
                 <Button variant="ghost" className="w-full justify-start" onClick={() => router.push('/auth')}>
@@ -107,7 +107,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
        </aside>
 
        <div className="flex flex-col flex-1 min-w-0">
-          <header className="flex items-center justify-between h-16 px-4 border-b md:hidden shrink-0">
+          <header className="flex items-center justify-between h-16 px-4 border-b md:hidden shrink-0 bg-background">
              <Sheet>
                 <SheetTrigger asChild>
                     <Button variant="ghost" size="icon">
@@ -115,12 +115,12 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                     <span className="sr-only">Ouvrir le menu</span>
                     </Button>
                 </SheetTrigger>
-                <SheetContent side="left" className="w-[280px] p-0 flex flex-col">
+                <SheetContent side="left" className="w-[280px] p-0 flex flex-col bg-background">
                     <SheetHeader className="p-4 border-b">
                         <SheetTitle>
                             <div className="flex items-center">
-                                <Shield className="h-6 w-6 text-primary mr-2"/>
-                                <span>Crypto Sentinel</span>
+                                <Handshake className="h-6 w-6 text-primary mr-2"/>
+                                <span>Zoudou</span>
                             </div>
                         </SheetTitle>
                     </SheetHeader>
@@ -165,8 +165,8 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
              <div className="w-10 flex justify-end">
                 <Button variant="ghost" size="icon" onClick={() => router.push('/profile')}>
                      <Avatar className="w-8 h-8">
-                        <AvatarImage src="https://placehold.co/100x100.png" alt="@username" data-ai-hint="profile avatar"/>
-                        <AvatarFallback>CS</AvatarFallback>
+                        <AvatarImage src="https://picsum.photos/seed/zoudou/100/100" alt="@SahelUser" data-ai-hint="profile avatar"/>
+                        <AvatarFallback>SU</AvatarFallback>
                     </Avatar>
                 </Button>
              </div>

@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Heart, ThumbsUp, MessageSquare, UserPlus } from 'lucide-react';
+import { usePathname } from 'next/navigation';
 
 // Type pour le profil utilisateur
 type UserProfile = {
@@ -21,16 +22,16 @@ type UserProfile = {
 const userProfiles: Record<string, UserProfile> = {
   user123: {
     name: '@user123',
-    avatar: 'https://placehold.co/100x100.png',
+    avatar: 'https://picsum.photos/seed/user123/100/100',
     email: 'user123@exemple.com',
-    bio: "Heureux de rejoindre la communauté Zoudou ! Prêt à miner mes premiers tokens Z. 🚀",
+    bio: "Heureux de rejoindre la communauté Zoudou ! Prêt à miner mes premiers SAHEL. 🚀",
     parcours: "Je m'intéresse à la crypto depuis 2020. J'ai participé à plusieurs projets communautaires.",
     interests: "Crypto, Gaming, Voyages",
     maritalStatus: "Célibataire",
   },
   tech_news: {
     name: '@tech_news',
-    avatar: 'https://placehold.co/100x100.png',
+    avatar: 'https://picsum.photos/seed/guru/100/100',
     email: 'tech_news@exemple.com',
     bio: "Toutes les dernières actualités sur la technologie et le Web3.",
     parcours: "Journaliste tech avec plus de 10 ans d'expérience. Focus sur la blockchain et l'IA.",
@@ -39,27 +40,29 @@ const userProfiles: Record<string, UserProfile> = {
   },
   crypto_queen: {
     name: '@crypto_queen',
-    avatar: 'https://placehold.co/100x100.png',
+    avatar: 'https://picsum.photos/seed/queen/100/100',
     email: 'crypto_queen@exemple.com',
     bio: "Reine de la crypto. J'explore, j'investis et je partage mes connaissances. #WomenInCrypto",
     parcours: "Analyste financière convertie en experte DeFi. Spécialisée dans les stratégies de yield farming.",
     interests: "DeFi, NFT, Finance décentralisée",
     maritalStatus: "En couple",
+  },
+  saheluser: {
+    name: '@SahelUser',
+    avatar: 'https://picsum.photos/seed/zoudou/100/100',
+    email: `sahel.user@exemple.com`,
+    bio: "Passionné par la révolution Web3 en Afrique. #SAHEL",
+    parcours: "Développeur et entrepreneur, focus sur les solutions décentralisées pour les marchés émergents.",
+    interests: "Web3, Entrepreneuriat, Afrique",
+    maritalStatus: "En couple"
   }
 };
 
-// Type pour les props
-interface UserProfilePageProps {
-  params: {
-    username: string;
-  };
-}
-
-export default function UserProfilePage({ params: { username } }: { params: { username: string } }) {
-    const userProfile = userProfiles[username] || {
-        name: `@${username}`,
-        avatar: 'https://placehold.co/100x100.png',
-        email: `${username}@exemple.com`,
+export default function UserProfilePage({ params }: { params: { username: string } }) {
+    const userProfile = userProfiles[params.username] || {
+        name: `@${params.username}`,
+        avatar: 'https://picsum.photos/seed/random/100/100',
+        email: `${params.username}@exemple.com`,
         bio: "Ce profil est généré dynamiquement.",
         parcours: "N/A",
         interests: "N/A",
@@ -77,7 +80,7 @@ export default function UserProfilePage({ params: { username } }: { params: { us
               data-ai-hint="profile avatar" 
             />
             <AvatarFallback>
-              {userProfile.name.charAt(1).toUpperCase()}
+              {userProfile.name.replace('@','').substring(0,2).toUpperCase()}
             </AvatarFallback>
           </Avatar>
           

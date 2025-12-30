@@ -61,15 +61,15 @@ export default function VerificationPage() {
   return (
     <AppLayout>
         <div className="space-y-6">
-            <div className="text-center">
+            <div className="text-left">
                 <h1 className="text-3xl font-bold">Vérification de Compte</h1>
-                <p className="text-muted-foreground">Sécurisez votre compte et débloquez toutes les fonctionnalités.</p>
+                <p className="text-muted-foreground">Sécurisez votre compte et débloquez toutes les fonctionnalités de l'écosystème.</p>
             </div>
 
             <Tabs defaultValue="kyc" className="w-full">
               <TabsList className="grid w-full grid-cols-1 sm:grid-cols-2">
-                <TabsTrigger value="kyc">KYC (Individu)</TabsTrigger>
-                <TabsTrigger value="kyb">KYB (Entreprise)</TabsTrigger>
+                <TabsTrigger value="kyc">KYC (Utilisateur)</TabsTrigger>
+                <TabsTrigger value="kyb">KYB (Vendeur / Entreprise)</TabsTrigger>
               </TabsList>
 
               <TabsContent value="kyc">
@@ -85,7 +85,7 @@ export default function VerificationPage() {
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="kyc-doc-upload">Télécharger le document (Recto et Verso si applicable)</Label>
-                            <Input id="kyc-doc-upload" type="file" />
+                            <Input id="kyc-doc-upload" type="file" multiple />
                         </div>
 
                         <div className="space-y-2">

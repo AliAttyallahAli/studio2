@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import { ArrowLeft, Mic, MoreVertical, Paperclip, Phone, Send, Video, FileText, Download } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import Image from 'next/image';
 import React from 'react';
@@ -14,8 +14,8 @@ import React from 'react';
 const messages = [
   { id: 1, content: 'Salut ! Comment ça va ?', sender: 'other', time: '14:28' },
   { id: 2, content: 'Ça va bien, merci ! Et toi ?', sender: 'me', time: '14:29' },
-  { id: 3, content: 'Super ! Heureux de rejoindre la communauté Zoudou ! Prêt à miner mes premiers tokens Z. 🚀', sender: 'other', time: '14:30' },
-  { id: 'img-1', type: 'image', url: 'https://placehold.co/600x400.png', hint: 'abstract design', sender: 'other', time: '14:32' },
+  { id: 3, content: 'Super ! Heureux de rejoindre la communauté Zoudou ! Prêt à miner mes premiers SAHEL. 🚀', sender: 'other', time: '14:30' },
+  { id: 'img-1', type: 'image', url: 'https://picsum.photos/seed/abstract/600/400', hint: 'abstract design', sender: 'other', time: '14:32' },
   { id: 4, content: 'Bienvenue ! C\'est une super plateforme.', sender: 'me', time: '14:31' },
   { id: 'file-1', type: 'file', file: { name: 'whitepaper_zoudou.pdf', size: '1.2 MB' }, sender: 'me', time: '14:35' },
 ];
@@ -36,11 +36,12 @@ const FileAttachmentCard = ({ file }: { file: { name: string, size: string } }) 
 
 export default function ChatPage({ params }: { params: { id: string } }) {
   const router = useRouter();
+  const pathname = usePathname();
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   // In a real app, you'd fetch chat details based on params.id
   const chatName = "Alice";
-  const chatAvatar = "https://placehold.co/100x100.png";
+  const chatAvatar = "https://picsum.photos/seed/alice/100/100";
 
   const handleAttachmentClick = () => {
     fileInputRef.current?.click();

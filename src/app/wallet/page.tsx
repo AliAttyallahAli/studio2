@@ -5,29 +5,28 @@ import { useState } from 'react';
 import { AppLayout } from '@/components/AppLayout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { ArrowDown, ArrowUp, QrCode, Repeat, KeyRound, Copy, Eye, EyeOff, AlertTriangle } from 'lucide-react';
+import { ArrowDown, ArrowUp, QrCode, Repeat, KeyRound, Copy, Eye, EyeOff, AlertTriangle, PlusCircle } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
-const hotWallet = {
-    address: '0x4a7c7e5a3e1b9b8c6d4f5a3e1b9b8c6d4f5a3e1b',
-    balance: '234.56 Z'
-};
-
-const coldWallet = {
-    address: '0x9f8e7d6c5b4a3f2e1d9c8b7a6f5e4d3c2b1a9f8e',
-    balance: '1,000.00 Z',
-    privateKey: 'cold-wallet-private-key-example-never-share-this'
+const walletData = {
+    sahel: { balance: '1250.75 SAHEL', address: '0xSHEL123...abc' },
+    tokens: [
+        { name: 'Z-Immo', balance: '50.00 ZIM', address: '0xZIM456...def' },
+        { name: 'EcoToken', balance: '10,000.00 ECO', address: '0xECO789...ghi' },
+    ]
 };
 
 const transactions = [
-    { type: 'reçu', amount: '+ 50.25 Z', from: 'de @user123', date: 'Aujourd\'hui', icon: ArrowDown },
-    { type: 'envoyé', amount: '- 10.00 Z', from: 'à @market', date: 'Hier', icon: ArrowUp },
-    { type: 'reçu', amount: '+ 2.50 Z', from: 'Minage quotidien', date: 'Hier', icon: ArrowDown },
+    { type: 'reçu', amount: '+ 50.25 SAHEL', from: 'de @user123', date: 'Aujourd\'hui', icon: ArrowDown },
+    { type: 'swap', amount: '- 100.00 SAHEL', from: 'pour 10000.00 ECO', date: 'Hier', icon: Repeat },
+    { type: 'envoyé', amount: '- 10.00 ZIM', from: 'à @market', date: 'Hier', icon: ArrowUp },
+    { type: 'récompense', amount: '+ 2.50 SAHEL', from: 'Minage quotidien', date: 'Hier', icon: ArrowDown },
 ];
 
 
@@ -42,40 +41,6 @@ function AddressRow({ address }: { address: string }) {
     );
 }
 
-function PrivateKeyDialog({ privateKey }: { privateKey: string }) {
-    const [showKey, setShowKey] = useState(false);
-
-    return (
-        <DialogContent>
-            <DialogHeader>
-                <DialogTitle>Clé Privée de votre Portefeuille Cold</DialogTitle>
-                <DialogDescription>
-                    Cette clé vous donne un accès total à vos fonds. Ne la partagez JAMAIS.
-                </DialogDescription>
-            </DialogHeader>
-            <div className="space-y-4 py-4">
-                 <Alert variant="destructive">
-                  <AlertTriangle className="h-4 w-4" />
-                  <AlertTitle>Danger ! N'exposez jamais cette clé.</AlertTitle>
-                  <AlertDescription>
-                    Toute personne ayant accès à cette clé privée peut voler vos actifs. Conservez-la en lieu sûr et hors ligne.
-                  </AlertDescription>
-                </Alert>
-                <div className="flex items-center space-x-2 p-2 bg-secondary rounded-md">
-                    <p className="text-sm font-mono text-destructive flex-grow truncate">
-                        {showKey ? privateKey : '************************************************'}
-                    </p>
-                    <Button variant="ghost" size="icon" onClick={() => setShowKey(!showKey)}>
-                        {showKey ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                    </Button>
-                </div>
-                 <Button className="w-full" onClick={() => navigator.clipboard.writeText(privateKey)}>
-                    <Copy className="mr-2 h-4 w-4"/> Copier la clé privée
-                </Button>
-            </div>
-        </DialogContent>
-    );
-}
 
 function QrDialog({ address }: { address: string }) {
     return (
@@ -100,10 +65,23 @@ function SendDialog() {
     return (
         <DialogContent>
             <DialogHeader>
-                <DialogTitle>Envoyer des Tokens Z</DialogTitle>
-                <DialogDescription>Depuis votre portefeuille Hot.</DialogDescription>
+                <DialogTitle>Envoyer des Actifs</DialogTitle>
+                <DialogDescription>Envoyer des SAHEL ou des tokens.</DialogDescription>
             </DialogHeader>
             <div className="space-y-4 py-4">
+                 <div className="space-y-2">
+                    <Label htmlFor="asset-select">Actif à envoyer</Label>
+                    <Select>
+                        <SelectTrigger id="asset-select">
+                            <SelectValue placeholder="Sélectionnez un actif" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="sahel">SAHEL Coin</SelectItem>
+                            <SelectItem value="z-immo">Z-Immo Token</SelectItem>
+                            <SelectItem value="eco">EcoToken</SelectItem>
+                        </SelectContent>
+                    </Select>
+                </div>
                 <div className="space-y-2">
                     <Label htmlFor="recipient">Adresse ou @utilisateur du destinataire</Label>
                     <Input id="recipient" placeholder="@utilisateur ou 0x..." />
@@ -119,80 +97,6 @@ function SendDialog() {
 }
 
 
-const gsmOperators: Record<string, string[]> = {
-    'Cameroun': ['MTN', 'Orange', 'Nexttel', 'Camtel'],
-    'Gabon': ['Airtel', 'Moov'],
-    'Congo-Brazzaville': ['MTN', 'Airtel'],
-    'Tchad': ['Airtel', 'Moov'],
-    'République Centrafricaine': ['Orange', 'Telecel', 'Moov'],
-    'Guinée Équatoriale': ['Orange', 'MTN', 'Getesa'],
-    'Nigeria': ['MTN', 'Airtel', 'Glo', '9mobile'],
-    'Ghana': ['MTN', 'Vodafone', 'AirtelTigo'],
-    'Côte d\'Ivoire': ['Orange', 'MTN', 'Moov'],
-    'Sénégal': ['Orange', 'Free', 'Expresso'],
-};
-
-function ExchangeDialog() {
-    const [selectedCountry, setSelectedCountry] = useState('');
-    const [operators, setOperators] = useState<string[]>([]);
-
-    const handleCountryChange = (country: string) => {
-        setSelectedCountry(country);
-        setOperators(gsmOperators[country] || []);
-    }
-
-    return (
-        <DialogContent>
-            <DialogHeader>
-                <DialogTitle>Échanger Z contre du Crédit GSM</DialogTitle>
-                <DialogDescription>
-                    Sélectionnez le pays et l'opérateur, puis entrez le numéro.
-                </DialogDescription>
-            </DialogHeader>
-            <div className="space-y-4 py-4">
-                <div className="space-y-2">
-                    <Label htmlFor="country">Pays</Label>
-                     <Select onValueChange={handleCountryChange}>
-                        <SelectTrigger id="country">
-                            <SelectValue placeholder="Sélectionnez un pays" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            {Object.keys(gsmOperators).map(country => (
-                                <SelectItem key={country} value={country}>{country}</SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
-                </div>
-                 {selectedCountry && (
-                    <div className="space-y-2">
-                        <Label htmlFor="operator">Opérateur</Label>
-                        <Select>
-                            <SelectTrigger id="operator">
-                                <SelectValue placeholder="Sélectionnez un opérateur" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {operators.map(operator => (
-                                    <SelectItem key={operator} value={operator}>{operator}</SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                    </div>
-                )}
-                <div className="space-y-2">
-                    <Label htmlFor="phone">Numéro de téléphone</Label>
-                    <Input id="phone" placeholder="+237..." />
-                </div>
-                <div className="space-y-2">
-                    <Label htmlFor="amount-exchange">Montant en Z à échanger</Label>
-                    <Input id="amount-exchange" type="number" placeholder="0.00" />
-                </div>
-                <p className="text-sm text-muted-foreground">Taux de change : 1 Z = 500 XAF</p>
-                <Button className="w-full" disabled={!selectedCountry}>Échanger</Button>
-            </div>
-        </DialogContent>
-    );
-}
-
 export default function WalletPage() {
   const [dialogContent, setDialogContent] = useState<React.ReactNode | null>(null);
 
@@ -203,59 +107,66 @@ export default function WalletPage() {
             
             <Card>
                 <CardHeader>
-                    <CardTitle>Portefeuille Hot</CardTitle>
-                    <CardDescription>Pour les transactions quotidiennes. Solde : <span className="font-bold text-primary">{hotWallet.balance}</span></CardDescription>
+                    <div className="flex justify-between items-start">
+                        <div>
+                            <CardTitle>Mon Portefeuille Multichain</CardTitle>
+                            <CardDescription>Solde total estimé : <span className="font-bold text-primary">$1,850.50 USD</span></CardDescription>
+                        </div>
+                        <div className="flex gap-2">
+                            <DialogTrigger asChild>
+                                <Button onClick={() => setDialogContent(<SendDialog />)}>
+                                    <ArrowUp className="mr-2 h-4 w-4"/>Envoyer
+                                </Button>
+                            </DialogTrigger>
+                             <DialogTrigger asChild>
+                                <Button variant="outline" onClick={() => setDialogContent(<QrDialog address={walletData.sahel.address} />)}>
+                                    <ArrowDown className="mr-2 h-4 w-4"/>Recevoir
+                                </Button>
+                            </DialogTrigger>
+                        </div>
+                    </div>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                    <div>
-                        <Label>Adresse de réception</Label>
-                        <AddressRow address={hotWallet.address} />
-                    </div>
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                         <DialogTrigger asChild>
-                            <Button variant="outline" onClick={() => setDialogContent(<SendDialog />)}>
-                                <ArrowUp className="mr-2 h-4 w-4"/>Envoyer
-                            </Button>
-                        </DialogTrigger>
-                        <DialogTrigger asChild>
-                            <Button variant="outline" onClick={() => setDialogContent(<QrDialog address={hotWallet.address} />)}>
-                                <QrCode className="mr-2 h-4 w-4"/>Recevoir
-                            </Button>
-                        </DialogTrigger>
-                        <DialogTrigger asChild>
-                           <Button variant="outline" onClick={() => setDialogContent(<ExchangeDialog />)}>
-                                <Repeat className="mr-2 h-4 w-4"/>Échanger
-                            </Button>
-                        </DialogTrigger>
-                    </div>
+                <CardContent>
+                    <Tabs defaultValue="coins" className="w-full">
+                        <TabsList className="grid w-full grid-cols-2">
+                            <TabsTrigger value="coins">Coins</TabsTrigger>
+                            <TabsTrigger value="tokens">Tokens</TabsTrigger>
+                        </TabsList>
+                        <TabsContent value="coins" className="mt-4">
+                            <Card className="bg-secondary">
+                                <CardHeader>
+                                    <CardTitle className="text-lg">SAHEL Coin</CardTitle>
+                                    <CardDescription>Le coin principal de l'écosystème</CardDescription>
+                                </CardHeader>
+                                <CardContent>
+                                    <p className="text-2xl font-bold text-primary">{walletData.sahel.balance}</p>
+                                    <div className="mt-2">
+                                        <Label className="text-xs">Votre adresse SAHEL</Label>
+                                        <AddressRow address={walletData.sahel.address} />
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        </TabsContent>
+                        <TabsContent value="tokens" className="mt-4 space-y-4">
+                           {walletData.tokens.map(token => (
+                                <Card key={token.name} className="bg-secondary">
+                                    <CardHeader>
+                                        <CardTitle className="text-lg">{token.name}</CardTitle>
+                                    </CardHeader>
+                                    <CardContent>
+                                        <p className="text-2xl font-bold">{token.balance}</p>
+                                         <div className="mt-2">
+                                            <Label className="text-xs">Votre adresse {token.name}</Label>
+                                            <AddressRow address={token.address} />
+                                        </div>
+                                    </CardContent>
+                                </Card>
+                           ))}
+                        </TabsContent>
+                    </Tabs>
                 </CardContent>
             </Card>
 
-            <Card>
-                <CardHeader>
-                    <CardTitle>Portefeuille Cold</CardTitle>
-                    <CardDescription>Pour le stockage sécurisé à long terme. Solde : <span className="font-bold text-primary">{coldWallet.balance}</span></CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                    <div>
-                        <Label>Adresse de réception</Label>
-                        <AddressRow address={coldWallet.address} />
-                    </div>
-                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                        <DialogTrigger asChild>
-                            <Button variant="outline" onClick={() => setDialogContent(<QrDialog address={coldWallet.address} />)}>
-                                <QrCode className="mr-2 h-4 w-4"/>Recevoir
-                            </Button>
-                        </DialogTrigger>
-                         <DialogTrigger asChild>
-                            <Button variant="destructive" onClick={() => setDialogContent(<PrivateKeyDialog privateKey={coldWallet.privateKey}/>)}>
-                                <KeyRound className="mr-2 h-4 w-4"/>Clé Privée
-                            </Button>
-                        </DialogTrigger>
-                    </div>
-                </CardContent>
-            </Card>
-            
             <div>
                 <h2 className="text-lg font-semibold mb-2">Historique des transactions</h2>
                 <Card>
@@ -264,7 +175,7 @@ export default function WalletPage() {
                         <div className="divide-y divide-border">
                             {transactions.map((tx, index) => (
                                 <div key={index} className="flex items-center p-4">
-                                    <div className={`flex items-center justify-center w-10 h-10 rounded-full mr-4 ${tx.type === 'reçu' ? 'bg-green-900/50 text-green-400' : 'bg-red-900/50 text-red-400'}`}>
+                                    <div className={`flex items-center justify-center w-10 h-10 rounded-full mr-4 ${tx.amount.startsWith('+') ? 'bg-green-900/50 text-green-400' : 'bg-red-900/50 text-red-400'}`}>
                                         <tx.icon className="w-5 h-5" />
                                     </div>
                                     <div className="flex-grow">

@@ -7,12 +7,12 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Shield } from 'lucide-react';
+import { Handshake } from 'lucide-react';
 
 function AppLogo() {
   return (
     <div className="flex items-center justify-center w-16 h-16 rounded-full bg-primary mb-6">
-      <Shield className="w-8 h-8 text-primary-foreground" />
+      <Handshake className="w-8 h-8 text-primary-foreground" />
     </div>
   );
 }
@@ -27,15 +27,15 @@ export default function AuthPage() {
   };
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center p-4 bg-background">
+    <main className="flex min-h-screen flex-col items-center justify-center p-4 bg-muted/20">
       <div className="w-full max-w-md">
         <div className="flex justify-center mb-6">
           <AppLogo />
         </div>
         <Card>
           <CardHeader className="text-center">
-            <CardTitle className="text-2xl">Crypto Sentinel</CardTitle>
-            <CardDescription>Votre tableau de bord de mining sécurisé</CardDescription>
+            <CardTitle className="text-2xl">Bienvenue sur Zoudou</CardTitle>
+            <CardDescription>Votre écosystème financier décentralisé.</CardDescription>
           </CardHeader>
           <CardContent>
             <Tabs defaultValue="login" className="w-full">

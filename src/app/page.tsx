@@ -4,10 +4,11 @@
 import { AppLayout } from '@/components/AppLayout';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { AlertTriangle, CheckCircle2, ChevronRight, RefreshCw } from 'lucide-react';
+import { AlertTriangle, CheckCircle2, ChevronRight, RefreshCw, Zap } from 'lucide-react';
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, XAxis, YAxis } from 'recharts';
 import { ChartTooltip, ChartTooltipContent, ChartContainer } from '@/components/ui/chart';
 import { Button } from '@/components/ui/button';
+import { Progress } from '@/components/ui/progress';
 
 const chartData = [
   { date: '01/07', hashRate: 125 },
@@ -27,41 +28,60 @@ const chartConfig = {
 
 
 const workers = [
-  { id: 'worker-001', name: 'RIG-01', status: 'Online', hashRate: '72 TH/s', temp: '65°C', uptime: '24h' },
-  { id: 'worker-002', name: 'RIG-02', status: 'Online', hashRate: '70 TH/s', temp: '68°C', uptime: '24h' },
-  { id: 'worker-003', name: 'RIG-03', status: 'Offline', hashRate: '0 TH/s', temp: '-', uptime: '0h' },
+  { id: 'worker-001', name: 'RIG-01', status: 'En ligne', hashRate: '72 TH/s', temp: '65°C', uptime: '24h' },
+  { id: 'worker-002', name: 'RIG-02', status: 'En ligne', hashRate: '70 TH/s', temp: '68°C', uptime: '24h' },
+  { id: 'worker-003', name: 'RIG-03', status: 'Hors ligne', hashRate: '0 TH/s', temp: '-', uptime: '0h' },
 ]
 
 const recentTransactions = [
-    {id: 'tx-1', type: 'Reward', amount: '+0.005 Z', date: '2024-07-07 14:30'},
-    {id: 'tx-2', type: 'Payout', amount: '-10 Z', date: '2024-07-06 10:00'},
-    {id: 'tx-3', type: 'Reward', amount: '+0.0048 Z', date: '2024-07-05 14:25'},
+    {id: 'tx-1', type: 'Récompense de minage', amount: '+0.005 SAHEL', date: '2024-07-07 14:30'},
+    {id: 'tx-2', type: 'Transfert P2P', amount: '-10 SAHEL', date: '2024-07-06 10:00'},
+    {id: 'tx-3', type: 'Récompense de minage', amount: '+0.0048 SAHEL', date: '2024-07-05 14:25'},
 ]
 
 export default function MiningPage() {
   return (
     <AppLayout>
       <div className="space-y-6">
+        
+        <Card className="bg-primary/10 border-primary/20">
+          <CardHeader>
+            <CardTitle>Session de Minage Quotidienne</CardTitle>
+            <CardDescription>Votre session de minage se termine dans 15h 45m 22s.</CardDescription>
+          </CardHeader>
+          <CardContent className="flex flex-col md:flex-row items-center gap-6">
+            <div className="relative">
+              <Zap className="w-24 h-24 text-primary animate-pulse"/>
+            </div>
+            <div className="flex-grow w-full">
+              <p className="font-bold text-lg">Minage Actif</p>
+              <Progress value={35} className="mt-2 mb-1" />
+              <p className="text-sm text-muted-foreground">Taux de base : +0.1 SAHEL/h</p>
+            </div>
+            <Button size="lg" className="bg-primary hover:bg-primary/90 w-full md:w-auto">Arrêter le minage</Button>
+          </CardContent>
+        </Card>
+
 
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           <Card>
             <CardHeader>
-              <CardTitle>Hash Rate Actuel</CardTitle>
-              <CardDescription>Performance globale de vos workers</CardDescription>
+              <CardTitle>Solde SAHEL (en attente)</CardTitle>
+              <CardDescription>Coins minés non vérifiés (KYC requis)</CardDescription>
             </CardHeader>
             <CardContent>
-              <p className="text-4xl font-bold text-primary">142 TH/s</p>
-              <p className="text-xs text-muted-foreground mt-1">+2.1% depuis hier</p>
+              <p className="text-4xl font-bold text-primary">12.50 SAHEL</p>
+              <p className="text-xs text-muted-foreground mt-1">Sera transféré à votre wallet après KYC.</p>
             </CardContent>
           </Card>
            <Card>
             <CardHeader>
-              <CardTitle>Récompenses Journalières</CardTitle>
-              <CardDescription>Tokens Z générés aujourd'hui</CardDescription>
+              <CardTitle>Hash Rate Actuel</CardTitle>
+              <CardDescription>Performance globale</CardDescription>
             </CardHeader>
             <CardContent>
-              <p className="text-4xl font-bold">2.50 Z</p>
-               <p className="text-xs text-muted-foreground mt-1">Prochaine distribution dans 6h</p>
+              <p className="text-4xl font-bold">142 TH/s</p>
+               <p className="text-xs text-muted-foreground mt-1">+2.1% depuis hier</p>
             </CardContent>
           </Card>
            <Card>
@@ -89,35 +109,6 @@ export default function MiningPage() {
             </CardContent>
           </Card>
         </div>
-
-        <Card>
-            <CardHeader>
-                <CardTitle>Performance sur 7 jours</CardTitle>
-            </CardHeader>
-            <CardContent>
-                 <ChartContainer config={chartConfig} className="w-full h-64">
-                    <BarChart data={chartData} accessibilityLayer>
-                        <CartesianGrid vertical={false} />
-                        <XAxis
-                            dataKey="date"
-                            tickLine={false}
-                            axisLine={false}
-                            tickMargin={8}
-                            tickFormatter={(value) => value.slice(0, 5)}
-                        />
-                        <YAxis 
-                            tickLine={false}
-                            axisLine={false}
-                        />
-                        <ChartTooltip
-                            cursor={false}
-                            content={<ChartTooltipContent indicator="dot" />}
-                        />
-                        <Bar dataKey="hashRate" fill="var(--color-hashRate)" radius={4} />
-                    </BarChart>
-                </ChartContainer>
-            </CardContent>
-        </Card>
         
         <div className="grid gap-6 md:grid-cols-2">
              <Card>
@@ -142,7 +133,7 @@ export default function MiningPage() {
                                     <TableCell className="font-medium">{worker.name}</TableCell>
                                     <TableCell>
                                         <span className={`px-2 py-1 rounded-full text-xs ${
-                                            worker.status === 'Online' ? 'bg-green-900/50 text-green-400' : 'bg-red-900/50 text-red-400'
+                                            worker.status === 'En ligne' ? 'bg-green-900/50 text-green-400' : 'bg-red-900/50 text-red-400'
                                         }`}>
                                             {worker.status}
                                         </span>

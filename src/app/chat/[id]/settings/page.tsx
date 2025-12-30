@@ -14,7 +14,7 @@ export default function ChatSettingsPage({ params }: { params: { id: string } })
     // In a real app, you'd fetch chat details based on params.id
     const isGroup = params.id === '1' || params.id === '4';
     const chatName = isGroup ? "Zoudou Annonces" : "Alice";
-    const chatAvatar = "https://placehold.co/100x100.png";
+    const chatAvatar = `https://picsum.photos/seed/${isGroup ? 'announce' : 'alice'}/100/100`;
     const chatDescription = isGroup ? "24 Membres" : "@alice_crypto";
 
     const userProfile = {
@@ -25,7 +25,7 @@ export default function ChatSettingsPage({ params }: { params: { id: string } })
     };
 
     return (
-        <div className="flex flex-col h-full bg-background">
+        <div className="flex flex-col h-full bg-background md:border-l">
              <header className="flex items-center p-3 border-b shrink-0 bg-background sticky top-0 z-10">
                 <Button variant="ghost" size="icon" onClick={() => router.back()}>
                     <ArrowLeft className="h-6 w-6" />
@@ -131,4 +131,3 @@ const Label = ({ htmlFor, children }: { htmlFor: string, children: React.ReactNo
         {children}
     </label>
 );
-

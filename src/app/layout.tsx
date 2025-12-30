@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
-import { PT_Sans, Space_Grotesk } from 'next/font/google';
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
 import { cn } from '@/lib/utils';
+import { PT_Sans, Space_Grotesk } from 'next/font/google';
 
 const ptSans = PT_Sans({ 
   subsets: ['latin'], 
@@ -15,9 +15,10 @@ const spaceGrotesk = Space_Grotesk({
   variable: '--font-space-grotesk',
 });
 
+
 export const metadata: Metadata = {
-  title: 'Crypto Sentinel',
-  description: 'Votre tableau de bord de mining sécurisé.',
+  title: 'Zoudou',
+  description: 'Votre écosystème financier décentralisé.',
 };
 
 export default function RootLayout({

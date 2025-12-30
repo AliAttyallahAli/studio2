@@ -4,12 +4,13 @@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { ArrowUpRight, Copy, DollarSign, Users } from 'lucide-react';
+import { ArrowUpRight, Copy, DollarSign, Users, Shield } from 'lucide-react';
 import { AppLayout } from '@/components/AppLayout';
 
 const coreTeamWallet = {
-    address: '0xFedCba0987654321fEdCbA0987654321FeDcBa09',
-    balance: '10,500,000.00 Z',
+    address: '0xSHELCORETEAM...a1b2c3d4e5f6',
+    balance: '1,500,000.00 SAHEL',
+    chains: ['Ethereum', 'BNB Chain', 'Polygon']
 };
 
 const recentUsers = [
@@ -34,7 +35,7 @@ export default function AdminPage() {
                 </CardHeader>
                 <CardContent>
                     <div className="text-2xl font-bold">{coreTeamWallet.balance}</div>
-                    <p className="text-xs text-muted-foreground mt-1">Portefeuille principal de l'équipe</p>
+                    <p className="text-xs text-muted-foreground mt-1">Wallet multichain principal</p>
                 </CardContent>
             </Card>
              <Card>
@@ -47,21 +48,27 @@ export default function AdminPage() {
                 <CardContent>
                     <div className="text-2xl font-bold">+1,234</div>
                     <p className="text-xs text-muted-foreground">
-                        +180.1% depuis le mois dernier
+                        +18.1% depuis le mois dernier
                     </p>
                 </CardContent>
             </Card>
              <Card>
                 <CardHeader>
                     <CardTitle>Portefeuille Core Team</CardTitle>
-                    <CardDescription>Adresse unique pour les fonds de l'équipe.</CardDescription>
+                    <CardDescription>Adresse unique pour les frais de transaction.</CardDescription>
                 </CardHeader>
                 <CardContent>
                     <div className="flex items-center space-x-2 p-2 bg-secondary rounded-md">
+                         <Shield className="h-4 w-4 text-primary" />
                         <p className="text-sm font-mono text-primary flex-grow truncate">{coreTeamWallet.address}</p>
                         <Button variant="ghost" size="icon" onClick={() => navigator.clipboard.writeText(coreTeamWallet.address)}>
                             <Copy className="h-4 w-4" />
                         </Button>
+                    </div>
+                    <div className="flex gap-2 mt-2">
+                        {coreTeamWallet.chains.map(chain => (
+                             <span key={chain} className="px-2 py-1 text-xs rounded-full bg-secondary">{chain}</span>
+                        ))}
                     </div>
                 </CardContent>
             </Card>
@@ -70,7 +77,7 @@ export default function AdminPage() {
         <Card>
             <CardHeader>
                 <CardTitle>Gestion des Utilisateurs</CardTitle>
-                <CardDescription>Consulter et gérer les utilisateurs récents.</CardDescription>
+                <CardDescription>Consulter et gérer les vérifications KYC/KYB.</CardDescription>
             </CardHeader>
             <CardContent>
                 <Table>
@@ -86,7 +93,7 @@ export default function AdminPage() {
                             <TableRow key={user.id}>
                                 <TableCell className="font-medium">{user.email}</TableCell>
                                 <TableCell>
-                                    <span className={`px-2 py-1 rounded-full text-xs ${
+                                    <span className={`px-2 py-1 rounded-full text-xs font-semibold ${
                                         user.kycStatus === 'Vérifié' ? 'bg-green-900/50 text-green-400' :
                                         user.kycStatus === 'En attente' ? 'bg-yellow-900/50 text-yellow-400' :
                                         'bg-red-900/50 text-red-400'

@@ -79,15 +79,15 @@ const PostCard = ({ post }: { post: any }) => {
 
 const initialFeedPosts = [
   {
-    user: { name: '@user123', username: 'user123', avatar: 'https://placehold.co/100x100.png' },
+    user: { name: '@SahelUser', username: 'saheluser', avatar: 'https://picsum.photos/seed/zoudou/100/100' },
     time: 'Il y a 2 heures',
-    content: 'Heureux de rejoindre la communauté Zoudou ! Prêt à miner mes premiers tokens Z. 🚀',
-    image: 'https://placehold.co/600x400.png',
+    content: 'Heureux de rejoindre la communauté Zoudou ! Prêt à miner mes premiers SAHEL. 🚀',
+    image: 'https://picsum.photos/seed/rocket/600/400',
     imageHint: 'rocket launch',
     linkPreview: null,
   },
   {
-    user: { name: '@tech_news', username: 'tech_news', avatar: 'https://placehold.co/100x100.png' },
+    user: { name: '@tech_news', username: 'tech_news', avatar: 'https://picsum.photos/seed/guru/100/100' },
     time: 'Il y a 4 heures',
     content: 'Article intéressant sur le futur du Web3 : https://example-web3-news.com/article',
     image: null,
@@ -96,13 +96,13 @@ const initialFeedPosts = [
         url: 'https://example-web3-news.com/article',
         title: 'Le futur du Web3 : décentralisation et tokens',
         description: 'Un aperçu des tendances qui façonneront la prochaine génération d\'internet, de la DeFi aux DAO en passant par les identités décentralisées.',
-        image: 'https://placehold.co/600x315.png',
+        image: 'https://picsum.photos/seed/web3news/600/315',
     }
   },
   {
-    user: { name: '@crypto_queen', username: 'crypto_queen', avatar: 'https://placehold.co/100x100.png' },
+    user: { name: '@crypto_queen', username: 'crypto_queen', avatar: 'https://picsum.photos/seed/queen/100/100' },
     time: 'Il y a 5 heures',
-    content: "Le marché est en pleine effervescence aujourd'hui. J'ai échangé quelques Z contre un bon d'achat. C'est tellement pratique !",
+    content: "Le marché est en pleine effervescence aujourd'hui. J'ai échangé quelques SAHEL contre un bon d'achat. C'est tellement pratique !",
     image: null,
     imageHint: '',
     linkPreview: null,
@@ -127,7 +127,7 @@ export default function FeedPage() {
     if (newPostContent.trim() === '' && !imagePreview) return;
 
     const newPost = {
-      user: { name: '@NomUtilisateur', username: 'NomUtilisateur', avatar: 'https://placehold.co/100x100.png' },
+      user: { name: '@SahelUser', username: 'saheluser', avatar: 'https://picsum.photos/seed/zoudou/100/100' },
       time: 'À l\'instant',
       content: newPostContent,
       image: imagePreview,
@@ -152,7 +152,7 @@ export default function FeedPage() {
             <Card>
             <CardContent className="p-4 space-y-4">
                 <Textarea 
-                    placeholder="Quoi de neuf, @NomUtilisateur ?" 
+                    placeholder="Quoi de neuf, @SahelUser ?" 
                     className="min-h-[100px]" 
                     value={newPostContent}
                     onChange={(e) => setNewPostContent(e.target.value)}
