@@ -5,7 +5,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
-import { ArrowLeft, Block, FileImage, Heart, Bell, LogOut, Trash2, Users, ThumbsUp } from 'lucide-react';
+import { ArrowLeft, Ban, FileImage, Heart, Bell, LogOut, Trash2, Users, ThumbsUp } from 'lucide-react';
 import { useRouter, usePathname } from 'next/navigation';
 import { getUserProfile, type UserProfileData } from '@/lib/chat-data';
 import { useEffect, useState } from 'react';
@@ -116,7 +116,7 @@ export default function ChatSettingsPage({ params }: { params: { id: string } })
                     <CardContent className="p-0 divide-y divide-border">
                         {!isGroup && (
                              <Button variant="ghost" className="w-full justify-start p-4 h-auto text-base text-destructive hover:text-destructive">
-                                <Block className="mr-4 h-5 w-5" />
+                                <Ban className="mr-4 h-5 w-5" />
                                 Bloquer {name}
                             </Button>
                         )}
