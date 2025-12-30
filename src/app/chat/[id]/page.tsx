@@ -28,19 +28,26 @@ const FileAttachmentCard = ({ file }: { file: { name: string, size: string } }) 
 const AudioPlayer = ({ duration }: { duration: string }) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [currentTime, setCurrentTime] = useState(0);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
-  const totalSeconds = parseInt(duration.split(':')[0]) * 60 + parseInt(duration.split(':')[1]);
+  
+  const parseDuration = (durationStr: string) => {
+    const parts = durationStr.split(':');
+    return parseInt(parts[0]) * 60 + parseInt(parts[1]);
+  };
+  
+  const totalSeconds = parseDuration(duration);
 
   useEffect(() => {
       if (isPlaying) {
           intervalRef.current = setInterval(() => {
-              setProgress(prev => {
-                  if (prev >= 100) {
+              setCurrentTime(prevTime => {
+                  if (prevTime >= totalSeconds) {
                       clearInterval(intervalRef.current!);
                       setIsPlaying(false);
-                      return 100;
+                      return totalSeconds;
                   }
-                  return prev + (100 / totalSeconds);
+                  return prevTime + 1;
               });
           }, 1000);
       } else {
@@ -56,15 +63,28 @@ const AudioPlayer = ({ duration }: { duration: string }) => {
   }, [isPlaying, totalSeconds]);
   
   useEffect(() => {
-    if (progress >= 100) {
+    setProgress((currentTime / totalSeconds) * 100);
+    if (currentTime >= totalSeconds) {
       setIsPlaying(false);
-      setProgress(0);
     }
-  }, [progress]);
+  }, [currentTime, totalSeconds]);
 
   const togglePlay = () => {
-      setIsPlaying(!isPlaying);
+      if (isPlaying) {
+          setIsPlaying(false);
+      } else {
+          if (currentTime >= totalSeconds) {
+              setCurrentTime(0);
+          }
+          setIsPlaying(true);
+      }
   }
+
+  const formatTime = (seconds: number) => {
+    const m = Math.floor(seconds / 60);
+    const s = seconds % 60;
+    return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+  };
 
   return (
     <div className="flex items-center gap-2">
@@ -75,7 +95,7 @@ const AudioPlayer = ({ duration }: { duration: string }) => {
           <div className="absolute left-0 top-0 h-1 bg-primary rounded-full" style={{width: `${progress}%`}}></div>
           <div className="absolute top-1/2 -translate-y-1/2 h-3 w-3 bg-primary rounded-full" style={{left: `${progress}%`}}></div>
       </div>
-      <span className="text-xs opacity-80">{duration}</span>
+      <span className="text-xs opacity-80">{formatTime(currentTime)} / {duration}</span>
     </div>
   );
 };
@@ -389,4 +409,5 @@ export default function ChatPage({ params }: { params: { id: string } }) {
   );
 }
 
+    
     
