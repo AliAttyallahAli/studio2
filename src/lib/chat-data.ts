@@ -75,6 +75,17 @@ export interface FeedPost {
   comments: { id: string; user: { name: string; avatar: string }; content: string; time: string }[];
 }
 
+export interface BlogPost {
+  id: string;
+  title: string;
+  description: string;
+  author: { name: string; username: string; avatar: string };
+  image: string;
+  imageHint: string;
+  category: string;
+  readTime: string;
+}
+
 
 const userProfiles: Record<string, UserProfileData> = {
   '1': {
@@ -221,7 +232,7 @@ export let allStories: Story[] = [
     },
 ];
 
-export const allFeedPosts: FeedPost[] = [
+export let allFeedPosts: FeedPost[] = [
   {
     id: 'post-1',
     user: { name: '@SahelUser', username: 'saheluser', avatar: 'https://picsum.photos/seed/sahel/100/100' },
@@ -264,6 +275,29 @@ export const allFeedPosts: FeedPost[] = [
   },
 ];
 
+export let allBlogPosts: BlogPost[] = [
+    { 
+        id: 'blog-1',
+        title: "L'impact de la tokenisation sur l'immobilier en Afrique",
+        description: "Découvrez comment la blockchain et la tokenisation, via des projets comme Z-Immo, peuvent révolutionner l'accès à la propriété sur le continent.",
+        author: { name: "ImmoToken", username: "immotoken", avatar: "https://picsum.photos/seed/immo/100/100" },
+        image: "https://picsum.photos/seed/building/800/400",
+        imageHint: "modern architecture",
+        category: "Technologie",
+        readTime: "8 min de lecture"
+    },
+    { 
+        id: 'blog-2',
+        title: "Agriculture Durable : Le rôle des EcoTokens",
+        description: "Les EcoTokens ne sont pas juste une monnaie, c'est un mouvement. Voici comment ils financent des projets à impact positif pour notre environnement.",
+        author: { name: "EcoVille", username: "ecoville", avatar: "https://picsum.photos/seed/eco/100/100" },
+        image: "https://picsum.photos/seed/farm/800/400",
+        imageHint: "vertical farm",
+        category: "Écologie",
+        readTime: "6 min de lecture"
+    },
+];
+
 
 export const addStory = (story: Story) => {
   allStories.unshift(story);
@@ -271,7 +305,11 @@ export const addStory = (story: Story) => {
 
 export const addPost = (post: FeedPost) => {
   allFeedPosts.unshift(post);
-}
+};
+
+export const addBlogPost = (post: BlogPost) => {
+  allBlogPosts.unshift(post);
+};
 
 export const getChatData = (id: string): ChatData | undefined => {
     return allChats.find(chat => chat.id === id);

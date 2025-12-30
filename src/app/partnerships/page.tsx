@@ -13,33 +13,11 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useState } from 'react';
-
-const initialBlogPosts = [
-    { 
-        id: 'blog-1',
-        title: "L'impact de la tokenisation sur l'immobilier en Afrique",
-        description: "Découvrez comment la blockchain et la tokenisation, via des projets comme Z-Immo, peuvent révolutionner l'accès à la propriété sur le continent.",
-        author: { name: "ImmoToken", username: "immotoken", avatar: "https://picsum.photos/seed/immo/100/100" },
-        image: "https://picsum.photos/seed/building/800/400",
-        imageHint: "modern architecture",
-        category: "Technologie",
-        readTime: "8 min de lecture"
-    },
-    { 
-        id: 'blog-2',
-        title: "Agriculture Durable : Le rôle des EcoTokens",
-        description: "Les EcoTokens ne sont pas juste une monnaie, c'est un mouvement. Voici comment ils financent des projets à impact positif pour notre environnement.",
-        author: { name: "EcoVille", username: "ecoville", avatar: "https://picsum.photos/seed/eco/100/100" },
-        image: "https://picsum.photos/seed/farm/800/400",
-        imageHint: "vertical farm",
-        category: "Écologie",
-        readTime: "6 min de lecture"
-    },
-];
+import { allBlogPosts, addBlogPost, type BlogPost } from '@/lib/chat-data';
 
 
 export default function PartnershipsPage() {
-    const [blogPosts, setBlogPosts] = useState(initialBlogPosts);
+    const [blogPosts, setBlogPosts] = useState(allBlogPosts);
     const [openDialog, setOpenDialog] = useState(false);
     
     // Form state
@@ -59,7 +37,7 @@ export default function PartnershipsPage() {
     const handleAddNewPost = () => {
         if (!title || !content) return;
 
-        const newPost = {
+        const newPost: BlogPost = {
             id: `blog-${Date.now()}`,
             title: title,
             description: content.substring(0, 100) + '...',
@@ -69,7 +47,8 @@ export default function PartnershipsPage() {
             category: "Communauté",
             readTime: "5 min de lecture"
         };
-        setBlogPosts(prev => [newPost, ...prev]);
+        addBlogPost(newPost);
+        setBlogPosts([...allBlogPosts]);
         setOpenDialog(false);
         // Reset form
         setTitle('');
