@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import Image from 'next/image';
 import { Input } from '@/components/ui/input';
+import { addStory, type Story } from '@/lib/chat-data';
 
 export default function CreateStoryPage() {
   const router = useRouter();
@@ -24,10 +25,25 @@ export default function CreateStoryPage() {
   };
 
   const handlePublish = () => {
-    // Logic to upload image and caption would go here
-    if (!imageFile) return;
-    console.log('Publishing story:', { image: imageFile, caption });
-    router.push('/feed'); // Redirect to feed after publishing
+    if (!imageFile || !imagePreview) return;
+    
+    const newStory: Story = {
+        id: `story-${Date.now()}`,
+        user: {
+            name: 'Moi',
+            avatar: 'https://picsum.photos/seed/sahel/100/100'
+        },
+        items: [{
+            type: 'image',
+            url: imagePreview,
+            hint: 'user story'
+        }],
+        timestamp: 'À l\'instant',
+        seen: true, // User's own story is always seen
+    };
+    
+    addStory(newStory);
+    router.push('/feed');
   };
 
   return (

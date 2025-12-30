@@ -2,42 +2,56 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import Image from 'next/image';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { ChevronLeft, ChevronRight, X } from 'lucide-react';
 import { Input } from '@/components/ui/input';
+import { getStoryData, type Story } from '@/lib/chat-data';
 
-// Mock data, in a real app this would be fetched
-const storyData = {
-  id: 'story-2',
-  user: { name: 'Alice', avatar: 'https://picsum.photos/seed/alice/100/100' },
-  items: [
-    { type: 'image', url: 'https://picsum.photos/seed/beach/1080/1920', hint: 'tropical beach' },
-  ],
-  timestamp: 'Il y a 2h',
-};
-
-export default function StoryViewerPage({ params }: { params: { id: string } }) {
+export default function StoryViewerPage() {
   const router = useRouter();
+  const params = useParams();
+  const [storyData, setStoryData] = useState<Story | null>(null);
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      setProgress((prev) => {
-        if (prev >= 100) {
-          clearInterval(timer);
-          router.back(); // Go back when story ends
-          return 100;
-        }
-        return prev + 2; // Increase progress every 100ms for a 5s story
-      });
-    }, 100);
+    const storyId = params.id as string;
+    if (storyId) {
+      const data = getStoryData(storyId);
+      if (data) {
+        setStoryData(data);
+      } else {
+        router.back();
+      }
+    }
+  }, [params.id, router]);
 
-    return () => clearInterval(timer);
-  }, [router]);
+  useEffect(() => {
+    if (storyData) {
+      const timer = setInterval(() => {
+        setProgress((prev) => {
+          if (prev >= 100) {
+            clearInterval(timer);
+            router.back(); // Go back when story ends
+            return 100;
+          }
+          return prev + 2; // Increase progress every 100ms for a 5s story
+        });
+      }, 100);
+      return () => clearInterval(timer);
+    }
+  }, [storyData, router]);
+
+  if (!storyData) {
+    return (
+        <div className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center">
+            <p className="text-white">Chargement du statut...</p>
+        </div>
+    );
+  }
 
   const currentItem = storyData.items[0]; // Assuming one item per story for now
 

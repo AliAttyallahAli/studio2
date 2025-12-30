@@ -11,39 +11,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Plus } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useRouter } from 'next/navigation';
-
-const stories = [
-  {
-    id: 'story-2',
-    user: { name: 'Alice', avatar: 'https://picsum.photos/seed/alice/100/100' },
-    seen: false,
-  },
-  {
-    id: 'story-3',
-    user: { name: 'Bob', avatar: 'https://picsum.photos/seed/bob/100/100' },
-    seen: false,
-  },
-  {
-    id: 'story-4',
-    user: { name: 'Charlie', avatar: 'https://picsum.photos/seed/charlie/100/100' },
-    seen: true,
-  },
-  {
-    id: 'story-5',
-    user: { name: 'David', avatar: 'https://picsum.photos/seed/david/100/100' },
-    seen: true,
-  },
-  {
-    id: 'story-6',
-    user: { name: 'Eve', avatar: 'https://picsum.photos/seed/eve/100/100' },
-    seen: false,
-  },
-  {
-    id: 'story-7',
-    user: { name: 'Frank', avatar: 'https://picsum.photos/seed/frank/100/100' },
-    seen: true,
-  },
-];
+import { allStories } from '@/lib/chat-data';
 
 export function StoryCarousel() {
   const router = useRouter();
@@ -78,7 +46,7 @@ export function StoryCarousel() {
         </CarouselItem>
 
         {/* Other user stories */}
-        {stories.map((story) => (
+        {allStories.map((story) => (
           <CarouselItem key={story.id} className="basis-1/4 sm:basis-1/5 md:basis-1/6 lg:basis-1/8">
             <div className="p-1 cursor-pointer" onClick={() => router.push(`/story/${story.id}`)}>
               <div className="flex flex-col items-center gap-2">

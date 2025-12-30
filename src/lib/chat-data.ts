@@ -43,6 +43,22 @@ export interface ChatData {
   messages: ChatMessage[];
 }
 
+export interface Story {
+    id: string;
+    user: {
+        name: string;
+        avatar: string;
+    };
+    items: {
+        type: 'image' | 'video';
+        url: string;
+        hint?: string;
+    }[];
+    seen?: boolean;
+    timestamp: string;
+}
+
+
 const userProfiles: Record<string, UserProfileData> = {
   '1': {
     id: '1',
@@ -97,6 +113,19 @@ const userProfiles: Record<string, UserProfileData> = {
       maritalStatus: "Célibataire"
     }
   },
+   'saheluser': {
+    id: 'saheluser',
+    name: '@SahelUser',
+    avatar: 'https://picsum.photos/seed/sahel/100/100',
+    description: 'Moi',
+    isGroup: false,
+    details: {
+        bio: "Passionné par la révolution Web3 en Afrique. #SAHEL",
+        parcours: "Développeur et entrepreneur, focus sur les solutions décentralisées pour les marchés émergents.",
+        interests: "Web3, Entrepreneuriat, Afrique",
+        maritalStatus: "En couple"
+    }
+   }
 };
 
 
@@ -144,6 +173,41 @@ export const allChats: ChatData[] = [
   },
 ];
 
+export let allStories: Story[] = [
+  {
+    id: 'story-2',
+    user: { name: 'Alice', avatar: 'https://picsum.photos/seed/alice/100/100' },
+    items: [{ type: 'image', url: 'https://picsum.photos/seed/beach/1080/1920', hint: 'tropical beach' }],
+    seen: false,
+    timestamp: 'Il y a 2h',
+  },
+  {
+    id: 'story-3',
+    user: { name: 'Bob', avatar: 'https://picsum.photos/seed/bob/100/100' },
+    items: [{ type: 'image', url: 'https://picsum.photos/seed/city/1080/1920', hint: 'city scape' }],
+    seen: false,
+    timestamp: 'Il y a 3h',
+  },
+  {
+    id: 'story-4',
+    user: { name: 'Charlie', avatar: 'https://picsum.photos/seed/charlie/100/100' },
+    items: [{ type: 'image', url: 'https://picsum.photos/seed/nature/1080/1920', hint: 'nature forest' }],
+    seen: true,
+    timestamp: 'Il y a 5h',
+  },
+  {
+    id: 'story-5',
+    user: { name: 'David', avatar: 'https://picsum.photos/seed/david/100/100' },
+    items: [{ type: 'image', url: 'https://picsum.photos/seed/food/1080/1920', hint: 'delicious food' }],
+    seen: true,
+    timestamp: 'Il y a 8h',
+  },
+];
+
+export const addStory = (story: Story) => {
+  allStories.unshift(story);
+};
+
 export const getChatData = (id: string): ChatData | undefined => {
     return allChats.find(chat => chat.id === id);
 }
@@ -151,3 +215,7 @@ export const getChatData = (id: string): ChatData | undefined => {
 export const getUserProfile = (id: string): UserProfileData | undefined => {
     return userProfiles[id];
 }
+
+export const getStoryData = (id: string): Story | undefined => {
+    return allStories.find(story => story.id === id);
+};
