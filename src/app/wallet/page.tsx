@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { AppLayout } from '@/components/AppLayout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -12,7 +12,8 @@ import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { PinDialog, PinInput } from '@/components/PinDialog';
+import { PinDialog } from '@/components/PinDialog';
+import { PinSetup } from '@/components/PinSetup';
 
 
 const walletData = {
@@ -50,18 +51,46 @@ function AddressRow({ address }: { address: string }) {
 }
 
 export default function WalletPage() {
-  const [isUnlocked, setIsUnlocked] = useState(false);
+  const [pinState, setPinState] = useState<'checking' | 'setup' | 'locked' | 'unlocked'>('checking');
   const [showSendDialog, setShowSendDialog] = useState(false);
+  
+  useEffect(() => {
+    const pinIsSet = localStorage.getItem('pin_is_set') === 'true';
+    if (pinIsSet) {
+      setPinState('locked');
+    } else {
+      setPinState('setup');
+    }
+  }, []);
 
   const handlePinSuccess = () => {
-    setIsUnlocked(true);
+    setPinState('unlocked');
+  }
+  
+  const handlePinSetupSuccess = () => {
+     localStorage.setItem('pin_is_set', 'true');
+     setPinState('unlocked');
   }
 
   const handleSendAction = () => {
     setShowSendDialog(true);
   }
 
-  if (!isUnlocked) {
+  if (pinState === 'checking') {
+    return <AppLayout><div className="flex items-center justify-center h-full">Chargement...</div></AppLayout>;
+  }
+
+  if (pinState === 'setup') {
+    return (
+        <AppLayout>
+            <div className="flex flex-col items-center justify-center h-full">
+                <PinSetup onPinSetupSuccess={handlePinSetupSuccess} />
+            </div>
+        </AppLayout>
+    );
+  }
+
+  if (pinState === 'locked') {
     return (
         <AppLayout>
             <div className="flex flex-col items-center justify-center h-full">
@@ -71,7 +100,9 @@ export default function WalletPage() {
                         <CardDescription>Veuillez entrer votre code PIN pour accéder à votre portefeuille.</CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <PinInput onPinComplete={(pin) => { if (pin === '1234') handlePinSuccess() }} />
+                       <PinDialog onPinSuccess={handlePinSuccess} isTrigger={false}>
+                          {/* Le contenu de PinInput est maintenant directement dans le dialogue */}
+                       </PinDialog>
                     </CardContent>
                 </Card>
             </div>
