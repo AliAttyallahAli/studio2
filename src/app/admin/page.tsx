@@ -4,9 +4,10 @@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { ArrowUpRight, Copy, DollarSign, Users, Shield } from 'lucide-react';
+import { ArrowUpRight, Copy, DollarSign, Users, Shield, Wallet } from 'lucide-react';
 import { AppLayout } from '@/components/AppLayout';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 const coreTeamWallet = {
     address: '0xSHELCORETEAM...a1b2c3d4e5f6',
@@ -42,6 +43,12 @@ export default function AdminPage() {
                 <CardContent>
                     <div className="text-2xl font-bold">{coreTeamWallet.balance}</div>
                     <p className="text-xs text-muted-foreground mt-1">Wallet multichain principal</p>
+                    <Link href="/wallet">
+                        <Button variant="outline" size="sm" className="mt-4">
+                            <Wallet className="mr-2 h-4 w-4" />
+                            Gérer le portefeuille
+                        </Button>
+                    </Link>
                 </CardContent>
             </Card>
              <Card>
