@@ -58,6 +58,23 @@ export interface Story {
     timestamp: string;
 }
 
+export interface FeedPost {
+  id: string;
+  user: { name: string; username: string; avatar: string };
+  time: string;
+  content: string;
+  image: string | null;
+  imageHint: string;
+  linkPreview: {
+    url: string;
+    title: string;
+    description: string;
+    image: string;
+  } | null;
+  likes: number;
+  comments: { id: string; user: { name: string; avatar: string }; content: string; time: string }[];
+}
+
 
 const userProfiles: Record<string, UserProfileData> = {
   '1': {
@@ -174,39 +191,87 @@ export const allChats: ChatData[] = [
 ];
 
 export let allStories: Story[] = [
+    {
+      id: 'story-2',
+      user: { name: 'Alice', avatar: 'https://picsum.photos/seed/alice/100/100' },
+      items: [{ type: 'image', url: 'https://picsum.photos/seed/beach/1080/1920', hint: 'tropical beach' }],
+      seen: false,
+      timestamp: 'Il y a 2h',
+    },
+    {
+      id: 'story-3',
+      user: { name: 'Bob', avatar: 'https://picsum.photos/seed/bob/100/100' },
+      items: [{ type: 'image', url: 'https://picsum.photos/seed/city/1080/1920', hint: 'city scape' }],
+      seen: false,
+      timestamp: 'Il y a 3h',
+    },
+    {
+      id: 'story-4',
+      user: { name: 'Charlie', avatar: 'https://picsum.photos/seed/charlie/100/100' },
+      items: [{ type: 'image', url: 'https://picsum.photos/seed/nature/1080/1920', hint: 'nature forest' }],
+      seen: true,
+      timestamp: 'Il y a 5h',
+    },
+    {
+      id: 'story-5',
+      user: { name: 'David', avatar: 'https://picsum.photos/seed/david/100/100' },
+      items: [{ type: 'image', url: 'https://picsum.photos/seed/food/1080/1920', hint: 'delicious food' }],
+      seen: true,
+      timestamp: 'Il y a 8h',
+    },
+];
+
+export const allFeedPosts: FeedPost[] = [
   {
-    id: 'story-2',
-    user: { name: 'Alice', avatar: 'https://picsum.photos/seed/alice/100/100' },
-    items: [{ type: 'image', url: 'https://picsum.photos/seed/beach/1080/1920', hint: 'tropical beach' }],
-    seen: false,
-    timestamp: 'Il y a 2h',
+    id: 'post-1',
+    user: { name: '@SahelUser', username: 'saheluser', avatar: 'https://picsum.photos/seed/sahel/100/100' },
+    time: 'Il y a 2 heures',
+    content: 'Heureux de rejoindre la communauté SAHEL ! Prêt à miner mes premiers SAHEL. 🚀',
+    image: 'https://picsum.photos/seed/rocket/600/400',
+    imageHint: 'rocket launch',
+    linkPreview: null,
+    likes: 12,
+    comments: [
+        { id: 'c1-1', user: { name: 'Alice', avatar: 'https://picsum.photos/seed/alice/100/100' }, content: 'Bienvenue !', time: '1h' }
+    ]
   },
   {
-    id: 'story-3',
-    user: { name: 'Bob', avatar: 'https://picsum.photos/seed/bob/100/100' },
-    items: [{ type: 'image', url: 'https://picsum.photos/seed/city/1080/1920', hint: 'city scape' }],
-    seen: false,
-    timestamp: 'Il y a 3h',
+    id: 'post-2',
+    user: { name: '@tech_news', username: 'tech_news', avatar: 'https://picsum.photos/seed/guru/100/100' },
+    time: 'Il y a 4 heures',
+    content: 'Article intéressant sur le futur du Web3 : https://example-web3-news.com/article',
+    image: null,
+    imageHint: '',
+    linkPreview: {
+        url: 'https://example-web3-news.com/article',
+        title: 'Le futur du Web3 : décentralisation et tokens',
+        description: 'Un aperçu des tendances qui façonneront la prochaine génération d\'internet, de la DeFi aux DAO en passant par les identités décentralisées.',
+        image: 'https://picsum.photos/seed/web3news/600/315',
+    },
+    likes: 42,
+    comments: []
   },
   {
-    id: 'story-4',
-    user: { name: 'Charlie', avatar: 'https://picsum.photos/seed/charlie/100/100' },
-    items: [{ type: 'image', url: 'https://picsum.photos/seed/nature/1080/1920', hint: 'nature forest' }],
-    seen: true,
-    timestamp: 'Il y a 5h',
-  },
-  {
-    id: 'story-5',
-    user: { name: 'David', avatar: 'https://picsum.photos/seed/david/100/100' },
-    items: [{ type: 'image', url: 'https://picsum.photos/seed/food/1080/1920', hint: 'delicious food' }],
-    seen: true,
-    timestamp: 'Il y a 8h',
+    id: 'post-3',
+    user: { name: '@crypto_queen', username: 'crypto_queen', avatar: 'https://picsum.photos/seed/queen/100/100' },
+    time: 'Il y a 5 heures',
+    content: "Le marché est en pleine effervescence aujourd'hui. J'ai échangé quelques SAHEL contre un bon d'achat. C'est tellement pratique !",
+    image: null,
+    imageHint: '',
+    linkPreview: null,
+    likes: 5,
+    comments: []
   },
 ];
+
 
 export const addStory = (story: Story) => {
   allStories.unshift(story);
 };
+
+export const addPost = (post: FeedPost) => {
+  allFeedPosts.unshift(post);
+}
 
 export const getChatData = (id: string): ChatData | undefined => {
     return allChats.find(chat => chat.id === id);

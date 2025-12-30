@@ -14,6 +14,7 @@ import React, { useState, useRef } from 'react';
 import Link from 'next/link';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { extractLinkPreview, type LinkPreview } from '@/ai/flows/extract-link-preview-flow';
+import { allFeedPosts, addPost, type FeedPost } from '@/lib/chat-data';
 
 const urlRegex = /(https?:\/\/[^\s]+)/g;
 
@@ -212,52 +213,8 @@ const PostCard = ({ post }: { post: any }) => {
     );
 };
 
-const initialFeedPosts = [
-  {
-    id: 'post-1',
-    user: { name: '@SahelUser', username: 'saheluser', avatar: 'https://picsum.photos/seed/sahel/100/100' },
-    time: 'Il y a 2 heures',
-    content: 'Heureux de rejoindre la communauté SAHEL ! Prêt à miner mes premiers SAHEL. 🚀',
-    image: 'https://picsum.photos/seed/rocket/600/400',
-    imageHint: 'rocket launch',
-    linkPreview: null,
-    likes: 12,
-    comments: [
-        { id: 'c1-1', user: { name: 'Alice', avatar: 'https://picsum.photos/seed/alice/100/100' }, content: 'Bienvenue !', time: '1h' }
-    ]
-  },
-  {
-    id: 'post-2',
-    user: { name: '@tech_news', username: 'tech_news', avatar: 'https://picsum.photos/seed/guru/100/100' },
-    time: 'Il y a 4 heures',
-    content: 'Article intéressant sur le futur du Web3 : https://example-web3-news.com/article',
-    image: null,
-    imageHint: '',
-    linkPreview: {
-        url: 'https://example-web3-news.com/article',
-        title: 'Le futur du Web3 : décentralisation et tokens',
-        description: 'Un aperçu des tendances qui façonneront la prochaine génération d\'internet, de la DeFi aux DAO en passant par les identités décentralisées.',
-        image: 'https://picsum.photos/seed/web3news/600/315',
-    },
-    likes: 42,
-    comments: []
-  },
-  {
-    id: 'post-3',
-    user: { name: '@crypto_queen', username: 'crypto_queen', avatar: 'https://picsum.photos/seed/queen/100/100' },
-    time: 'Il y a 5 heures',
-    content: "Le marché est en pleine effervescence aujourd'hui. J'ai échangé quelques SAHEL contre un bon d'achat. C'est tellement pratique !",
-    image: null,
-    imageHint: '',
-    linkPreview: null,
-    likes: 5,
-    comments: []
-  },
-];
-
-
 export default function FeedPage() {
-  const [posts, setPosts] = useState(initialFeedPosts);
+  const [posts, setPosts] = useState(allFeedPosts);
   const [newPostContent, setNewPostContent] = useState('');
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const imageInputRef = useRef<HTMLInputElement>(null);
@@ -290,7 +247,7 @@ export default function FeedPage() {
     }
 
 
-    const newPost = {
+    const newPost: FeedPost = {
       id: `post-${Date.now()}`,
       user: { name: '@SahelUser', username: 'saheluser', avatar: 'https://picsum.photos/seed/sahel/100/100' },
       time: 'À l\'instant',
@@ -302,7 +259,8 @@ export default function FeedPage() {
       comments: [],
     };
 
-    setPosts([newPost, ...posts]);
+    addPost(newPost);
+    setPosts([...allFeedPosts]); // Re-read from the shared source
     setNewPostContent('');
     removeImage();
   };
