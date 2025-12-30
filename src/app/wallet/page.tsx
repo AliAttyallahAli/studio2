@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import { AppLayout } from '@/components/AppLayout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { ArrowDown, ArrowUp, QrCode, Repeat, Copy } from 'lucide-react';
+import { ArrowDown, ArrowUp, QrCode, Repeat, Copy, ShieldAlert } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
@@ -14,13 +14,16 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { PinDialog } from '@/components/PinDialog';
 import { PinSetup } from '@/components/PinSetup';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 
 const walletData = {
-    sahel: { balance: '1250.75 SAHEL', address: '0xSHEL123...abc' },
+    sahel: { balance: '1250.75 SAHEL', address: '0xSHEL123abc456def789ghi012jkl345mno' },
+    privateKey: '0xprivkey_a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6',
+    accessKey: 'zoudou-access-key-gamma-7-zeta-9',
     tokens: [
-        { name: 'Z-Immo', balance: '50.00 ZIM', address: '0xZIM456...def' },
-        { name: 'EcoToken', balance: '10,000.00 ECO', address: '0xECO789...ghi' },
+        { name: 'Z-Immo', balance: '50.00 ZIM', address: '0xZIM456def789ghi012jkl345mno456def' },
+        { name: 'EcoToken', balance: '10,000.00 ECO', address: '0xECO789ghi012jkl345mno456def789ghi' },
     ]
 };
 
@@ -53,6 +56,7 @@ function AddressRow({ address }: { address: string }) {
 export default function WalletPage() {
   const [pinState, setPinState] = useState<'checking' | 'setup' | 'locked' | 'unlocked'>('checking');
   const [showSendDialog, setShowSendDialog] = useState(false);
+  const [showSensitiveInfo, setShowSensitiveInfo] = useState(false);
   
   useEffect(() => {
     const pinIsSet = localStorage.getItem('pin_is_set') === 'true';
@@ -74,6 +78,10 @@ export default function WalletPage() {
 
   const handleSendAction = () => {
     setShowSendDialog(true);
+  }
+  
+  const handleRevealInfo = () => {
+    setShowSensitiveInfo(true);
   }
 
   if (pinState === 'checking') {
@@ -228,6 +236,46 @@ export default function WalletPage() {
                 </div>
             </DialogContent>
           </Dialog>
+
+          <Card>
+            <CardHeader>
+                <CardTitle>Informations de Sécurité</CardTitle>
+                <CardDescription>Accédez à vos clés privées et de récupération.</CardDescription>
+            </CardHeader>
+            <CardContent>
+                {showSensitiveInfo ? (
+                    <div className="space-y-4">
+                        <Alert variant="destructive">
+                            <ShieldAlert className="h-4 w-4" />
+                            <AlertTitle>Attention !</AlertTitle>
+                            <AlertDescription>
+                                Ne partagez jamais votre clé privée ou votre clé d'accès. Toute personne y ayant accès peut voler vos fonds.
+                            </AlertDescription>
+                        </Alert>
+
+                         <div>
+                            <Label>Adresse du Portefeuille</Label>
+                            <AddressRow address={walletData.sahel.address} />
+                        </div>
+                        <div>
+                            <Label>Clé Privée</Label>
+                            <AddressRow address={walletData.privateKey} />
+                        </div>
+                        <div>
+                            <Label>Clé d'Accès (Mot de passe de récupération)</Label>
+                            <AddressRow address={walletData.accessKey} />
+                        </div>
+
+                        <Button variant="outline" onClick={() => setShowSensitiveInfo(false)}>Cacher les informations</Button>
+                    </div>
+                ) : (
+                    <PinDialog onPinSuccess={handleRevealInfo}>
+                        <Button variant="destructive">Révéler les informations sensibles</Button>
+                    </PinDialog>
+                )}
+            </CardContent>
+          </Card>
+
 
           <div>
               <h2 className="text-lg font-semibold mb-2">Historique des transactions</h2>
