@@ -9,7 +9,7 @@ import Image from 'next/image';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Download, FileText, ArrowLeft } from 'lucide-react';
+import { Download, FileText, ArrowLeft, UserPlus, MessageSquare } from 'lucide-react';
 import Link from 'next/link';
 
 export default function BlogPostPage() {
@@ -50,7 +50,7 @@ export default function BlogPostPage() {
                     <header className="space-y-4">
                         <p className="text-sm font-semibold text-primary">{post.category}</p>
                         <h1 className="text-4xl font-bold tracking-tight">{post.title}</h1>
-                        <div className="flex items-center justify-between text-sm text-muted-foreground">
+                        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between text-sm text-muted-foreground gap-4">
                             <Link href={`/profile/${post.author.username}`} className="flex items-center gap-2 group">
                                 <Avatar className="h-10 w-10">
                                     <AvatarImage src={post.author.avatar} alt={post.author.name} data-ai-hint="profile avatar" />
@@ -61,6 +61,16 @@ export default function BlogPostPage() {
                                     <p>{post.readTime}</p>
                                 </div>
                             </Link>
+                             <div className="flex items-center gap-2">
+                                <Button size="sm">
+                                <UserPlus className="mr-2 h-4 w-4" /> 
+                                Suivre
+                                </Button>
+                                <Button variant="outline" size="sm" onClick={() => router.push('/chat/new')}>
+                                <MessageSquare className="mr-2 h-4 w-4" /> 
+                                Message
+                                </Button>
+                            </div>
                         </div>
                     </header>
 
