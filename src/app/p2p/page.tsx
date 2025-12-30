@@ -13,17 +13,72 @@ import { PinDialog } from '@/components/PinDialog';
 import { useToast } from '@/hooks/use-toast';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 
 const buyOffers = [
-    { user: 'CryptoKing', rate: '1.05 USD / SAHEL', available: '500 SAHEL', limits: '50 - 500 USD' },
-    { user: 'SahelTrader', rate: '1.04 USD / SAHEL', available: '1,200 SAHEL', limits: '100 - 1,200 USD' },
-    { user: 'ZoudouFan', rate: '1.03 USD / SAHEL', available: '250 SAHEL', limits: '20 - 250 USD' },
+    { user: 'CryptoKing', rate: 1.05, available: 500, limits: {min: 50, max: 500} },
+    { user: 'SahelTrader', rate: 1.04, available: 1200, limits: {min: 100, max: 1200} },
+    { user: 'ZoudouFan', rate: 1.03, available: 250, limits: {min: 20, max: 250} },
 ]
 
 const sellOffers = [
-    { user: 'P2P_Master', rate: '1.06 USD / SAHEL', available: '800 SAHEL', limits: '100 - 800 USD' },
-    { user: 'QuickCash', rate: '1.07 USD / SAHEL', available: '300 SAHEL', limits: '50 - 300 USD' },
+    { user: 'P2P_Master', rate: 1.06, available: 800, limits: {min: 100, max: 800} },
+    { user: 'QuickCash', rate: 1.07, available: 300, limits: {min: 50, max: 300} },
 ]
+
+type Offer = typeof buyOffers[0];
+
+const P2PTransactionDialog = ({ offer, type, onTransactionSuccess }: { offer: Offer, type: 'Acheter' | 'Vendre', onTransactionSuccess: (type: 'Acheter' | 'Vendre') => void }) => {
+    const [fiatAmount, setFiatAmount] = useState('');
+    const [sahelAmount, setSahelAmount] = useState('');
+    const [openPin, setOpenPin] = useState(false);
+
+    const handleFiatChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const value = e.target.value;
+        setFiatAmount(value);
+        if (value && !isNaN(Number(value))) {
+            setSahelAmount((Number(value) / offer.rate).toFixed(6));
+        } else {
+            setSahelAmount('');
+        }
+    };
+
+    const handleSahelChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const value = e.target.value;
+        setSahelAmount(value);
+        if (value && !isNaN(Number(value))) {
+            setFiatAmount((Number(value) * offer.rate).toFixed(2));
+        } else {
+            setFiatAmount('');
+        }
+    };
+    
+    const handleConfirm = () => {
+        onTransactionSuccess(type);
+    }
+
+    return (
+        <DialogContent>
+            <DialogHeader>
+                <DialogTitle>{type} du SAHEL avec {offer.user}</DialogTitle>
+                <DialogDescription>Taux : <span className="font-bold text-primary">{offer.rate} USD / SAHEL</span></DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+                <div className="space-y-2">
+                    <Label htmlFor="fiat-amount">Montant à {type === 'Acheter' ? 'payer' : 'recevoir'} (USD)</Label>
+                    <Input id="fiat-amount" type="number" placeholder={`Min: ${offer.limits.min} USD`} value={fiatAmount} onChange={handleFiatChange} />
+                </div>
+                <div className="space-y-2">
+                    <Label htmlFor="sahel-amount">Montant à {type === 'Acheter' ? 'recevoir' : 'vendre'} (SAHEL)</Label>
+                    <Input id="sahel-amount" type="number" placeholder={`Disponible: ${offer.available} SAHEL`} value={sahelAmount} onChange={handleSahelChange} />
+                </div>
+                <PinDialog onPinSuccess={handleConfirm}>
+                    <Button className="w-full">{type} le SAHEL</Button>
+                </PinDialog>
+            </div>
+        </DialogContent>
+    );
+};
 
 
 export default function P2PPage() {
@@ -96,15 +151,18 @@ export default function P2PPage() {
                                 {buyOffers.map(offer => (
                                     <TableRow key={offer.user}>
                                         <TableCell className="font-medium">{offer.user}</TableCell>
-                                        <TableCell className="text-primary font-semibold">{offer.rate}</TableCell>
+                                        <TableCell className="text-primary font-semibold">{offer.rate} USD / SAHEL</TableCell>
                                         <TableCell>
-                                            <div>{offer.available}</div>
-                                            <div className="text-xs text-muted-foreground">{offer.limits}</div>
+                                            <div>{offer.available} SAHEL</div>
+                                            <div className="text-xs text-muted-foreground">{offer.limits.min} - {offer.limits.max} USD</div>
                                         </TableCell>
                                         <TableCell className="text-right">
-                                            <PinDialog onPinSuccess={() => handleTransaction('Acheter')}>
-                                                <Button size="sm" variant="secondary">Acheter</Button>
-                                            </PinDialog>
+                                            <Dialog>
+                                                <DialogTrigger asChild>
+                                                    <Button size="sm" variant="secondary">Acheter</Button>
+                                                </DialogTrigger>
+                                                <P2PTransactionDialog offer={offer} type="Acheter" onTransactionSuccess={handleTransaction} />
+                                            </Dialog>
                                         </TableCell>
                                     </TableRow>
                                 ))}
@@ -125,15 +183,18 @@ export default function P2PPage() {
                                 {sellOffers.map(offer => (
                                     <TableRow key={offer.user}>
                                         <TableCell className="font-medium">{offer.user}</TableCell>
-                                        <TableCell className="text-primary font-semibold">{offer.rate}</TableCell>
+                                        <TableCell className="text-primary font-semibold">{offer.rate} USD / SAHEL</TableCell>
                                         <TableCell>
-                                            <div>{offer.available}</div>
-                                            <div className="text-xs text-muted-foreground">{offer.limits}</div>
+                                            <div>{offer.available} SAHEL</div>
+                                            <div className="text-xs text-muted-foreground">{offer.limits.min} - {offer.limits.max} USD</div>
                                         </TableCell>
                                         <TableCell className="text-right">
-                                            <PinDialog onPinSuccess={() => handleTransaction('Vendre')}>
-                                                <Button size="sm" variant="destructive">Vendre</Button>
-                                            </PinDialog>
+                                           <Dialog>
+                                                <DialogTrigger asChild>
+                                                    <Button size="sm" variant="destructive">Vendre</Button>
+                                                </DialogTrigger>
+                                                <P2PTransactionDialog offer={offer} type="Vendre" onTransactionSuccess={handleTransaction} />
+                                            </Dialog>
                                         </TableCell>
                                     </TableRow>
                                 ))}
