@@ -11,6 +11,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { PinDialog } from '@/components/PinDialog';
 import { useToast } from '@/hooks/use-toast';
+import { useSearchParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
 const buyOffers = [
     { user: 'CryptoKing', rate: '1.05 USD / SAHEL', available: '500 SAHEL', limits: '50 - 500 USD' },
@@ -26,6 +28,15 @@ const sellOffers = [
 
 export default function P2PPage() {
     const { toast } = useToast();
+    const searchParams = useSearchParams();
+    const [searchQuery, setSearchQuery] = useState('');
+
+    useEffect(() => {
+        const address = searchParams.get('address');
+        if (address) {
+            setSearchQuery(address);
+        }
+    }, [searchParams]);
 
     const handleTransaction = (type: 'Acheter' | 'Vendre') => {
         toast({
@@ -51,7 +62,12 @@ export default function P2PPage() {
                             <TabsTrigger value="sell">Vendre</TabsTrigger>
                         </TabsList>
                         <div className="flex-grow flex items-center gap-2">
-                           <Input placeholder="Montant" className="max-w-xs"/>
+                           <Input 
+                                placeholder="Montant ou addresse" 
+                                className="max-w-xs"
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                           />
                            <Select defaultValue="USD">
                                 <SelectTrigger className="w-[100px]">
                                     <SelectValue />

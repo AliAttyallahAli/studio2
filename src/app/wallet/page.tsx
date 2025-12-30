@@ -15,6 +15,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { PinDialog } from '@/components/PinDialog';
 import { PinSetup } from '@/components/PinSetup';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import Link from 'next/link';
 
 
 const walletData = {
@@ -110,9 +111,7 @@ export default function WalletPage() {
                     <CardContent>
                        <Dialog open={true}>
                           <DialogContent onInteractOutside={(e) => e.preventDefault()} className="sm:max-w-sm">
-                              <PinDialog onPinSuccess={handlePinSuccess} isTrigger={false}>
-                                  {/* Le contenu de PinInput est maintenant directement dans le dialogue */}
-                              </PinDialog>
+                               <PinDialog onPinSuccess={handlePinSuccess} isTrigger={false} />
                           </DialogContent>
                        </Dialog>
                     </CardContent>
@@ -154,9 +153,11 @@ export default function WalletPage() {
                                         </DialogDescription>
                                     </DialogHeader>
                                     <div className="flex justify-center p-4">
-                                         <div className="w-48 h-48 bg-white flex items-center justify-center" data-ai-hint="QR code">
-                                            <QrCode className="w-40 h-40 text-black" />
-                                         </div>
+                                         <Link href={`/p2p?address=${walletData.sahel.address}`}>
+                                            <div className="w-48 h-48 bg-white flex items-center justify-center cursor-pointer" data-ai-hint="QR code">
+                                                <QrCode className="w-40 h-40 text-black" />
+                                            </div>
+                                         </Link>
                                     </div>
                                 </DialogContent>
                            </Dialog>
