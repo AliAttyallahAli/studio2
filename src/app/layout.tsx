@@ -3,6 +3,7 @@ import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
 import { cn } from '@/lib/utils';
 import { PT_Sans, Space_Grotesk } from 'next/font/google';
+import { ThemeProvider } from '@/components/ThemeProvider';
 
 const ptSans = PT_Sans({ 
   subsets: ['latin'], 
@@ -27,12 +28,19 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="fr" className="dark">
+    <html lang="fr" suppressHydrationWarning>
       <body className={cn(ptSans.variable, spaceGrotesk.variable, "font-sans")}>
-        <div className="flex flex-col min-h-screen">
-          <main className="flex-grow">{children}</main>
-        </div>
-        <Toaster />
+        <ThemeProvider
+            attribute="class"
+            defaultTheme="dark"
+            enableSystem
+            disableTransitionOnChange
+        >
+            <div className="flex flex-col min-h-screen">
+              <main className="flex-grow">{children}</main>
+            </div>
+            <Toaster />
+        </ThemeProvider>
       </body>
     </html>
   );

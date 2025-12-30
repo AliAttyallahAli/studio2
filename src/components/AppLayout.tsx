@@ -2,7 +2,7 @@
 'use client';
 
 import { usePathname, useRouter } from 'next/navigation';
-import { User, Wallet, Menu, LogOut, Shield, Repeat, MessageSquare, Landmark, Pickaxe, UserCog, Rss, ShoppingBag, Handshake, Newspaper } from 'lucide-react';
+import { User, Wallet, Menu, LogOut, Shield, Repeat, MessageSquare, Landmark, Pickaxe, UserCog, Rss, ShoppingBag, Handshake, Newspaper, Moon, Sun } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import {
@@ -16,6 +16,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { Separator } from './ui/separator';
 import React from 'react';
+import { useTheme } from 'next-themes';
 
 
 const navItems = [
@@ -40,6 +41,11 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const [isSheetOpen, setIsSheetOpen] = React.useState(false);
+  const { theme, setTheme } = useTheme();
+
+  const toggleTheme = () => {
+    setTheme(theme === 'dark' ? 'light' : 'dark');
+  };
 
   const getPageTitle = () => {
     const allItems = [...navItems, ...adminNavItems];
@@ -108,9 +114,13 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                                 </SheetClose>
                             ))}
                         </div>
-                        <div className="p-4 border-t mt-auto">
+                        <div className="p-4 border-t mt-auto space-y-2">
+                            <Button variant="ghost" className="w-full justify-start" onClick={toggleTheme}>
+                                {theme === 'dark' ? <Sun className="mr-2 h-5 w-5" /> : <Moon className="mr-2 h-5 w-5" />}
+                                {theme === 'dark' ? 'Thème clair' : 'Thème sombre'}
+                            </Button>
                             <SheetClose asChild>
-                                <Button variant="ghost" className="w-full justify-start mb-2" onClick={() => router.push('/profile')}>
+                                <Button variant="ghost" className="w-full justify-start" onClick={() => router.push('/profile')}>
                                     <Avatar className="w-8 h-8 mr-2">
                                         <AvatarImage src="https://picsum.photos/seed/zoudou/100/100" alt="@SahelUser" data-ai-hint="profile avatar"/>
                                         <AvatarFallback>SU</AvatarFallback>
