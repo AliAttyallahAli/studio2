@@ -408,6 +408,3 @@ export default function ChatPage({ params }: { params: { id: string } }) {
     </div>
   );
 }
-
-    
-    

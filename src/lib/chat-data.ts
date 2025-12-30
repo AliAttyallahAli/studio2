@@ -69,7 +69,7 @@ export interface FeedPost {
     url: string;
     title: string;
     description: string;
-    image: string;
+    image?: string;
   } | null;
   likes: number;
   comments: { id: string; user: { name: string; avatar: string }; content: string; time: string }[];
@@ -163,7 +163,7 @@ const userProfiles: Record<string, UserProfileData> = {
 };
 
 
-export const allChats: ChatData[] = [
+export let allChats: ChatData[] = [
   { 
     id: '1', 
     contact: { id: '1', name: 'SAHEL Annonces', avatar: 'https://picsum.photos/seed/announce/100/100', type: 'group' },
