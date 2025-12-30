@@ -32,12 +32,14 @@ export default function ChatPage({ params }: { params: { id: string } }) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   
+  const [chatId, setChatId] = useState<string | null>(null);
   const [chatData, setChatData] = useState<ChatData | null>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [newMessage, setNewMessage] = useState('');
 
   useEffect(() => {
     const id = pathname.split('/').pop() || '';
+    setChatId(id);
     const data = getChatData(id);
     if (!data) {
       router.push('/chat');
@@ -109,7 +111,7 @@ export default function ChatPage({ params }: { params: { id: string } }) {
     }
   }, [messages]);
 
-  if (!chatData) {
+  if (!chatData || !chatId) {
     return (
        <div className="flex flex-col h-full bg-card md:border-l items-center justify-center">
             <p>Chargement de la discussion...</p>
@@ -125,7 +127,7 @@ export default function ChatPage({ params }: { params: { id: string } }) {
         <Button variant="ghost" size="icon" onClick={() => router.push('/chat')} className="md:hidden">
           <ArrowLeft className="h-6 w-6" />
         </Button>
-        <div className="flex items-center gap-3 ml-2 cursor-pointer" onClick={() => router.push(`/chat/${params.id}/settings`)}>
+        <div className="flex items-center gap-3 ml-2 cursor-pointer" onClick={() => router.push(`/chat/${chatId}/settings`)}>
             <Avatar>
                 <AvatarImage src={chatAvatar} alt={chatName} data-ai-hint="profile avatar"/>
                 <AvatarFallback>{chatName.charAt(0)}</AvatarFallback>
@@ -139,7 +141,7 @@ export default function ChatPage({ params }: { params: { id: string } }) {
             <Button variant="ghost" size="icon">
                 <Video className="h-5 w-5" />
             </Button>
-             <Button variant="ghost" size="icon" onClick={() => router.push(`/chat/${params.id}/settings`)}>
+             <Button variant="ghost" size="icon" onClick={() => router.push(`/chat/${chatId}/settings`)}>
                 <MoreVertical className="h-5 w-5" />
             </Button>
         </div>
