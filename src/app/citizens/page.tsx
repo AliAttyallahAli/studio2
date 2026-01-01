@@ -33,13 +33,18 @@ export default function DexPage() {
     const [tokenName, setTokenName] = useState('');
     const [tokenTicker, setTokenTicker] = useState('');
     const [sahelAmount, setSahelAmount] = useState(100);
+    
+    const [activeTab, setActiveTab] = useState('swap');
+    const [fromToken, setFromToken] = useState('SAHEL');
+    const [toToken, setToToken] = useState('');
 
     const handleAddNewToken = () => {
         if (!tokenName || !tokenTicker) return;
 
+        const newTicker = tokenTicker.toUpperCase();
         const newToken = {
             name: tokenName,
-            ticker: tokenTicker.toUpperCase(),
+            ticker: newTicker,
             description: `Token personnalisé adossé à ${sahelAmount} SAHEL.`,
             logo: `https://picsum.photos/seed/${tokenTicker.toLowerCase()}/48/48`
         };
@@ -54,6 +59,11 @@ export default function DexPage() {
 
     const handleSwap = () => {
         toast({ title: 'Échange Réussi', description: 'Vos actifs ont été échangés avec succès.' });
+    }
+    
+    const handleSelectTokenForSwap = (ticker: string) => {
+        setToToken(ticker);
+        setActiveTab('swap');
     }
 
   return (
@@ -104,7 +114,7 @@ export default function DexPage() {
             </Dialog>
         </div>
 
-        <Tabs defaultValue="swap" className="w-full">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
             <TabsList className="grid w-full grid-cols-2">
                 <TabsTrigger value="swap"><Repeat className="mr-2 h-4 w-4" />Swap</TabsTrigger>
                 <TabsTrigger value="tokens"><PiggyBank className="mr-2 h-4 w-4" />Tokens Listés</TabsTrigger>
@@ -121,28 +131,30 @@ export default function DexPage() {
                             <div className="space-y-2">
                                 <Label>Vous donnez</Label>
                                 <Input type="number" placeholder="0.0" />
-                                 <Select>
+                                 <Select value={fromToken} onValueChange={setFromToken}>
                                     <SelectTrigger>
                                         <SelectValue placeholder="Sélectionnez" />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="sahel">SAHEL</SelectItem>
-                                        <SelectItem value="zim">ZIM</SelectItem>
-                                        <SelectItem value="eco">ECO</SelectItem>
+                                        <SelectItem value="SAHEL">SAHEL</SelectItem>
+                                        {tokens.map(token => (
+                                            <SelectItem key={token.ticker} value={token.ticker}>{token.ticker}</SelectItem>
+                                        ))}
                                     </SelectContent>
                                 </Select>
                             </div>
                             <div className="space-y-2">
                                 <Label>Vous recevez</Label>
                                 <Input type="number" placeholder="0.0" readOnly />
-                                 <Select>
+                                 <Select value={toToken} onValueChange={setToToken}>
                                     <SelectTrigger>
                                         <SelectValue placeholder="Sélectionnez" />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="sahel">SAHEL</SelectItem>
-                                        <SelectItem value="zim">ZIM</SelectItem>
-                                        <SelectItem value="eco">ECO</SelectItem>
+                                        <SelectItem value="SAHEL">SAHEL</SelectItem>
+                                        {tokens.map(token => (
+                                            <SelectItem key={token.ticker} value={token.ticker}>{token.ticker}</SelectItem>
+                                        ))}
                                     </SelectContent>
                                 </Select>
                             </div>
@@ -183,7 +195,7 @@ export default function DexPage() {
                                 </div>
                             </CardHeader>
                             <CardContent>
-                                <Button className="w-full md:w-auto">Échanger ce token</Button>
+                                <Button className="w-full md:w-auto" onClick={() => handleSelectTokenForSwap(token.ticker)}>Échanger ce token</Button>
                             </CardContent>
                         </Card>
                     ))}
@@ -194,3 +206,4 @@ export default function DexPage() {
     </AppLayout>
   );
 }
+
