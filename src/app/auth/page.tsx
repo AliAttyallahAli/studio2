@@ -47,7 +47,10 @@ export default function AuthPage() {
   const handleAuth = () => {
     // La logique pour gérer l'authentification (connexion ou inscription) irait ici.
     // Par exemple, appeler une API Firebase.
-    // Pour cette démo, nous redirigeons simplement vers la page d'accueil.
+    // Pour cette démo, nous simulons une session et redirigeons vers la page d'accueil.
+    if (typeof window !== 'undefined') {
+        localStorage.setItem('isAuthenticated', 'true');
+    }
     router.push('/');
   };
 

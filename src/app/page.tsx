@@ -8,6 +8,7 @@ import { AlertTriangle, CheckCircle2, ChevronRight, RefreshCw, Play, StopCircle 
 import { Button } from '@/components/ui/button';
 import { useState, useEffect } from 'react';
 import { CircularProgress } from '@/components/ui/circular-progress';
+import { useRouter } from 'next/navigation';
 
 const workers = [
   { id: 'worker-001', name: 'RIG-01', status: 'En ligne', hashRate: '72 TH/s', temp: '65°C', uptime: '24h' },
@@ -24,9 +25,21 @@ const recentTransactions = [
 const TOTAL_DURATION = 24 * 3600; // 24 hours in seconds
 
 export default function MiningPage() {
+    const router = useRouter();
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [isMining, setIsMining] = useState(true);
     const [timeRemaining, setTimeRemaining] = useState(TOTAL_DURATION - (8 * 3600 + 14 * 60 + 38)); // Start with some progress
     const [progress, setProgress] = useState(0);
+
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            const authStatus = localStorage.getItem('isAuthenticated') === 'true';
+            setIsAuthenticated(authStatus);
+            if (!authStatus) {
+                router.push('/auth');
+            }
+        }
+    }, [router]);
 
     useEffect(() => {
         let timer: NodeJS.Timeout | undefined;
@@ -74,6 +87,14 @@ export default function MiningPage() {
         const s = seconds % 60;
         return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
     };
+
+    if (!isAuthenticated) {
+        return (
+            <div className="flex h-screen items-center justify-center">
+                <p>Redirection vers la page de connexion...</p>
+            </div>
+        );
+    }
 
 
   return (

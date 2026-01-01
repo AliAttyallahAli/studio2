@@ -47,6 +47,13 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
     setTheme(theme === 'dark' ? 'light' : 'dark');
   };
 
+  const handleLogout = () => {
+    if (typeof window !== 'undefined') {
+        localStorage.removeItem('isAuthenticated');
+    }
+    router.push('/auth');
+  }
+
   const getPageTitle = () => {
     const allItems = [...navItems, ...adminNavItems];
     if (pathname === '/') return 'Minage';
@@ -129,7 +136,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                                 </Button>
                             </SheetClose>
                             <SheetClose asChild>
-                                <Button variant="ghost" className="w-full justify-start" onClick={() => router.push('/auth')}>
+                                <Button variant="ghost" className="w-full justify-start" onClick={handleLogout}>
                                     <LogOut className="mr-2 h-5 w-5" />
                                     Se déconnecter
                                 </Button>
