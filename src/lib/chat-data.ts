@@ -94,12 +94,12 @@ export interface BlogPost {
 }
 
 export const walletData = {
-    sahel: { balance: 1150.75, address: '0xSHEL123abc456def789ghi012jkl345mno' },
+    sahel: { balance: 10.00, address: '0xSHEL123abc456def789ghi012jkl345mno' },
     privateKey: '0xprivkey_a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6',
     accessKey: 'zoudou-access-key-gamma-7-zeta-9',
     tokens: [
-        { name: 'Z-Immo', balance: '50.00 ZIM', address: '0xZIM456def789ghi012jkl345mno456def' },
-        { name: 'EcoToken', balance: '10,000.00 ECO', address: '0xECO789ghi012jkl345mno456def789ghi' },
+        { name: 'Z-Immo', balance: '0.00 ZIM', address: '0xZIM456def789ghi012jkl345mno456def' },
+        { name: 'EcoToken', balance: '0.00 ECO', address: '0xECO789ghi012jkl345mno456def789ghi' },
     ]
 };
 
@@ -393,8 +393,9 @@ export const getOrCreateChat = (userId: string): ChatData => {
         throw new Error(`User with id ${userId} not found`);
     }
 
+    const newChatId = `chat-${Date.now()}-${userId}`;
     const newChat: ChatData = {
-        id: `chat-${userId}`,
+        id: newChatId,
         contact: {
             id: userId,
             name: user.name,
