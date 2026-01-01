@@ -4,7 +4,7 @@
 import { AppLayout } from '@/components/AppLayout';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { AlertTriangle, CheckCircle2, ChevronRight, RefreshCw } from 'lucide-react';
+import { AlertTriangle, CheckCircle2, ChevronRight, RefreshCw, Play, StopCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useState, useEffect } from 'react';
 import { CircularProgress } from '@/components/ui/circular-progress';
@@ -21,30 +21,52 @@ const recentTransactions = [
     {id: 'tx-3', type: 'Récompense de minage', amount: '+0.0048 SAHEL', date: '2024-07-05 14:25'},
 ]
 
+const TOTAL_DURATION = 24 * 3600; // 24 hours in seconds
+
 export default function MiningPage() {
-    const [timeRemaining, setTimeRemaining] = useState(15 * 3600 + 45 * 60 + 22); // 15h 45m 22s in seconds
+    const [isMining, setIsMining] = useState(true);
+    const [timeRemaining, setTimeRemaining] = useState(TOTAL_DURATION - (8 * 3600 + 14 * 60 + 38)); // Start with some progress
     const [progress, setProgress] = useState(0);
 
     useEffect(() => {
-        const totalDuration = 24 * 3600; // 24 hours in seconds
-        const initialProgress = ((totalDuration - timeRemaining) / totalDuration) * 100;
-        setProgress(initialProgress);
+        let timer: NodeJS.Timeout | undefined;
 
-        const timer = setInterval(() => {
-            setTimeRemaining(prevTime => {
-                if (prevTime <= 1) {
-                    clearInterval(timer);
-                    return 0;
-                }
-                const newTime = prevTime - 1;
-                const newProgress = ((totalDuration - newTime) / totalDuration) * 100;
-                setProgress(newProgress);
-                return newTime;
-            });
-        }, 1000);
+        if (isMining) {
+            const initialProgress = ((TOTAL_DURATION - timeRemaining) / TOTAL_DURATION) * 100;
+            setProgress(initialProgress);
+
+            timer = setInterval(() => {
+                setTimeRemaining(prevTime => {
+                    if (prevTime <= 1) {
+                        clearInterval(timer);
+                        setIsMining(false);
+                        return 0;
+                    }
+                    const newTime = prevTime - 1;
+                    const newProgress = ((TOTAL_DURATION - newTime) / TOTAL_DURATION) * 100;
+                    setProgress(newProgress);
+                    return newTime;
+                });
+            }, 1000);
+        } else {
+            setProgress(0);
+        }
 
         return () => clearInterval(timer);
-    }, [timeRemaining]);
+    }, [isMining, timeRemaining]);
+    
+    const handleToggleMining = () => {
+        setIsMining(prev => {
+            if (prev) {
+                // If stopping, just stop
+                return false;
+            } else {
+                // If starting, reset the timer
+                setTimeRemaining(TOTAL_DURATION);
+                return true;
+            }
+        });
+    }
 
     const formatTime = (seconds: number) => {
         const h = Math.floor(seconds / 3600);
@@ -64,16 +86,34 @@ export default function MiningPage() {
           </CardHeader>
           <CardContent className="flex flex-col md:flex-row items-center justify-center gap-6 text-center md:text-left">
             <div className="relative w-40 h-40">
-                <CircularProgress value={progress} strokeWidth={10} />
+                <CircularProgress value={isMining ? progress : 0} strokeWidth={10} />
                 <div className="absolute inset-0 flex flex-col items-center justify-center">
-                    <p className="text-2xl font-bold text-primary">{formatTime(timeRemaining)}</p>
-                    <p className="text-xs text-muted-foreground">Restant</p>
+                    {isMining ? (
+                        <>
+                           <p className="text-2xl font-bold text-primary">{formatTime(timeRemaining)}</p>
+                           <p className="text-xs text-muted-foreground">Restant</p>
+                        </>
+                    ) : (
+                         <p className="text-2xl font-bold">Inactif</p>
+                    )}
                 </div>
             </div>
             <div className="flex-grow">
-              <p className="font-bold text-2xl">Minage Actif</p>
-              <p className="text-muted-foreground">Taux de base : +0.1 SAHEL/h</p>
-               <Button size="lg" className="bg-primary hover:bg-primary/90 mt-4 w-full sm:w-auto">Arrêter le minage</Button>
+               {isMining ? (
+                    <>
+                        <p className="font-bold text-2xl">Minage Actif</p>
+                        <p className="text-muted-foreground">Taux de base : +0.1 SAHEL/h</p>
+                    </>
+               ) : (
+                    <>
+                        <p className="font-bold text-2xl">Minage Arrêté</p>
+                        <p className="text-muted-foreground">Appuyez pour commencer une nouvelle session de 24h.</p>
+                    </>
+               )}
+               <Button size="lg" className="bg-primary hover:bg-primary/90 mt-4 w-full sm:w-auto" onClick={handleToggleMining}>
+                    {isMining ? <StopCircle className="mr-2 h-5 w-5" /> : <Play className="mr-2 h-5 w-5" />}
+                    {isMining ? 'Arrêter le minage' : 'Commencer le minage'}
+                </Button>
             </div>
           </CardContent>
         </Card>
@@ -96,8 +136,8 @@ export default function MiningPage() {
               <CardDescription>Performance globale</CardDescription>
             </CardHeader>
             <CardContent>
-              <p className="text-4xl font-bold">142 TH/s</p>
-               <p className="text-xs text-muted-foreground mt-1">+2.1% depuis hier</p>
+              <p className="text-4xl font-bold">{isMining ? '142 TH/s' : '0 TH/s'}</p>
+               <p className="text-xs text-muted-foreground mt-1">{isMining ? '+2.1% depuis hier' : '-'}</p>
             </CardContent>
           </Card>
            <Card>
@@ -110,14 +150,14 @@ export default function MiningPage() {
                     <div className="flex items-center text-green-400">
                         <CheckCircle2 className="h-5 w-5 mr-2" />
                         <div>
-                            <p className="font-bold">2</p>
+                            <p className="font-bold">{isMining ? '2' : '0'}</p>
                             <p className="text-xs">En ligne</p>
                         </div>
                     </div>
                      <div className="flex items-center text-red-400">
                         <AlertTriangle className="h-5 w-5 mr-2" />
                          <div>
-                            <p className="font-bold">1</p>
+                            <p className="font-bold">{isMining ? '1' : '3'}</p>
                             <p className="text-xs">Hors ligne</p>
                         </div>
                     </div>
@@ -149,12 +189,12 @@ export default function MiningPage() {
                                     <TableCell className="font-medium">{worker.name}</TableCell>
                                     <TableCell>
                                         <span className={`px-2 py-1 rounded-full text-xs ${
-                                            worker.status === 'En ligne' ? 'bg-green-900/50 text-green-400' : 'bg-red-900/50 text-red-400'
+                                            isMining && worker.status === 'En ligne' ? 'bg-green-900/50 text-green-400' : 'bg-red-900/50 text-red-400'
                                         }`}>
-                                            {worker.status}
+                                            {isMining ? worker.status : 'Hors ligne'}
                                         </span>
                                     </TableCell>
-                                    <TableCell>{worker.hashRate}</TableCell>
+                                    <TableCell>{isMining ? worker.hashRate : '0 TH/s'}</TableCell>
                                 </TableRow>
                             ))}
                         </TableBody>
