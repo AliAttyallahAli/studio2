@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Heart, MessageCircle, Share2, Image as ImageIcon, X, ThumbsUp, Laugh, Angry, Copy, BarChart3, Plus, Trash2, Search } from 'lucide-react';
+import { Heart, MessageCircle, Share2, Image as ImageIcon, X, ThumbsUp, Laugh, Angry, Copy, BarChart3, Plus, Trash2, Search, Video } from 'lucide-react';
 import Image from 'next/image';
 import { Separator } from '@/components/ui/separator';
 import { StoryCarousel } from '@/components/StoryCarousel';
@@ -209,9 +209,15 @@ const PostCard = ({ post }: { post: any }) => {
         <CardContent>
             {contentWithoutUrl && <p className="mb-4 whitespace-pre-wrap">{contentWithoutUrl}</p>}
             
-            {post.image && (
+            {post.mediaType === 'image' && post.mediaUrl && (
                 <div className="mb-4">
-                    <Image src={post.image} alt="Post image" width={600} height={400} className="rounded-lg object-cover w-full" data-ai-hint={post.imageHint} />
+                    <Image src={post.mediaUrl} alt="Post image" width={600} height={400} className="rounded-lg object-cover w-full" data-ai-hint={post.imageHint} />
+                </div>
+            )}
+            
+            {post.mediaType === 'video' && post.mediaUrl && (
+                <div className="mb-4">
+                    <video src={post.mediaUrl} controls muted autoPlay loop className="rounded-lg w-full" />
                 </div>
             )}
 
@@ -401,26 +407,28 @@ const CreatePollDialog = ({ onPollCreate }: { onPollCreate: (pollData: { questio
 export default function FeedPage() {
   const [posts, setPosts] = useState(allFeedPosts);
   const [newPostContent, setNewPostContent] = useState('');
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const imageInputRef = useRef<HTMLInputElement>(null);
+  const [mediaPreview, setMediaPreview] = useState<{url: string, type: 'image' | 'video'} | null>(null);
+  const mediaInputRef = useRef<HTMLInputElement>(null);
   const [searchTerm, setSearchTerm] = useState('');
 
-  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleMediaChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
       const file = event.target.files[0];
-      setImagePreview(URL.createObjectURL(file));
+      const url = URL.createObjectURL(file);
+      const type = file.type.startsWith('video') ? 'video' : 'image';
+      setMediaPreview({ url, type });
     }
   };
 
-  const removeImage = () => {
-    setImagePreview(null);
-    if(imageInputRef.current) {
-        imageInputRef.current.value = '';
+  const removeMedia = () => {
+    setMediaPreview(null);
+    if(mediaInputRef.current) {
+        mediaInputRef.current.value = '';
     }
   }
 
   const handlePublish = async (pollData: FeedPost['poll'] = null) => {
-    if (newPostContent.trim() === '' && !imagePreview && !pollData) return;
+    if (newPostContent.trim() === '' && !mediaPreview && !pollData) return;
 
     let linkPreview: LinkPreview | null = null;
     const urls = newPostContent.match(urlRegex);
@@ -438,7 +446,8 @@ export default function FeedPage() {
       user: { name: '@SahelUser', username: 'saheluser', avatar: 'https://picsum.photos/seed/sahel/100/100' },
       time: 'À l\'instant',
       content: newPostContent,
-      image: imagePreview,
+      mediaUrl: mediaPreview?.url || null,
+      mediaType: mediaPreview?.type || null,
       imageHint: 'user content',
       linkPreview: linkPreview,
       poll: pollData,
@@ -449,7 +458,7 @@ export default function FeedPage() {
     addPost(newPost);
     setPosts([...allFeedPosts]); // Re-read from the shared source
     setNewPostContent('');
-    removeImage();
+    removeMedia();
   };
 
   const filteredPosts = posts.filter(post =>
@@ -482,27 +491,31 @@ export default function FeedPage() {
                     value={newPostContent}
                     onChange={(e) => setNewPostContent(e.target.value)}
                 />
-                {imagePreview && (
-                    <div className="relative w-24 h-24">
-                        <Image src={imagePreview} alt="Aperçu" layout="fill" objectFit="cover" className="rounded-md" />
-                        <Button variant="ghost" size="icon" className="absolute -top-2 -right-2 bg-black/50 hover:bg-black/70 rounded-full h-6 w-6" onClick={removeImage}>
+                {mediaPreview && (
+                    <div className="relative w-32 aspect-square">
+                        {mediaPreview.type === 'image' ? (
+                            <Image src={mediaPreview.url} alt="Aperçu" layout="fill" objectFit="cover" className="rounded-md" />
+                        ) : (
+                            <video src={mediaPreview.url} muted autoPlay loop className="rounded-md h-full w-full object-cover" />
+                        )}
+                        <Button variant="ghost" size="icon" className="absolute -top-2 -right-2 bg-black/50 hover:bg-black/70 rounded-full h-6 w-6" onClick={removeMedia}>
                             <X className="h-4 w-4 text-white"/>
                         </Button>
                     </div>
                 )}
                 <div className="flex justify-between items-center">
                     <div className="flex gap-2">
-                        <Button variant="outline" size="icon" onClick={() => imageInputRef.current?.click()}>
+                        <Button variant="outline" size="icon" onClick={() => mediaInputRef.current?.click()}>
                             <ImageIcon className="h-4 w-4" />
                         </Button>
-                        <CreatePollDialog onPollCreate={(pollData) => handlePublish(pollData)} />
+                         <CreatePollDialog onPollCreate={(pollData) => handlePublish(pollData)} />
                     </div>
                     <input 
                         type="file" 
-                        ref={imageInputRef} 
+                        ref={mediaInputRef} 
                         className="hidden" 
-                        accept="image/*"
-                        onChange={handleImageChange}
+                        accept="image/*,video/*"
+                        onChange={handleMediaChange}
                     />
                     <Button className="bg-accent hover:bg-accent/90" onClick={() => handlePublish()}>Publier</Button>
                 </div>
@@ -522,5 +535,6 @@ export default function FeedPage() {
     
 
     
+
 
 

@@ -3,6 +3,7 @@
 
 
 
+
 export interface ChatMessage {
   id: string;
   type: 'text' | 'image' | 'file' | 'audio' | 'poll';
@@ -73,7 +74,8 @@ export interface FeedPost {
   user: { name: string; username: string; avatar: string, status?: 'En ligne' | 'Hors ligne' };
   time: string;
   content: string;
-  image: string | null;
+  mediaUrl: string | null;
+  mediaType: 'image' | 'video' | null;
   imageHint: string;
   linkPreview: {
     url: string;
@@ -306,7 +308,8 @@ export let allFeedPosts: FeedPost[] = [
     user: { name: '@SahelUser', username: 'saheluser', avatar: 'https://picsum.photos/seed/sahel/100/100', status: 'En ligne' },
     time: 'Il y a 2 heures',
     content: 'Heureux de rejoindre la communauté SAHEL ! Prêt à miner mes premiers SAHEL. 🚀',
-    image: 'https://picsum.photos/seed/rocket/600/400',
+    mediaUrl: 'https://picsum.photos/seed/rocket/600/400',
+    mediaType: 'image',
     imageHint: 'rocket launch',
     linkPreview: null,
     poll: null,
@@ -319,11 +322,12 @@ export let allFeedPosts: FeedPost[] = [
     id: 'post-2',
     user: { name: '@tech_news', username: 'tech_news', avatar: 'https://picsum.photos/seed/guru/100/100', status: 'En ligne' },
     time: 'Il y a 4 heures',
-    content: 'Article intéressant sur le futur du Web3 : https://example-web3-news.com/article',
-    image: null,
+    content: 'Article intéressant sur le futur du Web3 : https://www.facebook.com/watch/?v=1103763354229954',
+    mediaUrl: null,
+    mediaType: null,
     imageHint: '',
     linkPreview: {
-        url: 'https://example-web3-news.com/article',
+        url: 'https://www.facebook.com/watch/?v=1103763354229954',
         title: 'Le futur du Web3 : décentralisation et tokens',
         description: 'Un aperçu des tendances qui façonneront la prochaine génération d\'internet, de la DeFi aux DAO en passant par les identités décentralisées.',
         image: 'https://i.ytimg.com/vi/m15kRt_Bqpw/maxresdefault.jpg',
@@ -337,7 +341,8 @@ export let allFeedPosts: FeedPost[] = [
     user: { name: 'SAHEL Annonces', username: 'sahel_annonces', avatar: 'https://picsum.photos/seed/announce/100/100' },
     time: 'Il y a 8 heures',
     content: 'Quelle fonctionnalité attendez-vous le plus ?',
-    image: null,
+    mediaUrl: null,
+    mediaType: null,
     imageHint: '',
     poll: {
         question: 'Quelle fonctionnalité attendez-vous le plus ?',
@@ -355,7 +360,8 @@ export let allFeedPosts: FeedPost[] = [
     user: { name: '@crypto_queen', username: 'crypto_queen', avatar: 'https://picsum.photos/seed/queen/100/100', status: 'Hors ligne' },
     time: 'Il y a 5 heures',
     content: "Le marché est en pleine effervescence aujourd'hui. J'ai échangé quelques SAHEL contre un bon d'achat. C'est tellement pratique !",
-    image: null,
+    mediaUrl: null,
+    mediaType: null,
     imageHint: '',
     linkPreview: null,
     poll: null,
