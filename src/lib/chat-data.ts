@@ -94,7 +94,7 @@ export interface BlogPost {
 }
 
 export const walletData = {
-    sahel: { balance: 1250.75, address: '0xSHEL123abc456def789ghi012jkl345mno' },
+    sahel: { balance: 1200.75, address: '0xSHEL123abc456def789ghi012jkl345mno' },
     privateKey: '0xprivkey_a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6',
     accessKey: 'zoudou-access-key-gamma-7-zeta-9',
     tokens: [
@@ -159,6 +159,19 @@ const userProfiles: Record<string, UserProfileData> = {
       bio: "Développeur Full-Stack, curieux du Web3.",
       parcours: "Développeur Web avec 3 ans d'expérience.",
       interests: "React, Next.js, Web3",
+      maritalStatus: "Célibataire"
+    }
+  },
+  '6': {
+    id: '6',
+    name: 'Diana',
+    avatar: 'https://picsum.photos/seed/diana/100/100',
+    description: '@diana_designer',
+    isGroup: false,
+    details: {
+      bio: "Designer UI/UX spécialisée dans les applications décentralisées.",
+      parcours: "Designer depuis 4 ans, passionnée par l'esthétique et la fonctionnalité.",
+      interests: "UI/UX, Design, Art digital",
       maritalStatus: "Célibataire"
     }
   },
@@ -345,8 +358,40 @@ export const getChatData = (id: string): ChatData | undefined => {
     return allChats.find(chat => chat.id === id);
 }
 
+export const getOrCreateChat = (userId: string): ChatData => {
+    let chat = allChats.find(c => c.contact.id === userId);
+    if (chat) {
+        return chat;
+    }
+
+    const user = getUserProfile(userId);
+    if (!user) {
+        throw new Error(`User with id ${userId} not found`);
+    }
+
+    const newChat: ChatData = {
+        id: userId,
+        contact: {
+            id: userId,
+            name: user.name,
+            avatar: user.avatar,
+            type: 'user',
+        },
+        lastMessage: `Commencez à discuter avec ${user.name}`,
+        time: new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }),
+        messages: [],
+    };
+    allChats.unshift(newChat);
+    return newChat;
+}
+
 export const getUserProfile = (id: string): UserProfileData | undefined => {
     return userProfiles[id];
+}
+
+export const getSuggestedUsers = (): UserProfileData[] => {
+    const chatUserIds = allChats.map(c => c.contact.id);
+    return Object.values(userProfiles).filter(p => !p.isGroup && !chatUserIds.includes(p.id));
 }
 
 export const getStoryData = (id: string): Story | undefined => {

@@ -7,15 +7,23 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { ArrowLeft, Search, UserPlus, Users } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent } from '@/components/ui/card';
-import { getUserProfile } from '@/lib/chat-data';
+import { getSuggestedUsers, getOrCreateChat, type UserProfileData } from '@/lib/chat-data';
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
 
-
-const suggestedUserIds = ['2', '3', '5'];
-const suggestedUsers = suggestedUserIds.map(id => getUserProfile(id)).filter(Boolean);
 
 export default function NewChatPage() {
   const router = useRouter();
+  const [suggestedUsers, setSuggestedUsers] = useState<UserProfileData[]>([]);
+
+  useEffect(() => {
+    setSuggestedUsers(getSuggestedUsers());
+  }, []);
+
+  const handleStartChat = (userId: string) => {
+    const chat = getOrCreateChat(userId);
+    router.push(`/chat/${chat.id}`);
+  }
 
   return (
     <div className="flex flex-col h-full bg-background absolute inset-0 z-20 md:relative md:border-l">
@@ -49,7 +57,7 @@ export default function NewChatPage() {
         </Card>
 
         <div>
-            <h3 className="text-sm font-semibold text-muted-foreground mb-2 px-2">CONTACTS FRÉQUENTS</h3>
+            <h3 className="text-sm font-semibold text-muted-foreground mb-2 px-2">CONTACTS SUGGÉRÉS</h3>
              <Card>
                 <CardContent className="p-0 divide-y divide-border">
                     {suggestedUsers.map((user) => (
@@ -57,7 +65,7 @@ export default function NewChatPage() {
                         <div
                             key={user.id}
                             className="flex items-center p-3 cursor-pointer hover:bg-secondary"
-                            onClick={() => router.push(`/chat/${user.id}`)}
+                            onClick={() => handleStartChat(user.id)}
                         >
                             <Avatar className="w-10 h-10 mr-4">
                                 <AvatarImage src={user.avatar} alt={user.name} data-ai-hint="profile avatar" />
