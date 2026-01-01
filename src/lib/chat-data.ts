@@ -1,9 +1,10 @@
 
 
 
+
 export interface ChatMessage {
   id: string;
-  type: 'text' | 'image' | 'file' | 'audio';
+  type: 'text' | 'image' | 'file' | 'audio' | 'poll';
   content?: string;
   url?: string;
   hint?: string;
@@ -11,6 +12,10 @@ export interface ChatMessage {
   file?: {
     name: string;
     size: string;
+  };
+   poll?: {
+    question: string;
+    options: { text: string; votes: number }[];
   };
   sender: 'me' | 'other';
   time: string;
@@ -241,10 +246,24 @@ export let allChats: ChatData[] = [
   { 
     id: '4', 
     contact: { id: '4', name: 'Projet Z-NFT', avatar: 'https://picsum.photos/seed/nft/100/100', type: 'group' },
-    lastMessage: 'N\'oubliez pas la réunion de 16h.', 
+    lastMessage: 'Quel est votre design préféré ?', 
     time: '11:58',
     messages: [
         { id: 'msg4-1', type: 'text', content: 'N\'oubliez pas la réunion de 16h.', sender: 'other', time: '11:58' },
+        { 
+            id: 'msg4-2', 
+            type: 'poll',
+            sender: 'other',
+            time: '11:59',
+            poll: {
+                question: 'Quel est votre design préféré pour le prochain NFT ?',
+                options: [
+                    { text: 'Abstrait', votes: 1 },
+                    { text: 'Figuratif', votes: 3 },
+                    { text: 'Minimaliste', votes: 5 },
+                ]
+            }
+        },
     ]
   },
 ];
@@ -319,7 +338,6 @@ export let allFeedPosts: FeedPost[] = [
     content: 'Quelle fonctionnalité attendez-vous le plus ?',
     image: null,
     imageHint: '',
-    linkPreview: null,
     poll: {
         question: 'Quelle fonctionnalité attendez-vous le plus ?',
         options: [

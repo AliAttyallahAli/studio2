@@ -5,13 +5,16 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
-import { ArrowLeft, Mic, MoreVertical, Paperclip, Phone, Send, Video, FileText, Download, PhoneOff, MicOff, VideoOff, Volume2, Play, Pause } from 'lucide-react';
+import { ArrowLeft, Mic, MoreVertical, Paperclip, Phone, Send, Video, FileText, Download, PhoneOff, MicOff, VideoOff, Volume2, Play, Pause, BarChart3, Plus, Trash2 } from 'lucide-react';
 import { useRouter, usePathname } from 'next/navigation';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import Image from 'next/image';
 import React, { useState, useRef, useEffect } from 'react';
 import { getChatData, type ChatMessage, type ChatData } from '@/lib/chat-data';
 import { useToast } from '@/hooks/use-toast';
+import { Progress } from '@/components/ui/progress';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
 
 const FileAttachmentCard = ({ file }: { file: { name: string, size: string } }) => (
     <div className="flex items-center p-3 rounded-lg bg-background/20 mt-2">
@@ -101,6 +104,55 @@ const AudioPlayer = ({ duration }: { duration: string }) => {
   );
 };
 
+const ChatPoll = ({ poll, sender }: { poll: NonNullable<ChatMessage['poll']>, sender: 'me' | 'other' }) => {
+    const [voted, setVoted] = useState<number | null>(null);
+    const [options, setOptions] = useState(poll.options);
+
+    const totalVotes = options.reduce((sum, option) => sum + option.votes, 0);
+
+    const handleVote = (index: number) => {
+        if (voted !== null) return;
+        setVoted(index);
+        const newOptions = [...options];
+        newOptions[index].votes += 1;
+        setOptions(newOptions);
+    };
+
+    return (
+        <div className="space-y-3 mt-2">
+            <h4 className="font-semibold">{poll.question}</h4>
+            <div className="space-y-2">
+                {options.map((option, index) => {
+                    const percentage = totalVotes > 0 ? (option.votes / totalVotes) * 100 : 0;
+                    return (
+                        <div key={index} className="space-y-1">
+                            {voted !== null ? (
+                                <div className="relative">
+                                    <Progress value={percentage} className={cn("h-8", sender === 'me' ? "bg-primary-foreground/30" : "bg-background/30")} />
+                                    <div className={cn("absolute inset-0 flex items-center justify-between px-3 font-medium", sender === 'me' ? "text-primary-foreground" : "text-foreground")}>
+                                        <span>{option.text}</span>
+                                        <span>{Math.round(percentage)}%</span>
+                                    </div>
+                                </div>
+                            ) : (
+                                <Button
+                                    variant={sender === 'me' ? 'secondary' : 'outline'}
+                                    className="w-full justify-start h-10"
+                                    onClick={() => handleVote(index)}
+                                >
+                                    {option.text}
+                                </Button>
+                            )}
+                        </div>
+                    );
+                })}
+            </div>
+            <p className="text-xs opacity-80">{totalVotes} votes</p>
+        </div>
+    );
+};
+
+
 const CallView = ({ contact, type, onHangUp }: { contact: ChatData['contact'], type: 'audio' | 'video', onHangUp: () => void }) => {
     const [callTime, setCallTime] = useState(0);
 
@@ -146,6 +198,96 @@ const CallView = ({ contact, type, onHangUp }: { contact: ChatData['contact'], t
                 </Button>
             </div>
         </div>
+    );
+};
+
+const CreatePollDialog = ({ onPollCreate }: { onPollCreate: (pollData: NonNullable<ChatMessage['poll']>) => void }) => {
+    const [question, setQuestion] = useState('');
+    const [options, setOptions] = useState(['', '']);
+    const [open, setOpen] = useState(false);
+
+    const handleOptionChange = (index: number, value: string) => {
+        const newOptions = [...options];
+        newOptions[index] = value;
+        setOptions(newOptions);
+    };
+
+    const addOption = () => {
+        if (options.length < 5) {
+            setOptions([...options, '']);
+        }
+    };
+    
+    const removeOption = (index: number) => {
+        if (options.length > 2) {
+            const newOptions = options.filter((_, i) => i !== index);
+            setOptions(newOptions);
+        }
+    };
+
+    const handleCreate = () => {
+        const validOptions = options.map(o => o.trim()).filter(o => o !== '');
+        if (question.trim() && validOptions.length >= 2) {
+            onPollCreate({
+                question: question.trim(),
+                options: validOptions.map(opt => ({ text: opt, votes: 0 })),
+            });
+            setOpen(false);
+            setQuestion('');
+            setOptions(['','']);
+        }
+    };
+
+    return (
+        <Dialog open={open} onOpenChange={setOpen}>
+            <DialogTrigger asChild>
+                <Button variant="ghost" size="icon">
+                    <BarChart3 className="h-5 w-5" />
+                </Button>
+            </DialogTrigger>
+            <DialogContent>
+                <DialogHeader>
+                    <DialogTitle>Créer un sondage</DialogTitle>
+                    <DialogDescription>
+                        Posez une question et définissez les options de réponse.
+                    </DialogDescription>
+                </DialogHeader>
+                <div className="space-y-4 py-4">
+                    <div className="space-y-2">
+                        <Label htmlFor="poll-question">Votre question</Label>
+                        <Input 
+                            id="poll-question" 
+                            placeholder="Ex: Quel sujet pour la prochaine réunion ?" 
+                            value={question}
+                            onChange={(e) => setQuestion(e.target.value)}
+                        />
+                    </div>
+                    <div className="space-y-2">
+                        <Label>Options de réponse</Label>
+                        {options.map((option, index) => (
+                            <div key={index} className="flex items-center gap-2">
+                                <Input 
+                                    placeholder={`Option ${index + 1}`}
+                                    value={option}
+                                    onChange={(e) => handleOptionChange(index, e.target.value)}
+                                />
+                                {options.length > 2 ? (
+                                    <Button variant="ghost" size="icon" onClick={() => removeOption(index)}>
+                                        <Trash2 className="h-4 w-4" />
+                                    </Button>
+                                ) : <div className="w-10"/> }
+                            </div>
+                        ))}
+                    </div>
+                     <Button variant="outline" size="sm" onClick={addOption} disabled={options.length >= 5}>
+                        <Plus className="mr-2 h-4 w-4" /> Ajouter une option
+                    </Button>
+                </div>
+                <DialogFooter>
+                    <Button onClick={handleCreate} disabled={!question.trim() || options.filter(o=>o.trim()).length < 2}>Créer le sondage</Button>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
     );
 };
 
@@ -216,17 +358,29 @@ export default function ChatPage({ params }: { params: { id: string } }) {
     }
   };
 
-  const handleSendMessage = () => {
-    if (newMessage.trim() === '') return;
+  const handleSendMessage = (pollData: ChatMessage['poll'] | null = null) => {
+    if (newMessage.trim() === '' && !pollData) return;
 
     const time = new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
-    const message: ChatMessage = {
-        id: `msg-${Date.now()}`,
-        content: newMessage,
-        sender: 'me',
-        time: time,
-        type: 'text'
-    };
+    let message: ChatMessage;
+
+    if (pollData) {
+        message = {
+            id: `msg-${Date.now()}`,
+            sender: 'me',
+            time: time,
+            type: 'poll',
+            poll: pollData
+        };
+    } else {
+        message = {
+            id: `msg-${Date.now()}`,
+            content: newMessage,
+            sender: 'me',
+            time: time,
+            type: 'text'
+        };
+    }
 
     setMessages(prev => [...prev, message]);
     setNewMessage('');
@@ -359,7 +513,7 @@ export default function ChatPage({ params }: { params: { id: string } }) {
                     ? 'bg-primary text-primary-foreground'
                     : 'bg-secondary',
                    (message.type !== 'text') && 'p-2',
-                   message.type === 'audio' && 'w-64'
+                   (message.type === 'audio' || message.type === 'poll') && 'w-full'
                 )}
               >
                 {message.type === 'text' && <p>{message.content}</p>}
@@ -374,6 +528,10 @@ export default function ChatPage({ params }: { params: { id: string } }) {
                 
                 {message.type === 'audio' && (
                    <AudioPlayer duration={message.duration as string} />
+                )}
+
+                {message.type === 'poll' && message.poll && (
+                   <ChatPoll poll={message.poll} sender={message.sender} />
                 )}
 
 
@@ -406,6 +564,7 @@ export default function ChatPage({ params }: { params: { id: string } }) {
               <Button type="button" variant="ghost" size="icon" onClick={handleAttachmentClick}>
                 <Paperclip className="h-5 w-5" />
               </Button>
+               <CreatePollDialog onPollCreate={(pollData) => handleSendMessage(pollData)} />
               <Input 
                 placeholder="Message..." 
                 className="flex-grow" 
