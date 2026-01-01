@@ -423,7 +423,7 @@ export default function ChatPage({ params }: { params: { id: string } }) {
                 >
                 <Mic className="h-5 w-5" />
               </Button>
-              <Button type="submit" size="icon" className="bg-primary hover:bg-primary/90">
+              <Button type="submit" size="icon" disabled={!newMessage} className="bg-primary hover:bg-primary/90">
                 <Send className="h-5 w-5" />
               </Button>
             </form>
