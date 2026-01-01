@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Heart, MessageCircle, Share2, Image as ImageIcon, X, ThumbsUp, Laugh, Angry, Copy } from 'lucide-react';
+import { Heart, MessageCircle, Share2, Image as ImageIcon, X, ThumbsUp, Laugh, Angry, Copy, BarChart3 } from 'lucide-react';
 import Image from 'next/image';
 import { Separator } from '@/components/ui/separator';
 import { StoryCarousel } from '@/components/StoryCarousel';
@@ -15,6 +15,7 @@ import Link from 'next/link';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { extractLinkPreview, type LinkPreview } from '@/ai/flows/extract-link-preview-flow';
 import { allFeedPosts, addPost, type FeedPost } from '@/lib/chat-data';
+import { Progress } from '@/components/ui/progress';
 
 const urlRegex = /(https?:\/\/[^\s]+)/g;
 
@@ -32,6 +33,54 @@ const LinkPreviewCard = ({ link }: { link: any }) => (
         </Card>
     </a>
 );
+
+const PollCard = ({ poll }: { poll: NonNullable<FeedPost['poll']> }) => {
+    const [voted, setVoted] = useState<number | null>(null);
+    const [options, setOptions] = useState(poll.options);
+
+    const totalVotes = options.reduce((sum, option) => sum + option.votes, 0);
+
+    const handleVote = (index: number) => {
+        if (voted !== null) return;
+        setVoted(index);
+        const newOptions = [...options];
+        newOptions[index].votes += 1;
+        setOptions(newOptions);
+    };
+
+    return (
+        <div className="space-y-3 mt-4">
+            <h4 className="font-semibold">{poll.question}</h4>
+            <div className="space-y-2">
+                {options.map((option, index) => {
+                    const percentage = totalVotes > 0 ? (option.votes / totalVotes) * 100 : 0;
+                    return (
+                        <div key={index} className="space-y-1">
+                            {voted !== null ? (
+                                <div className="relative">
+                                    <Progress value={percentage} className="h-8" />
+                                    <div className="absolute inset-0 flex items-center justify-between px-3 text-white font-medium">
+                                        <span>{option.text}</span>
+                                        <span>{Math.round(percentage)}%</span>
+                                    </div>
+                                </div>
+                            ) : (
+                                <Button
+                                    variant="outline"
+                                    className="w-full justify-start h-10"
+                                    onClick={() => handleVote(index)}
+                                >
+                                    {option.text}
+                                </Button>
+                            )}
+                        </div>
+                    );
+                })}
+            </div>
+            <p className="text-xs text-muted-foreground">{totalVotes} votes</p>
+        </div>
+    );
+};
 
 
 const PostCard = ({ post }: { post: any }) => {
@@ -121,6 +170,8 @@ const PostCard = ({ post }: { post: any }) => {
                     <Image src={post.image} alt="Post image" width={600} height={400} className="rounded-lg object-cover w-full" data-ai-hint={post.imageHint} />
                 </div>
             )}
+
+            {post.poll && <PollCard poll={post.poll} />}
 
             {link && <LinkPreviewCard link={link} />}
 
@@ -257,6 +308,7 @@ export default function FeedPage() {
       linkPreview: linkPreview,
       likes: 0,
       comments: [],
+      poll: null,
     };
 
     addPost(newPost);
@@ -288,9 +340,14 @@ export default function FeedPage() {
                     </div>
                 )}
                 <div className="flex justify-between items-center">
-                    <Button variant="outline" size="icon" onClick={() => imageInputRef.current?.click()}>
-                        <ImageIcon className="h-4 w-4" />
-                    </Button>
+                    <div className="flex gap-2">
+                        <Button variant="outline" size="icon" onClick={() => imageInputRef.current?.click()}>
+                            <ImageIcon className="h-4 w-4" />
+                        </Button>
+                        <Button variant="outline" size="icon" disabled>
+                            <BarChart3 className="h-4 w-4" />
+                        </Button>
+                    </div>
                     <input 
                         type="file" 
                         ref={imageInputRef} 
@@ -312,3 +369,5 @@ export default function FeedPage() {
     </AppLayout>
   );
 }
+
+    

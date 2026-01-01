@@ -1,5 +1,6 @@
 
 
+
 export interface ChatMessage {
   id: string;
   type: 'text' | 'image' | 'file' | 'audio';
@@ -73,6 +74,10 @@ export interface FeedPost {
     title: string;
     description: string;
     image?: string;
+  } | null;
+  poll: {
+    question: string;
+    options: { text: string; votes: number }[];
   } | null;
   likes: number;
   comments: { id: string; user: { name: string; avatar: string }; content: string; time: string }[];
@@ -284,6 +289,7 @@ export let allFeedPosts: FeedPost[] = [
     image: 'https://picsum.photos/seed/rocket/600/400',
     imageHint: 'rocket launch',
     linkPreview: null,
+    poll: null,
     likes: 12,
     comments: [
         { id: 'c1-1', user: { name: 'Alice', avatar: 'https://picsum.photos/seed/alice/100/100' }, content: 'Bienvenue !', time: '1h' }
@@ -302,7 +308,27 @@ export let allFeedPosts: FeedPost[] = [
         description: 'Un aperçu des tendances qui façonneront la prochaine génération d\'internet, de la DeFi aux DAO en passant par les identités décentralisées.',
         image: 'https://i.ytimg.com/vi/m15kRt_Bqpw/maxresdefault.jpg',
     },
+    poll: null,
     likes: 42,
+    comments: []
+  },
+  {
+    id: 'post-4',
+    user: { name: 'SAHEL Annonces', username: 'sahel_annonces', avatar: 'https://picsum.photos/seed/announce/100/100' },
+    time: 'Il y a 8 heures',
+    content: 'Quelle fonctionnalité attendez-vous le plus ?',
+    image: null,
+    imageHint: '',
+    linkPreview: null,
+    poll: {
+        question: 'Quelle fonctionnalité attendez-vous le plus ?',
+        options: [
+            { text: 'Staking de SAHEL', votes: 18 },
+            { text: 'Intégration de plus de DApps', votes: 32 },
+            { text: 'Gouvernance (DAO)', votes: 25 },
+        ]
+    },
+    likes: 75,
     comments: []
   },
   {
@@ -313,6 +339,7 @@ export let allFeedPosts: FeedPost[] = [
     image: null,
     imageHint: '',
     linkPreview: null,
+    poll: null,
     likes: 5,
     comments: []
   },
@@ -442,4 +469,5 @@ export const getBlogPost = (id: string): BlogPost | undefined => {
     return allBlogPosts.find(post => post.id === id);
 }
 
+    
     
