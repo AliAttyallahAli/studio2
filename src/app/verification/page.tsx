@@ -13,6 +13,7 @@ import { useToast } from "@/hooks/use-toast"
 import { Camera, Upload } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useSearchParams } from 'next/navigation';
+import Image from 'next/image';
 
 const africanCountries = [
     "Algérie", "Angola", "Bénin", "Botswana", "Burkina Faso", "Burundi", "Cabo Verde", "Cameroun", "République centrafricaine",
@@ -31,6 +32,32 @@ export default function VerificationPage() {
   const [hasCameraPermission, setHasCameraPermission] = useState<boolean | null>(null);
   const [email, setEmail] = useState('');
   const videoRef = useRef<HTMLVideoElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [selfiePreview, setSelfiePreview] = useState<string | null>(null);
+
+   const [kycForm, setKycForm] = useState({
+    firstName: '',
+    lastName: '',
+    birthDate: '',
+    birthPlace: '',
+    country: '',
+    region: '',
+    city: '',
+    district: '',
+    docType: '',
+    docNumber: '',
+    docFront: null,
+    docBack: null,
+  });
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { id, value } = e.target;
+    setKycForm(prev => ({ ...prev, [id]: value }));
+  };
+
+  const handleSelectChange = (id: string, value: string) => {
+    setKycForm(prev => ({ ...prev, [id]: value }));
+  };
 
   useEffect(() => {
     const userEmail = searchParams.get('email');
@@ -78,6 +105,70 @@ export default function VerificationPage() {
     };
   }, [toast]);
 
+  const handleCaptureSelfie = () => {
+    if (videoRef.current && canvasRef.current) {
+      const video = videoRef.current;
+      const canvas = canvasRef.current;
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      const context = canvas.getContext('2d');
+      context?.drawImage(video, 0, 0, video.videoWidth, video.videoHeight);
+      const dataUrl = canvas.toDataURL('image/png');
+      setSelfiePreview(dataUrl);
+      toast({
+        title: 'Selfie capturé!',
+        description: 'L\'image a été prise et est prête à être soumise.',
+      });
+    }
+  };
+
+  const handleSubmitKyc = () => {
+    const requiredFields: (keyof typeof kycForm)[] = [
+      'firstName', 'lastName', 'birthDate', 'birthPlace', 'country', 'region', 'city', 'district', 'docType', 'docNumber'
+    ];
+    
+    for (const field of requiredFields) {
+      if (!kycForm[field]) {
+        toast({
+          variant: 'destructive',
+          title: 'Champ manquant',
+          description: `Veuillez remplir tous les champs avant de soumettre. Le champ "${field}" est requis.`,
+        });
+        return;
+      }
+    }
+
+     if (!selfiePreview) {
+        toast({
+          variant: 'destructive',
+          title: 'Selfie manquant',
+          description: 'Veuillez capturer un selfie vidéo avant de soumettre.',
+        });
+        return;
+    }
+
+    toast({
+      title: 'Soumission Réussie',
+      description: 'Vos informations KYC ont été soumises pour vérification.',
+    });
+  };
+
+  const handleApprove = () => {
+    toast({
+      title: 'KYC Approuvé',
+      description: `La vérification pour ${email} a été approuvée avec succès.`,
+      className: 'bg-green-500 text-white',
+    });
+  };
+
+  const handleReject = () => {
+     toast({
+      variant: 'destructive',
+      title: 'KYC Rejeté',
+      description: `La vérification pour ${email} a été rejetée.`,
+    });
+  };
+
 
   return (
     <AppLayout>
@@ -108,28 +199,28 @@ export default function VerificationPage() {
                         )}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div className="space-y-2">
-                                <Label htmlFor="first-name">Prénom</Label>
-                                <Input id="first-name" placeholder="Ex: Jean" />
+                                <Label htmlFor="firstName">Prénom</Label>
+                                <Input id="firstName" placeholder="Ex: Jean" required value={kycForm.firstName} onChange={handleInputChange} />
                             </div>
                             <div className="space-y-2">
-                                <Label htmlFor="last-name">Nom de famille</Label>
-                                <Input id="last-name" placeholder="Ex: Dupont" />
+                                <Label htmlFor="lastName">Nom de famille</Label>
+                                <Input id="lastName" placeholder="Ex: Dupont" required value={kycForm.lastName} onChange={handleInputChange} />
                             </div>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                            <div className="space-y-2">
-                                <Label htmlFor="birth-date">Date de naissance</Label>
-                                <Input id="birth-date" type="date" />
+                                <Label htmlFor="birthDate">Date de naissance</Label>
+                                <Input id="birthDate" type="date" required value={kycForm.birthDate} onChange={handleInputChange} />
                             </div>
                              <div className="space-y-2">
-                                <Label htmlFor="birth-place">Lieu de naissance</Label>
-                                <Input id="birth-place" placeholder="Ex: Dakar" />
+                                <Label htmlFor="birthPlace">Lieu de naissance</Label>
+                                <Input id="birthPlace" placeholder="Ex: Dakar" required value={kycForm.birthPlace} onChange={handleInputChange} />
                             </div>
                         </div>
                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div className="space-y-2">
                                 <Label htmlFor="country">Pays</Label>
-                                <Select>
+                                <Select required value={kycForm.country} onValueChange={(v) => handleSelectChange('country', v)}>
                                     <SelectTrigger id="country">
                                         <SelectValue placeholder="Sélectionnez votre pays" />
                                     </SelectTrigger>
@@ -142,24 +233,24 @@ export default function VerificationPage() {
                             </div>
                              <div className="space-y-2">
                                 <Label htmlFor="region">Région</Label>
-                                <Input id="region" placeholder="Ex: Région de Dakar" />
+                                <Input id="region" placeholder="Ex: Région de Dakar" required value={kycForm.region} onChange={handleInputChange} />
                             </div>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                              <div className="space-y-2">
                                 <Label htmlFor="city">Ville</Label>
-                                <Input id="city" placeholder="Ex: Dakar" />
+                                <Input id="city" placeholder="Ex: Dakar" required value={kycForm.city} onChange={handleInputChange} />
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="district">Quartier</Label>
-                                <Input id="district" placeholder="Ex: Mermoz" />
+                                <Input id="district" placeholder="Ex: Mermoz" required value={kycForm.district} onChange={handleInputChange} />
                             </div>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div className="space-y-2">
-                                <Label htmlFor="doc-type">Type de pièce</Label>
-                                <Select>
-                                    <SelectTrigger id="doc-type">
+                                <Label htmlFor="docType">Type de pièce</Label>
+                                <Select required value={kycForm.docType} onValueChange={(v) => handleSelectChange('docType', v)}>
+                                    <SelectTrigger id="docType">
                                         <SelectValue placeholder="Sélectionnez le type" />
                                     </SelectTrigger>
                                     <SelectContent>
@@ -171,19 +262,19 @@ export default function VerificationPage() {
                                 </Select>
                             </div>
                             <div className="space-y-2">
-                                <Label htmlFor="doc-number">Numéro de pièce</Label>
-                                <Input id="doc-number" placeholder="Ex: 123456789" />
+                                <Label htmlFor="docNumber">Numéro de pièce</Label>
+                                <Input id="docNumber" placeholder="Ex: 123456789" required value={kycForm.docNumber} onChange={handleInputChange} />
                             </div>
                         </div>
 
                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div className="space-y-2">
                                 <Label htmlFor="doc-front">Pièce d'identité (Recto)</Label>
-                                <Input id="doc-front" type="file" />
+                                <Input id="doc-front" type="file" required />
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="doc-back">Pièce d'identité (Verso)</Label>
-                                <Input id="doc-back" type="file" />
+                                <Input id="doc-back" type="file" required />
                             </div>
                         </div>
 
@@ -192,6 +283,7 @@ export default function VerificationPage() {
                              <div className="p-2 border rounded-md bg-secondary aspect-video flex items-center justify-center">
                                 <video ref={videoRef} className="w-full h-full rounded-md" autoPlay muted playsInline />
                             </div>
+                            <canvas ref={canvasRef} className="hidden" />
                              {hasCameraPermission === false && (
                                 <Alert variant="destructive">
                                     <AlertTitle>Accès à la caméra requis</AlertTitle>
@@ -200,17 +292,27 @@ export default function VerificationPage() {
                                     </AlertDescription>
                                   </Alert>
                             )}
-                            <Button className="w-full" disabled={!hasCameraPermission}>
+                            {selfiePreview && (
+                                <div className="space-y-2">
+                                    <Label>Aperçu du selfie</Label>
+                                    <div className="p-2 border rounded-md bg-secondary flex justify-center">
+                                        <Image src={selfiePreview} alt="Aperçu du selfie" width={200} height={150} className="rounded-md" />
+                                    </div>
+                                </div>
+                            )}
+                            <Button className="w-full" disabled={!hasCameraPermission} onClick={handleCaptureSelfie}>
                                 <Camera className="mr-2 h-4 w-4" />
                                 Capturer le Selfie
                             </Button>
                         </div>
 
-                        <div className="flex gap-2">
-                             <Button className="w-full bg-green-600 hover:bg-green-700">Approuver</Button>
-                             <Button className="w-full" variant="destructive">Rejeter</Button>
-                        </div>
-                        <Button className="w-full bg-accent hover:bg-accent/90">Soumettre pour vérification KYC</Button>
+                        {email && (
+                            <div className="flex gap-2">
+                                <Button className="w-full bg-green-600 hover:bg-green-700" onClick={handleApprove}>Approuver</Button>
+                                <Button className="w-full" variant="destructive" onClick={handleReject}>Rejeter</Button>
+                            </div>
+                        )}
+                        <Button className="w-full bg-accent hover:bg-accent/90" onClick={handleSubmitKyc}>Soumettre pour vérification KYC</Button>
 
                     </CardContent>
                 </Card>
