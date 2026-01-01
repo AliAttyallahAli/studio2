@@ -154,14 +154,44 @@ const ChatPoll = ({ poll, sender }: { poll: NonNullable<ChatMessage['poll']>, se
 
 
 const CallView = ({ contact, type, onHangUp }: { contact: ChatData['contact'], type: 'audio' | 'video', onHangUp: () => void }) => {
+    const [callStatus, setCallStatus] = useState<'ringing' | 'active'>('ringing');
     const [callTime, setCallTime] = useState(0);
+    const selfViewRef = useRef<HTMLVideoElement>(null);
+    const [hasCameraPermission, setHasCameraPermission] = useState(false);
 
     useEffect(() => {
-        const timer = setInterval(() => {
-            setCallTime(prev => prev + 1);
-        }, 1000);
+        if (type === 'video') {
+            const getCameraPermission = async () => {
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                    setHasCameraPermission(true);
+                    if (selfViewRef.current) {
+                        selfViewRef.current.srcObject = stream;
+                    }
+                } catch (error) {
+                    console.error('Error accessing camera:', error);
+                    setHasCameraPermission(false);
+                }
+            };
+            getCameraPermission();
+        }
+    }, [type]);
+
+    useEffect(() => {
+        let timer: NodeJS.Timeout;
+        if (callStatus === 'active') {
+            timer = setInterval(() => {
+                setCallTime(prev => prev + 1);
+            }, 1000);
+        } else {
+            // Simulate other user picking up after 3 seconds
+            const pickupTimeout = setTimeout(() => {
+                setCallStatus('active');
+            }, 3000);
+            return () => clearTimeout(pickupTimeout);
+        }
         return () => clearInterval(timer);
-    }, []);
+    }, [callStatus]);
 
     const formatTime = (seconds: number) => {
         const m = Math.floor(seconds / 60);
@@ -177,12 +207,14 @@ const CallView = ({ contact, type, onHangUp }: { contact: ChatData['contact'], t
                     <AvatarFallback>{contact.name.charAt(0)}</AvatarFallback>
                 </Avatar>
                 <h1 className="text-3xl font-bold mt-4">{contact.name}</h1>
-                <p className="text-lg text-muted-foreground mt-2">{formatTime(callTime)}</p>
+                <p className="text-lg text-muted-foreground mt-2">
+                    {callStatus === 'ringing' ? 'Appel en cours...' : formatTime(callTime)}
+                </p>
             </div>
             
             {type === 'video' && (
                 <div className="w-32 h-48 rounded-lg bg-secondary/50 overflow-hidden absolute top-8 right-8">
-                     {/* Your self-view video would go here */}
+                     <video ref={selfViewRef} className="w-full h-full object-cover" autoPlay muted playsInline />
                 </div>
             )}
 
