@@ -11,6 +11,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import Image from 'next/image';
 import React, { useState, useRef, useEffect } from 'react';
 import { getChatData, type ChatMessage, type ChatData } from '@/lib/chat-data';
+import { useToast } from '@/hooks/use-toast';
 
 const FileAttachmentCard = ({ file }: { file: { name: string, size: string } }) => (
     <div className="flex items-center p-3 rounded-lg bg-background/20 mt-2">
@@ -154,6 +155,7 @@ export default function ChatPage({ params }: { params: { id: string } }) {
   const pathname = usePathname();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
+  const { toast } = useToast();
   
   const [chatId, setChatId] = useState<string | null>(null);
   const [chatData, setChatData] = useState<ChatData | null>(null);
@@ -263,6 +265,17 @@ export default function ChatPage({ params }: { params: { id: string } }) {
       }
       setRecordingTime(0);
   };
+  
+  const handleInitiateCall = (type: 'audio' | 'video') => {
+    if (chatData?.contact.status === 'En ligne') {
+        setCallState({ active: true, type: type });
+    } else {
+        toast({
+            title: "Contact hors ligne",
+            description: `${chatData?.contact.name} n'est pas en ligne. Une notification d'appel manqué lui sera envoyée.`,
+        });
+    }
+  };
 
 
   useEffect(() => {
@@ -283,7 +296,7 @@ export default function ChatPage({ params }: { params: { id: string } }) {
     );
   }
 
-  const { name: chatName, avatar: chatAvatar } = chatData.contact;
+  const { name: chatName, avatar: chatAvatar, status, type: contactType } = chatData.contact;
 
   return (
     <div className="flex flex-col h-full bg-card md:border-l">
@@ -299,17 +312,28 @@ export default function ChatPage({ params }: { params: { id: string } }) {
           <ArrowLeft className="h-6 w-6" />
         </Button>
         <div className="flex items-center gap-3 ml-2 cursor-pointer" onClick={() => router.push(`/chat/${chatId}/settings`)}>
-            <Avatar>
-                <AvatarImage src={chatAvatar} alt={chatName} data-ai-hint="profile avatar"/>
-                <AvatarFallback>{chatName.charAt(0)}</AvatarFallback>
-            </Avatar>
-            <h2 className="text-lg font-semibold">{chatName}</h2>
+            <div className="relative">
+                <Avatar>
+                    <AvatarImage src={chatAvatar} alt={chatName} data-ai-hint="profile avatar"/>
+                    <AvatarFallback>{chatName.charAt(0)}</AvatarFallback>
+                </Avatar>
+                {contactType === 'user' && (
+                    <div className={cn(
+                        "absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-background",
+                        status === 'En ligne' ? 'bg-green-500' : 'bg-gray-400'
+                    )} />
+                )}
+            </div>
+            <div>
+                <h2 className="text-lg font-semibold">{chatName}</h2>
+                {contactType === 'user' && <p className="text-xs text-muted-foreground">{status}</p>}
+            </div>
         </div>
         <div className="ml-auto flex items-center gap-2">
-            <Button variant="ghost" size="icon" onClick={() => setCallState({ active: true, type: 'audio' })}>
+            <Button variant="ghost" size="icon" onClick={() => handleInitiateCall('audio')}>
                 <Phone className="h-5 w-5" />
             </Button>
-            <Button variant="ghost" size="icon" onClick={() => setCallState({ active: true, type: 'video' })}>
+            <Button variant="ghost" size="icon" onClick={() => handleInitiateCall('video')}>
                 <Video className="h-5 w-5" />
             </Button>
              <Button variant="ghost" size="icon" onClick={() => router.push(`/chat/${chatId}/settings`)}>
@@ -408,3 +432,5 @@ export default function ChatPage({ params }: { params: { id: string } }) {
     </div>
   );
 }
+
+    

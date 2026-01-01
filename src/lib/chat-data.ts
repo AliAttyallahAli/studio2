@@ -28,6 +28,7 @@ export interface UserProfileData {
   avatar: string;
   description: string;
   isGroup: boolean;
+  status?: 'En ligne' | 'Hors ligne';
   details?: UserProfileDetails;
 }
 
@@ -38,6 +39,7 @@ export interface ChatData {
     name: string;
     avatar: string;
     type: 'user' | 'group';
+    status?: 'En ligne' | 'Hors ligne';
   };
   lastMessage: string;
   time: string;
@@ -122,6 +124,7 @@ const userProfiles: Record<string, UserProfileData> = {
     avatar: 'https://picsum.photos/seed/alice/100/100',
     description: '@alice_crypto',
     isGroup: false,
+    status: 'En ligne',
     details: {
       bio: "Passionnée de crypto et de voyages. J'explore le web3 un bloc à la fois. 🚀",
       parcours: "Développeuse Blockchain depuis 5 ans, spécialisée dans les contrats intelligents sur Ethereum. A travaillé sur plusieurs projets DeFi et NFT.",
@@ -135,6 +138,7 @@ const userProfiles: Record<string, UserProfileData> = {
     avatar: 'https://picsum.photos/seed/bob/100/100',
     description: '@bob_trader',
     isGroup: false,
+    status: 'Hors ligne',
     details: {
       bio: "Trader et analyste technique. Fan de SAHEL coin.",
       parcours: "Trader indépendant depuis 2018.",
@@ -155,6 +159,7 @@ const userProfiles: Record<string, UserProfileData> = {
     avatar: 'https://picsum.photos/seed/charlie/100/100',
     description: '@charlie_dev',
     isGroup: false,
+    status: 'En ligne',
      details: {
       bio: "Développeur Full-Stack, curieux du Web3.",
       parcours: "Développeur Web avec 3 ans d'expérience.",
@@ -168,6 +173,7 @@ const userProfiles: Record<string, UserProfileData> = {
     avatar: 'https://picsum.photos/seed/diana/100/100',
     description: '@diana_designer',
     isGroup: false,
+    status: 'Hors ligne',
     details: {
       bio: "Designer UI/UX spécialisée dans les applications décentralisées.",
       parcours: "Designer depuis 4 ans, passionnée par l'esthétique et la fonctionnalité.",
@@ -181,6 +187,7 @@ const userProfiles: Record<string, UserProfileData> = {
     avatar: 'https://picsum.photos/seed/sahel/100/100',
     description: 'Moi',
     isGroup: false,
+    status: 'En ligne',
     details: {
         bio: "Passionné par la révolution Web3 en Afrique. #SAHEL",
         parcours: "Développeur et entrepreneur, focus sur les solutions décentralisées pour les marchés émergents.",
@@ -203,7 +210,7 @@ export let allChats: ChatData[] = [
   },
   { 
     id: '2', 
-    contact: { id: '2', name: 'Alice', avatar: 'https://picsum.photos/seed/alice/100/100', type: 'user' },
+    contact: { id: '2', name: 'Alice', avatar: 'https://picsum.photos/seed/alice/100/100', type: 'user', status: 'En ligne' },
     lastMessage: 'Bienvenue ! C\'est une super plateforme.', 
     time: '14:31', 
     messages: [
@@ -219,7 +226,7 @@ export let allChats: ChatData[] = [
   },
   { 
     id: '3', 
-    contact: { id: '3', name: 'Bob', avatar: 'https://picsum.photos/seed/bob/100/100', type: 'user' },
+    contact: { id: '3', name: 'Bob', avatar: 'https://picsum.photos/seed/bob/100/100', type: 'user', status: 'Hors ligne' },
     lastMessage: 'On se voit plus tard.', 
     time: '12:15',
     messages: [
@@ -355,7 +362,14 @@ export const addBlogPost = (post: BlogPost) => {
 };
 
 export const getChatData = (id: string): ChatData | undefined => {
-    return allChats.find(chat => chat.id === id);
+    const chat = allChats.find(chat => chat.id === id);
+    if (chat && chat.contact.type === 'user') {
+        const userProfile = getUserProfile(chat.contact.id);
+        if (userProfile) {
+            chat.contact.status = userProfile.status;
+        }
+    }
+    return chat;
 }
 
 export const createGroupChat = (groupInfo: {name: string, avatar: string, members: string[]}): ChatData => {
@@ -401,6 +415,7 @@ export const getOrCreateChat = (userId: string): ChatData => {
             name: user.name,
             avatar: user.avatar,
             type: 'user',
+            status: user.status
         },
         lastMessage: `Commencez à discuter avec ${user.name}`,
         time: new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }),
@@ -426,3 +441,5 @@ export const getStoryData = (id: string): Story | undefined => {
 export const getBlogPost = (id: string): BlogPost | undefined => {
     return allBlogPosts.find(post => post.id === id);
 }
+
+    
