@@ -27,10 +27,18 @@ export default function PartnershipsPage() {
     const [projectObject, setProjectObject] = useState('');
     const [contactAddress, setContactAddress] = useState('');
     const [attachedFile, setAttachedFile] = useState<File | null>(null);
+    const [imagePreview, setImagePreview] = useState<string | null>(null);
 
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         if (event.target.files && event.target.files[0]) {
             setAttachedFile(event.target.files[0]);
+        }
+    };
+
+    const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        if (event.target.files && event.target.files[0]) {
+            const file = event.target.files[0];
+            setImagePreview(URL.createObjectURL(file));
         }
     };
 
@@ -43,7 +51,7 @@ export default function PartnershipsPage() {
             description: content.substring(0, 100) + '...',
             content: content,
             author: { name: institution || "SahelUser", username: "saheluser", avatar: "https://picsum.photos/seed/zoudou/100/100" },
-            image: "https://picsum.photos/seed/newpost/800/400",
+            image: imagePreview || "https://picsum.photos/seed/newpost/800/400",
             imageHint: "user blog post",
             category: "Communauté",
             readTime: "5 min de lecture"
@@ -58,6 +66,7 @@ export default function PartnershipsPage() {
         setProjectObject('');
         setContactAddress('');
         setAttachedFile(null);
+        setImagePreview(null);
     };
 
   return (
@@ -96,8 +105,17 @@ export default function PartnershipsPage() {
                             <Textarea id="post-content" placeholder="Rédigez votre proposition ou votre article ici..." className="min-h-[150px]" value={content} onChange={e => setContent(e.target.value)} />
                         </div>
                          <div className="space-y-2">
-                            <Label htmlFor="post-image">Fichiers joints (optionnel)</Label>
-                            <Input id="post-image" type="file" onChange={handleFileChange} />
+                            <Label htmlFor="post-image-cover">Image de couverture</Label>
+                            <Input id="post-image-cover" type="file" accept="image/*" onChange={handleImageChange} />
+                            {imagePreview && (
+                                <div className="mt-2 relative aspect-video w-full max-w-sm">
+                                     <Image src={imagePreview} alt="Aperçu de l'image" fill className="rounded-md object-cover" />
+                                </div>
+                            )}
+                        </div>
+                         <div className="space-y-2">
+                            <Label htmlFor="post-files">Fichiers joints (optionnel)</Label>
+                            <Input id="post-files" type="file" onChange={handleFileChange} />
                              {attachedFile && <p className="text-sm text-muted-foreground">Fichier sélectionné : {attachedFile.name}</p>}
                         </div>
                         <div className="space-y-2">
