@@ -12,6 +12,7 @@ import { useRouter } from 'next/navigation';
 import { Textarea } from '@/components/ui/textarea';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import React, { useState, useRef, useEffect } from 'react';
+import { useToast } from '@/hooks/use-toast';
 
 const leaderboard = [
     { rank: 1, user: '@CryptoKing', referrals: 152, active: 140 },
@@ -23,6 +24,7 @@ const leaderboard = [
 
 export default function ProfilePage() {
     const router = useRouter();
+    const { toast } = useToast();
     
     const currentUser = {
         username: '@SahelUser',
@@ -58,6 +60,14 @@ export default function ProfilePage() {
             setImagePreview(URL.createObjectURL(file));
         }
     };
+    
+    const copyReferralLink = () => {
+        navigator.clipboard.writeText(referralLink);
+        toast({
+            title: 'Copié !',
+            description: 'Le lien de parrainage a été copié dans le presse-papiers.',
+        });
+    }
 
   return (
     <AppLayout>
@@ -135,7 +145,7 @@ export default function ProfilePage() {
                         <div className="flex items-center space-x-2 p-2 bg-secondary rounded-md mt-2">
                             <Gift className="h-5 w-5 text-primary"/>
                             <Input readOnly value={referralLink} className="flex-grow border-0 bg-transparent text-sm" />
-                            <Button variant="ghost" size="icon" onClick={() => navigator.clipboard.writeText(referralLink)}>
+                            <Button variant="ghost" size="icon" onClick={copyReferralLink}>
                                 <Copy className="h-4 w-4" />
                             </Button>
                         </div>
