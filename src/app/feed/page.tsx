@@ -19,6 +19,7 @@ import { Progress } from '@/components/ui/progress';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger, DialogFooter } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
+import { cn } from '@/lib/utils';
 
 const urlRegex = /(https?:\/\/[^\s]+)/g;
 
@@ -155,10 +156,18 @@ const PostCard = ({ post }: { post: any }) => {
     <Card>
         <CardHeader>
             <Link href={`/profile/${post.user.username}`} className="flex items-center gap-3 group">
-                <Avatar>
-                    <AvatarImage src={post.user.avatar} alt={post.user.name} data-ai-hint="profile avatar" />
-                    <AvatarFallback>{post.user.name.charAt(0)}</AvatarFallback>
-                </Avatar>
+                <div className="relative">
+                    <Avatar>
+                        <AvatarImage src={post.user.avatar} alt={post.user.name} data-ai-hint="profile avatar" />
+                        <AvatarFallback>{post.user.name.charAt(0)}</AvatarFallback>
+                    </Avatar>
+                     {post.user.status && (
+                        <div className={cn(
+                            "absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full border-2 border-background",
+                            post.user.status === 'En ligne' ? 'bg-green-500' : 'bg-gray-400'
+                        )} />
+                    )}
+                </div>
                 <div>
                     <p className="font-semibold group-hover:underline">{post.user.name}</p>
                     <p className="text-xs text-muted-foreground">{post.time}</p>

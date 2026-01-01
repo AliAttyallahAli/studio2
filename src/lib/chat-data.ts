@@ -2,6 +2,7 @@
 
 
 
+
 export interface ChatMessage {
   id: string;
   type: 'text' | 'image' | 'file' | 'audio' | 'poll';
@@ -69,7 +70,7 @@ export interface Story {
 
 export interface FeedPost {
   id: string;
-  user: { name: string; username: string; avatar: string };
+  user: { name: string; username: string; avatar: string, status?: 'En ligne' | 'Hors ligne' };
   time: string;
   content: string;
   image: string | null;
@@ -302,7 +303,7 @@ export let allStories: Story[] = [
 export let allFeedPosts: FeedPost[] = [
   {
     id: 'post-1',
-    user: { name: '@SahelUser', username: 'saheluser', avatar: 'https://picsum.photos/seed/sahel/100/100' },
+    user: { name: '@SahelUser', username: 'saheluser', avatar: 'https://picsum.photos/seed/sahel/100/100', status: 'En ligne' },
     time: 'Il y a 2 heures',
     content: 'Heureux de rejoindre la communauté SAHEL ! Prêt à miner mes premiers SAHEL. 🚀',
     image: 'https://picsum.photos/seed/rocket/600/400',
@@ -316,7 +317,7 @@ export let allFeedPosts: FeedPost[] = [
   },
   {
     id: 'post-2',
-    user: { name: '@tech_news', username: 'tech_news', avatar: 'https://picsum.photos/seed/guru/100/100' },
+    user: { name: '@tech_news', username: 'tech_news', avatar: 'https://picsum.photos/seed/guru/100/100', status: 'En ligne' },
     time: 'Il y a 4 heures',
     content: 'Article intéressant sur le futur du Web3 : https://example-web3-news.com/article',
     image: null,
@@ -351,7 +352,7 @@ export let allFeedPosts: FeedPost[] = [
   },
   {
     id: 'post-3',
-    user: { name: '@crypto_queen', username: 'crypto_queen', avatar: 'https://picsum.photos/seed/queen/100/100' },
+    user: { name: '@crypto_queen', username: 'crypto_queen', avatar: 'https://picsum.photos/seed/queen/100/100', status: 'Hors ligne' },
     time: 'Il y a 5 heures',
     content: "Le marché est en pleine effervescence aujourd'hui. J'ai échangé quelques SAHEL contre un bon d'achat. C'est tellement pratique !",
     image: null,
