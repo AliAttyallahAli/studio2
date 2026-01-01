@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Heart, MessageCircle, Share2, Image as ImageIcon, X, ThumbsUp, Laugh, Angry, Copy, BarChart3, Plus, Trash2 } from 'lucide-react';
+import { Heart, MessageCircle, Share2, Image as ImageIcon, X, ThumbsUp, Laugh, Angry, Copy, BarChart3, Plus, Trash2, Search } from 'lucide-react';
 import Image from 'next/image';
 import { Separator } from '@/components/ui/separator';
 import { StoryCarousel } from '@/components/StoryCarousel';
@@ -371,6 +371,7 @@ export default function FeedPage() {
   const [newPostContent, setNewPostContent] = useState('');
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const imageInputRef = useRef<HTMLInputElement>(null);
+  const [searchTerm, setSearchTerm] = useState('');
 
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
@@ -419,10 +420,26 @@ export default function FeedPage() {
     removeImage();
   };
 
+  const filteredPosts = posts.filter(post =>
+    post.content.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    post.user.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
 
   return (
     <AppLayout>
         <div className="max-w-2xl mx-auto w-full space-y-6">
+            
+            <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                <Input 
+                    placeholder="Rechercher dans le fil..." 
+                    className="pl-10"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                />
+            </div>
+
             <StoryCarousel />
 
             <Card>
@@ -461,7 +478,7 @@ export default function FeedPage() {
             </Card>
 
             <div className="space-y-4">
-                {posts.map((post) => (
+                {filteredPosts.map((post) => (
                     <PostCard key={post.id} post={post} />
                 ))}
             </div>
@@ -473,3 +490,4 @@ export default function FeedPage() {
     
 
     
+
