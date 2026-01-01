@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { AppLayout } from '@/components/AppLayout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -70,6 +70,31 @@ export default function WalletPage() {
      }, 500); // Check for updates periodically
      return () => clearInterval(interval);
    }, []);
+   
+   const totalBalanceUSD = useMemo(() => {
+        const rates = {
+            SAHEL: 1.05,
+            ZIM: 0.10,
+            ECO: 0.01
+        };
+
+        let total = 0;
+        
+        // Sahel balance
+        total += currentWalletData.sahel.balance * rates.SAHEL;
+
+        // Tokens balance
+        currentWalletData.tokens.forEach(token => {
+            const [amountStr, ticker] = token.balance.split(' ');
+            const amount = parseFloat(amountStr);
+            const rate = rates[ticker as keyof typeof rates];
+            if (amount && rate) {
+                total += amount * rate;
+            }
+        });
+
+        return total;
+   }, [currentWalletData]);
 
   const handlePinSuccess = () => {
     setPinState('unlocked');
@@ -136,7 +161,7 @@ export default function WalletPage() {
                   <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                       <div>
                           <CardTitle>Mon Portefeuille Multichain</CardTitle>
-                          <CardDescription>Solde total estimé : <span className="font-bold text-primary">$1,850.50 USD</span></CardDescription>
+                          <CardDescription>Solde total estimé : <span className="font-bold text-primary">${totalBalanceUSD.toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD</span></CardDescription>
                       </div>
                        <div className="flex gap-2 w-full md:w-auto">
                            <Dialog open={showSendDialog} onOpenChange={setShowSendDialog}>
