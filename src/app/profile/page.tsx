@@ -11,7 +11,7 @@ import { Camera, Gift, Copy } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Textarea } from '@/components/ui/textarea';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 
 const leaderboard = [
     { rank: 1, user: '@CryptoKing', referrals: 152, active: 140 },
@@ -33,7 +33,15 @@ export default function ProfilePage() {
         bio: "Passionné par la révolution Web3 en Afrique. #SAHEL"
     };
     
-    const referralLink = `https://sahel.app/join/${currentUser.username.replace('@','')}`;
+    const [referralLink, setReferralLink] = useState('');
+
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            const origin = window.location.origin;
+            setReferralLink(`${origin}/auth?ref=${currentUser.username.replace('@','')}`);
+        }
+    }, [currentUser.username]);
+
 
     const [imagePreview, setImagePreview] = useState<string>(currentUser.avatar);
     const imageInputRef = useRef<HTMLInputElement>(null);
@@ -126,7 +134,7 @@ export default function ProfilePage() {
                         <Label>Votre lien de parrainage</Label>
                         <div className="flex items-center space-x-2 p-2 bg-secondary rounded-md mt-2">
                             <Gift className="h-5 w-5 text-primary"/>
-                            <Input readOnly defaultValue={referralLink} className="flex-grow border-0 bg-transparent text-sm" />
+                            <Input readOnly value={referralLink} className="flex-grow border-0 bg-transparent text-sm" />
                             <Button variant="ghost" size="icon" onClick={() => navigator.clipboard.writeText(referralLink)}>
                                 <Copy className="h-4 w-4" />
                             </Button>

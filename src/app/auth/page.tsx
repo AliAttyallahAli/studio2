@@ -1,13 +1,13 @@
 
 'use client';
 
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Handshake } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 function AppLogo() {
   return (
@@ -23,8 +23,17 @@ const existingUsers = ['jean.dupont@exemple.com', 'test@gmail.com'];
 
 export default function AuthPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [step, setStep] = useState<'initial' | 'login' | 'signup'>('initial');
   const [email, setEmail] = useState('');
+  const [referral, setReferral] = useState<string | null>(null);
+
+  useEffect(() => {
+    const ref = searchParams.get('ref');
+    if(ref) {
+        setReferral(ref);
+    }
+  }, [searchParams]);
   
   const handleInitialSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -63,7 +72,7 @@ export default function AuthPage() {
             <CardDescription>
                 {step === 'initial' && 'Entrez votre email pour commencer.'}
                 {step === 'login' && `Content de vous revoir !`}
-                {step === 'signup' && 'Finalisez la création de votre compte.'}
+                {step === 'signup' && (referral ? `Invité par @${referral}. Finalisez votre compte.` : 'Finalisez la création de votre compte.')}
             </CardDescription>
           </CardHeader>
           <CardContent>
