@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Heart, MessageCircle, Share2, Image as ImageIcon, X, ThumbsUp, Laugh, Angry, Copy, BarChart3 } from 'lucide-react';
+import { Heart, MessageCircle, Share2, Image as ImageIcon, X, ThumbsUp, Laugh, Angry, Copy, BarChart3, Plus, Trash2 } from 'lucide-react';
 import Image from 'next/image';
 import { Separator } from '@/components/ui/separator';
 import { StoryCarousel } from '@/components/StoryCarousel';
@@ -16,6 +16,9 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { extractLinkPreview, type LinkPreview } from '@/ai/flows/extract-link-preview-flow';
 import { allFeedPosts, addPost, type FeedPost } from '@/lib/chat-data';
 import { Progress } from '@/components/ui/progress';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger, DialogFooter } from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
 
 const urlRegex = /(https?:\/\/[^\s]+)/g;
 
@@ -264,6 +267,96 @@ const PostCard = ({ post }: { post: any }) => {
     );
 };
 
+const CreatePollDialog = ({ onPollCreate }: { onPollCreate: (pollData: { question: string, options: { text: string, votes: number }[]}) => void }) => {
+    const [question, setQuestion] = useState('');
+    const [options, setOptions] = useState(['', '']);
+    const [open, setOpen] = useState(false);
+
+    const handleOptionChange = (index: number, value: string) => {
+        const newOptions = [...options];
+        newOptions[index] = value;
+        setOptions(newOptions);
+    };
+
+    const addOption = () => {
+        if (options.length < 5) {
+            setOptions([...options, '']);
+        }
+    };
+    
+    const removeOption = (index: number) => {
+        if (options.length > 2) {
+            const newOptions = options.filter((_, i) => i !== index);
+            setOptions(newOptions);
+        }
+    };
+
+    const handleCreate = () => {
+        const validOptions = options.map(o => o.trim()).filter(o => o !== '');
+        if (question.trim() && validOptions.length >= 2) {
+            onPollCreate({
+                question: question.trim(),
+                options: validOptions.map(opt => ({ text: opt, votes: 0 })),
+            });
+            setOpen(false);
+            setQuestion('');
+            setOptions(['','']);
+        }
+    };
+
+    return (
+        <Dialog open={open} onOpenChange={setOpen}>
+            <DialogTrigger asChild>
+                <Button variant="outline" size="icon">
+                    <BarChart3 className="h-4 w-4" />
+                </Button>
+            </DialogTrigger>
+            <DialogContent>
+                <DialogHeader>
+                    <DialogTitle>Créer un sondage</DialogTitle>
+                    <DialogDescription>
+                        Posez une question à la communauté et définissez les options de réponse.
+                    </DialogDescription>
+                </DialogHeader>
+                <div className="space-y-4 py-4">
+                    <div className="space-y-2">
+                        <Label htmlFor="poll-question">Votre question</Label>
+                        <Input 
+                            id="poll-question" 
+                            placeholder="Quelle est la meilleure cryptomonnaie ?" 
+                            value={question}
+                            onChange={(e) => setQuestion(e.target.value)}
+                        />
+                    </div>
+                    <div className="space-y-2">
+                        <Label>Options de réponse</Label>
+                        {options.map((option, index) => (
+                            <div key={index} className="flex items-center gap-2">
+                                <Input 
+                                    placeholder={`Option ${index + 1}`}
+                                    value={option}
+                                    onChange={(e) => handleOptionChange(index, e.target.value)}
+                                />
+                                {options.length > 2 ? (
+                                    <Button variant="ghost" size="icon" onClick={() => removeOption(index)}>
+                                        <Trash2 className="h-4 w-4" />
+                                    </Button>
+                                ) : <div className="w-10"/> }
+                            </div>
+                        ))}
+                    </div>
+                     <Button variant="outline" size="sm" onClick={addOption} disabled={options.length >= 5}>
+                        <Plus className="mr-2 h-4 w-4" /> Ajouter une option
+                    </Button>
+                </div>
+                <DialogFooter>
+                    <Button onClick={handleCreate} disabled={!question.trim() || options.filter(o=>o.trim()).length < 2}>Créer le sondage</Button>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
+    );
+};
+
 export default function FeedPage() {
   const [posts, setPosts] = useState(allFeedPosts);
   const [newPostContent, setNewPostContent] = useState('');
@@ -284,8 +377,8 @@ export default function FeedPage() {
     }
   }
 
-  const handlePublish = async () => {
-    if (newPostContent.trim() === '' && !imagePreview) return;
+  const handlePublish = async (pollData: FeedPost['poll'] = null) => {
+    if (newPostContent.trim() === '' && !imagePreview && !pollData) return;
 
     let linkPreview: LinkPreview | null = null;
     const urls = newPostContent.match(urlRegex);
@@ -306,9 +399,9 @@ export default function FeedPage() {
       image: imagePreview,
       imageHint: 'user content',
       linkPreview: linkPreview,
+      poll: pollData,
       likes: 0,
       comments: [],
-      poll: null,
     };
 
     addPost(newPost);
@@ -344,9 +437,7 @@ export default function FeedPage() {
                         <Button variant="outline" size="icon" onClick={() => imageInputRef.current?.click()}>
                             <ImageIcon className="h-4 w-4" />
                         </Button>
-                        <Button variant="outline" size="icon" disabled>
-                            <BarChart3 className="h-4 w-4" />
-                        </Button>
+                        <CreatePollDialog onPollCreate={(pollData) => handlePublish(pollData)} />
                     </div>
                     <input 
                         type="file" 
@@ -355,7 +446,7 @@ export default function FeedPage() {
                         accept="image/*"
                         onChange={handleImageChange}
                     />
-                    <Button className="bg-accent hover:bg-accent/90" onClick={handlePublish}>Publier</Button>
+                    <Button className="bg-accent hover:bg-accent/90" onClick={() => handlePublish()}>Publier</Button>
                 </div>
             </CardContent>
             </Card>
@@ -369,5 +460,7 @@ export default function FeedPage() {
     </AppLayout>
   );
 }
+
+    
 
     
