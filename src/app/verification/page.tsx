@@ -128,7 +128,7 @@ export default function VerificationPage() {
     ];
     
     for (const field of requiredFields) {
-      if (!kycForm[field]) {
+      if (!kycForm[field as keyof typeof kycForm]) {
         toast({
           variant: 'destructive',
           title: 'Champ manquant',
