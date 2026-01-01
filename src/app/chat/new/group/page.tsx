@@ -7,7 +7,7 @@ import { ArrowLeft, Camera, Check, User, Search, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { getUserProfile } from '@/lib/chat-data';
+import { getUserProfile, createGroupChat } from '@/lib/chat-data';
 import { Checkbox } from '@/components/ui/checkbox';
 import Image from 'next/image';
 
@@ -38,15 +38,13 @@ export default function NewGroupPage() {
   const handleCreateGroup = () => {
     if (!groupName || selectedUsers.length === 0) return;
     
-    // In a real app, you would use this data to create a group on your backend.
-    console.log({
-      groupName,
-      image: imagePreview,
+    const newGroup = createGroupChat({
+      name: groupName,
+      avatar: imagePreview || `https://picsum.photos/seed/${groupName.toLowerCase()}/100/100`,
       members: selectedUsers,
     });
     
-    // For now, we'll just redirect to the chat list.
-    router.push('/chat');
+    router.push(`/chat/${newGroup.id}`);
   };
 
   const filteredUsers = allUsers.filter(user => 

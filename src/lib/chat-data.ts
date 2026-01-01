@@ -94,7 +94,7 @@ export interface BlogPost {
 }
 
 export const walletData = {
-    sahel: { balance: 1200.75, address: '0xSHEL123abc456def789ghi012jkl345mno' },
+    sahel: { balance: 1150.75, address: '0xSHEL123abc456def789ghi012jkl345mno' },
     privateKey: '0xprivkey_a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6',
     accessKey: 'zoudou-access-key-gamma-7-zeta-9',
     tokens: [
@@ -358,8 +358,32 @@ export const getChatData = (id: string): ChatData | undefined => {
     return allChats.find(chat => chat.id === id);
 }
 
+export const createGroupChat = (groupInfo: {name: string, avatar: string, members: string[]}): ChatData => {
+    const newGroupId = `group-${Date.now()}`;
+    const newGroup: ChatData = {
+        id: newGroupId,
+        contact: {
+            id: newGroupId,
+            name: groupInfo.name,
+            avatar: groupInfo.avatar,
+            type: 'group',
+        },
+        lastMessage: 'Vous avez créé le groupe.',
+        time: new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }),
+        messages: [{
+            id: `msg-${Date.now()}`,
+            type: 'text',
+            content: `Vous avez créé le groupe "${groupInfo.name}".`,
+            sender: 'me',
+            time: new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }),
+        }],
+    };
+    allChats.unshift(newGroup);
+    return newGroup;
+};
+
 export const getOrCreateChat = (userId: string): ChatData => {
-    let chat = allChats.find(c => c.contact.id === userId);
+    let chat = allChats.find(c => c.contact.id === userId && c.contact.type === 'user');
     if (chat) {
         return chat;
     }
@@ -370,7 +394,7 @@ export const getOrCreateChat = (userId: string): ChatData => {
     }
 
     const newChat: ChatData = {
-        id: userId,
+        id: `chat-${userId}`,
         contact: {
             id: userId,
             name: user.name,
@@ -391,7 +415,7 @@ export const getUserProfile = (id: string): UserProfileData | undefined => {
 
 export const getSuggestedUsers = (): UserProfileData[] => {
     const chatUserIds = allChats.map(c => c.contact.id);
-    return Object.values(userProfiles).filter(p => !p.isGroup && !chatUserIds.includes(p.id));
+    return Object.values(userProfiles).filter(p => !p.isGroup && !chatUserIds.includes(p.id) && p.id !== 'saheluser');
 }
 
 export const getStoryData = (id: string): Story | undefined => {
