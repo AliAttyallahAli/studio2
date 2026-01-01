@@ -23,20 +23,52 @@ import { cn } from '@/lib/utils';
 
 const urlRegex = /(https?:\/\/[^\s]+)/g;
 
-const LinkPreviewCard = ({ link }: { link: any }) => (
-    <a href={link.url} target="_blank" rel="noopener noreferrer" className="block mt-4">
-        <Card className="hover:bg-secondary transition-colors">
-            {link.image && (
-                 <Image src={link.image} alt={link.title} width={600} height={315} className="rounded-t-lg object-cover w-full aspect-video" data-ai-hint="website preview" />
-            )}
-            <div className="p-4">
-                <p className="text-xs text-muted-foreground uppercase">{new URL(link.url).hostname}</p>
-                <h4 className="font-semibold truncate">{link.title}</h4>
-                <p className="text-sm text-muted-foreground line-clamp-2">{link.description}</p>
+const LinkPreviewCard = ({ link }: { link: any }) => {
+    let youtubeVideoId: string | null = null;
+    try {
+        const url = new URL(link.url);
+        if (url.hostname === 'www.youtube.com' || url.hostname === 'youtube.com') {
+            youtubeVideoId = url.searchParams.get('v');
+        } else if (url.hostname === 'youtu.be') {
+            youtubeVideoId = url.pathname.substring(1);
+        }
+    } catch (e) {
+        // Not a valid URL
+    }
+
+    if (youtubeVideoId) {
+        return (
+             <div className="mt-4 aspect-video">
+                <iframe 
+                    width="100%" 
+                    height="100%" 
+                    src={`https://www.youtube.com/embed/${youtubeVideoId}?autoplay=1&mute=1&loop=1&playlist=${youtubeVideoId}`}
+                    title={link.title} 
+                    frameBorder="0" 
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                    allowFullScreen
+                    className="rounded-lg"
+                ></iframe>
             </div>
-        </Card>
-    </a>
-);
+        )
+    }
+
+
+    return (
+        <a href={link.url} target="_blank" rel="noopener noreferrer" className="block mt-4">
+            <Card className="hover:bg-secondary transition-colors">
+                {link.image && (
+                     <Image src={link.image} alt={link.title} width={600} height={315} className="rounded-t-lg object-cover w-full aspect-video" data-ai-hint="website preview" />
+                )}
+                <div className="p-4">
+                    <p className="text-xs text-muted-foreground uppercase">{new URL(link.url).hostname}</p>
+                    <h4 className="font-semibold truncate">{link.title}</h4>
+                    <p className="text-sm text-muted-foreground line-clamp-2">{link.description}</p>
+                </div>
+            </Card>
+        </a>
+    );
+};
 
 const PollCard = ({ poll }: { poll: NonNullable<FeedPost['poll']> }) => {
     const [voted, setVoted] = useState<number | null>(null);
@@ -490,4 +522,5 @@ export default function FeedPage() {
     
 
     
+
 
