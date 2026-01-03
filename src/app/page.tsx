@@ -44,41 +44,36 @@ export default function MiningPage() {
     useEffect(() => {
         let timer: NodeJS.Timeout | undefined;
 
-        if (isMining) {
-            const initialProgress = ((TOTAL_DURATION - timeRemaining) / TOTAL_DURATION) * 100;
-            setProgress(initialProgress);
-
+        if (isMining && timeRemaining > 0) {
             timer = setInterval(() => {
                 setTimeRemaining(prevTime => {
-                    if (prevTime <= 1) {
+                    const newTime = prevTime - 1;
+                    if (newTime <= 0) {
                         clearInterval(timer);
                         setIsMining(false);
+                        setProgress(0);
                         return 0;
                     }
-                    const newTime = prevTime - 1;
                     const newProgress = ((TOTAL_DURATION - newTime) / TOTAL_DURATION) * 100;
                     setProgress(newProgress);
                     return newTime;
                 });
             }, 1000);
-        } else {
+        } else if (timeRemaining <= 0 && isMining) {
+             setIsMining(false);
+             setProgress(0);
+        } else if (!isMining){
             setProgress(0);
         }
 
         return () => clearInterval(timer);
     }, [isMining, timeRemaining]);
     
-    const handleToggleMining = () => {
-        setIsMining(prev => {
-            if (prev) {
-                // If stopping, just stop
-                return false;
-            } else {
-                // If starting, reset the timer
-                setTimeRemaining(TOTAL_DURATION);
-                return true;
-            }
-        });
+    const handleStartMining = () => {
+        if (!isMining && timeRemaining <= 0) {
+            setTimeRemaining(TOTAL_DURATION);
+            setIsMining(true);
+        }
     }
 
     const formatTime = (seconds: number) => {
@@ -109,7 +104,7 @@ export default function MiningPage() {
             <div className="relative w-40 h-40">
                 <CircularProgress value={isMining ? progress : 0} strokeWidth={10} />
                 <div className="absolute inset-0 flex flex-col items-center justify-center">
-                    {isMining ? (
+                    {isMining && timeRemaining > 0 ? (
                         <>
                            <p className="text-2xl font-bold text-primary">{formatTime(timeRemaining)}</p>
                            <p className="text-xs text-muted-foreground">Restant</p>
@@ -120,7 +115,7 @@ export default function MiningPage() {
                 </div>
             </div>
             <div className="flex-grow">
-               {isMining ? (
+               {isMining && timeRemaining > 0 ? (
                     <>
                         <p className="font-bold text-2xl">Minage Actif</p>
                         <p className="text-muted-foreground">Taux de base : +0.1 SAHEL/h</p>
@@ -131,9 +126,14 @@ export default function MiningPage() {
                         <p className="text-muted-foreground">Appuyez pour commencer une nouvelle session de 24h.</p>
                     </>
                )}
-               <Button size="lg" className="bg-primary hover:bg-primary/90 mt-4 w-full sm:w-auto" onClick={handleToggleMining}>
-                    {isMining ? <StopCircle className="mr-2 h-5 w-5" /> : <Play className="mr-2 h-5 w-5" />}
-                    {isMining ? 'Arrêter le minage' : 'Commencer le minage'}
+               <Button 
+                    size="lg" 
+                    className="bg-primary hover:bg-primary/90 mt-4 w-full sm:w-auto" 
+                    onClick={handleStartMining}
+                    disabled={isMining && timeRemaining > 0}
+                >
+                    {isMining && timeRemaining > 0 ? <StopCircle className="mr-2 h-5 w-5" /> : <Play className="mr-2 h-5 w-5" />}
+                    {isMining && timeRemaining > 0 ? 'Minage en cours...' : 'Commencer le minage'}
                 </Button>
             </div>
           </CardContent>
@@ -251,3 +251,5 @@ export default function MiningPage() {
     </AppLayout>
   );
 }
+
+    
