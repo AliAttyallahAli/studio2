@@ -6,7 +6,7 @@ import { AppLayout } from '@/components/AppLayout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { ArrowDown, ArrowUp, QrCode, Repeat, Copy, ShieldAlert } from 'lucide-react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -27,6 +27,15 @@ const transactions = [
     { id: 'tx4', type: 'récompense', amount: '+ 2.50 SAHEL', from: 'Minage quotidien', date: 'Hier', icon: ArrowDown },
 ];
 
+type TransactionDetails = {
+    sender: string;
+    receiver: string;
+    amount: string;
+    asset: string;
+    fee: string;
+    date: string;
+    transactionId: string;
+};
 
 function AddressRow({ address }: { address: string }) {
     const { toast } = useToast();
@@ -44,9 +53,51 @@ function AddressRow({ address }: { address: string }) {
     );
 }
 
+const TransactionConfirmationDialog = ({ details, onConfirm }: { details: TransactionDetails, onConfirm: () => void }) => (
+    <DialogContent>
+        <DialogHeader>
+            <DialogTitle>Confirmer la Transaction</DialogTitle>
+            <DialogDescription>Veuillez vérifier les détails de la transaction avant de confirmer.</DialogDescription>
+        </DialogHeader>
+        <div className="space-y-4 py-4 text-sm">
+            <div className="flex justify-between items-center">
+                <span className="text-muted-foreground">Date et Heure:</span>
+                <span>{details.date}</span>
+            </div>
+             <div className="flex justify-between items-center">
+                <span className="text-muted-foreground">De (Expéditeur):</span>
+                <span className="font-mono truncate max-w-[50%]">{details.sender}</span>
+            </div>
+             <div className="flex justify-between items-center">
+                <span className="text-muted-foreground">À (Destinataire):</span>
+                <span className="font-mono truncate max-w-[50%]">{details.receiver}</span>
+            </div>
+             <div className="flex justify-between items-center font-semibold text-lg text-primary">
+                <span>Montant:</span>
+                <span>{details.amount} {details.asset}</span>
+            </div>
+            <div className="flex justify-between items-center">
+                <span className="text-muted-foreground">Frais de réseau (estim.):</span>
+                <span>{details.fee} SAHEL</span>
+            </div>
+            <div className="flex flex-col gap-1 pt-2 border-t">
+                <span className="text-muted-foreground text-xs">ID de Transaction:</span>
+                <span className="font-mono text-xs break-all">{details.transactionId}</span>
+            </div>
+        </div>
+         <Button onClick={onConfirm} className="w-full">Confirmer et Envoyer</Button>
+    </DialogContent>
+);
+
+
 export default function WalletPage() {
   const [pinState, setPinState] = useState<'checking' | 'setup' | 'locked' | 'unlocked'>('checking');
   const [showSendDialog, setShowSendDialog] = useState(false);
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const [transactionDetails, setTransactionDetails] = useState<TransactionDetails | null>(null);
+
+  const [sendForm, setSendForm] = useState({ asset: 'SAHEL', recipient: '', amount: '' });
+  
   const [showSensitiveInfo, setShowSensitiveInfo] = useState(false);
   const { toast } = useToast();
   
@@ -104,13 +155,30 @@ export default function WalletPage() {
      localStorage.setItem('pin_is_set', 'true');
      setPinState('unlocked');
   }
+
+  const handleSendPinSuccess = () => {
+    setShowSendDialog(false);
+    const details: TransactionDetails = {
+        sender: currentWalletData.sahel.address,
+        receiver: sendForm.recipient,
+        amount: sendForm.amount,
+        asset: sendForm.asset,
+        fee: '0.001',
+        date: new Date().toLocaleString('fr-FR'),
+        transactionId: `0x${[...Array(64)].map(() => Math.floor(Math.random() * 16).toString(16)).join('')}`
+    };
+    setTransactionDetails(details);
+    setShowConfirmDialog(true);
+  }
   
   const handleConfirmSend = () => {
-    setShowSendDialog(false);
+    setShowConfirmDialog(false);
     toast({
         title: 'Envoi Confirmé',
         description: 'Votre transaction a été soumise au réseau.'
     });
+    // Reset form
+    setSendForm({ asset: 'SAHEL', recipient: '', amount: '' });
   }
 
   const handleRevealInfo = () => {
@@ -178,27 +246,28 @@ export default function WalletPage() {
                                     <div className="space-y-4 py-4">
                                         <div className="space-y-2">
                                             <Label htmlFor="asset-select">Actif à envoyer</Label>
-                                            <Select>
+                                            <Select value={sendForm.asset} onValueChange={(value) => setSendForm(prev => ({ ...prev, asset: value }))}>
                                                 <SelectTrigger id="asset-select">
                                                     <SelectValue placeholder="Sélectionnez un actif" />
                                                 </SelectTrigger>
                                                 <SelectContent>
-                                                    <SelectItem value="sahel">SAHEL Coin</SelectItem>
-                                                    <SelectItem value="z-immo">Z-Immo Token</SelectItem>
-                                                    <SelectItem value="eco">EcoToken</SelectItem>
+                                                    <SelectItem value="SAHEL">SAHEL Coin</SelectItem>
+                                                    {currentWalletData.tokens.map(t => (
+                                                        <SelectItem key={t.name} value={t.balance.split(' ')[1]}>{t.name}</SelectItem>
+                                                    ))}
                                                 </SelectContent>
                                             </Select>
                                         </div>
                                         <div className="space-y-2">
                                             <Label htmlFor="recipient">Adresse ou @utilisateur du destinataire</Label>
-                                            <Input id="recipient" placeholder="@utilisateur ou 0x..." />
+                                            <Input id="recipient" placeholder="@utilisateur ou 0x..." value={sendForm.recipient} onChange={(e) => setSendForm(prev => ({...prev, recipient: e.target.value}))} />
                                         </div>
                                         <div className="space-y-2">
                                             <Label htmlFor="amount">Montant</Label>
-                                            <Input id="amount" type="number" placeholder="0.00" />
+                                            <Input id="amount" type="number" placeholder="0.00" value={sendForm.amount} onChange={(e) => setSendForm(prev => ({...prev, amount: e.target.value}))} />
                                         </div>
-                                        <PinDialog onPinSuccess={handleConfirmSend}>
-                                            <Button className="w-full">Confirmer l'envoi</Button>
+                                        <PinDialog onPinSuccess={handleSendPinSuccess}>
+                                            <Button className="w-full" disabled={!sendForm.recipient || !sendForm.amount}>Vérifier et Envoyer</Button>
                                         </PinDialog>
                                     </div>
                                </DialogContent>
@@ -270,6 +339,13 @@ export default function WalletPage() {
                   </Tabs>
               </CardContent>
           </Card>
+
+            {transactionDetails && (
+                <Dialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
+                    <TransactionConfirmationDialog details={transactionDetails} onConfirm={handleConfirmSend} />
+                </Dialog>
+            )}
+
 
           <Card>
             <CardHeader>
