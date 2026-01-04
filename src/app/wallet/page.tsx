@@ -108,9 +108,9 @@ export default function WalletPage() {
   const [currentWalletData, setCurrentWalletData] = useState(walletData);
 
   useEffect(() => {
-    const pinIsSet = localStorage.getItem('pin_is_set') === 'true';
+    const pinIsSet = localStorage.getItem('user_pin') === 'true';
     if (pinIsSet) {
-      setPinState('locked');
+      setPinState('unlocked'); // Go directly to unlocked state to avoid re-prompting
     } else {
       setPinState('setup');
     }
@@ -236,19 +236,7 @@ export default function WalletPage() {
     return (
         <AppLayout>
             <div className="flex flex-col items-center justify-center h-full">
-                <Card className="w-full max-w-sm">
-                    <CardHeader>
-                        <CardTitle>Portefeuille Verrouillé</CardTitle>
-                        <CardDescription>Veuillez entrer votre code PIN pour accéder à votre portefeuille.</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                       <Dialog open={pinState === 'locked'} onOpenChange={() => {}}>
-                          <DialogContent onInteractOutside={(e) => e.preventDefault()} className="sm:max-w-sm">
-                               <PinDialog onPinSuccess={handlePinSuccess} isTrigger={false} />
-                          </DialogContent>
-                       </Dialog>
-                    </CardContent>
-                </Card>
+                 <PinDialog onPinSuccess={handlePinSuccess} isTrigger={false} />
             </div>
         </AppLayout>
     );
