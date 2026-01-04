@@ -16,7 +16,7 @@ import { useState } from 'react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { PinDialog } from '@/components/PinDialog';
 import { useToast } from '@/hooks/use-toast';
-import { updateSahelBalance } from '@/lib/chat-data';
+import { updateSahelBalance, addFeeToCoreTeamWallet } from '@/lib/chat-data';
 
 const initialMarketplaceItems = [
   { name: "Casque VR dernière génération", price: '150 SAHEL', image: 'https://picsum.photos/seed/vr/400/400', hint: 'vr headset', seller: '@user123', sellerAvatar: 'https://picsum.photos/seed/user123/100/100' },
@@ -72,9 +72,11 @@ export default function MarketplacePage() {
     }
 
     const handlePayFeeAndList = () => {
-        updateSahelBalance(-50);
+        const fee = 50;
+        updateSahelBalance(-fee);
+        addFeeToCoreTeamWallet(fee);
         setIsSellerActivated(true);
-        toast({ title: 'Compte vendeur activé!', description: '50 SAHEL ont été déduits de votre solde.' });
+        toast({ title: 'Compte vendeur activé!', description: `${fee} SAHEL ont été déduits de votre solde et transférés à la Core Team.` });
         handleListNewItem();
     };
 

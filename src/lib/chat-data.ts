@@ -5,6 +5,7 @@
 
 
 
+
 export interface ChatMessage {
   id: string;
   type: 'text' | 'image' | 'file' | 'audio' | 'poll';
@@ -112,6 +113,16 @@ export interface BlogPost {
 export const miningData = {
     completedSessions: 6,
 };
+
+export const coreTeamWallet = {
+    address: '0xSHELCORETEAM...a1b2c3d4e5f6',
+    balance: 1500048, // Base (1,500,000) + mining fees (6*8)
+    chains: ['Ethereum', 'BNB Chain', 'Polygon']
+};
+
+export const addFeeToCoreTeamWallet = (fee: number) => {
+    coreTeamWallet.balance += fee;
+}
 
 export const walletData = {
     sahel: { balance: 10.00, address: '0xSHEL123abc456def789ghi012jkl345mno' },

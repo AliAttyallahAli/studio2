@@ -8,14 +8,8 @@ import { ArrowUpRight, Copy, DollarSign, Users, Shield, Wallet } from 'lucide-re
 import { AppLayout } from '@/components/AppLayout';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { miningData } from '@/lib/chat-data';
+import { miningData, coreTeamWallet } from '@/lib/chat-data';
 import { useMemo } from 'react';
-
-const coreTeamWallet = {
-    address: '0xSHELCORETEAM...a1b2c3d4e5f6',
-    baseBalance: 1500000,
-    chains: ['Ethereum', 'BNB Chain', 'Polygon']
-};
 
 const recentUsers = [
     { id: 'user-001', email: 'test1@gmail.com', kycStatus: 'Vérifié' },
@@ -31,7 +25,8 @@ export default function AdminPage() {
     }
 
     const coreTeamBalance = useMemo(() => {
-        return coreTeamWallet.baseBalance + (miningData.completedSessions * 8);
+        // Now reads directly from the centralized data source
+        return coreTeamWallet.balance;
     }, []);
 
   return (

@@ -17,7 +17,7 @@ import { PinSetup } from '@/components/PinSetup';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import Link from 'next/link';
 import { useToast } from '@/hooks/use-toast';
-import { walletData } from '@/lib/chat-data';
+import { walletData, addFeeToCoreTeamWallet } from '@/lib/chat-data';
 import QRCode from "react-qr-code";
 
 
@@ -167,12 +167,13 @@ export default function WalletPage() {
 
   const handleSendPinSuccess = () => {
     setShowSendDialog(false);
+    const fee = 0.001; // Example fee
     const details: TransactionDetails = {
         sender: currentWalletData.sahel.address,
         receiver: sendForm.recipient,
         amount: sendForm.amount,
         asset: sendForm.asset,
-        fee: '0.001',
+        fee: fee.toString(),
         date: new Date().toLocaleString('fr-FR'),
         transactionId: `0x${[...Array(64)].map(() => Math.floor(Math.random() * 16).toString(16)).join('')}`
     };
@@ -182,6 +183,14 @@ export default function WalletPage() {
   
   const handleConfirmSend = () => {
     setShowConfirmDialog(false);
+    
+    if (transactionDetails) {
+        const fee = parseFloat(transactionDetails.fee);
+        if (!isNaN(fee)) {
+            addFeeToCoreTeamWallet(fee);
+        }
+    }
+
     toast({
         title: 'Envoi Confirmé',
         description: 'Votre transaction a été soumise au réseau.'
