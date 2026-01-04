@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Heart, MessageCircle, Share2, Image as ImageIcon, X, ThumbsUp, Laugh, Angry, Copy, BarChart3, Plus, Trash2, Search, Video } from 'lucide-react';
+import { Heart, MessageCircle, Share2, Image as ImageIcon, X, ThumbsUp, Laugh, Angry, Copy, BarChart3, Plus, Trash2, Search, Video, Rocket } from 'lucide-react';
 import Image from 'next/image';
 import { Separator } from '@/components/ui/separator';
 import { StoryCarousel } from '@/components/StoryCarousel';
@@ -14,12 +14,17 @@ import React, { useState, useRef } from 'react';
 import Link from 'next/link';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { extractLinkPreview, type LinkPreview } from '@/ai/flows/extract-link-preview-flow';
-import { allFeedPosts, addPost, type FeedPost } from '@/lib/chat-data';
+import { allFeedPosts, addPost, type FeedPost, updateSahelBalance, addFeeToCoreTeamWallet } from '@/lib/chat-data';
 import { Progress } from '@/components/ui/progress';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger, DialogFooter } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
+import { PinDialog } from '@/components/PinDialog';
+import { useToast } from '@/hooks/use-toast';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+
 
 const urlRegex = /(https?:\/\/[^\s]+)/g;
 
@@ -118,8 +123,78 @@ const PollCard = ({ poll }: { poll: NonNullable<FeedPost['poll']> }) => {
     );
 };
 
+const BoostDialog = ({ post, onBoostSuccess }: { post: FeedPost, onBoostSuccess: () => void }) => {
+    const [open, setOpen] = useState(false);
+    const [duration, setDuration] = useState('1'); // duration in days
+    const { toast } = useToast();
+    const BOOST_RATE = 5; // 5 SAHEL per day
+    const fee = parseInt(duration) * BOOST_RATE;
 
-const PostCard = ({ post }: { post: any }) => {
+    const handleBoost = () => {
+        if (updateSahelBalance(-fee)) {
+            addFeeToCoreTeamWallet(fee);
+            toast({
+                title: 'Post Boosté !',
+                description: `Votre publication a été boostée pour ${duration} jour(s). ${fee} SAHEL ont été déduits.`,
+            });
+            onBoostSuccess();
+            setOpen(false);
+        } else {
+            toast({
+                variant: 'destructive',
+                title: 'Solde insuffisant',
+                description: `Vous avez besoin de ${fee} SAHEL pour booster cette publication.`,
+            });
+        }
+    };
+
+    return (
+        <Dialog open={open} onOpenChange={setOpen}>
+            <DialogTrigger asChild>
+                <Button variant="ghost" className="w-full">
+                    <Rocket className="mr-2 h-4 w-4" /> Booster
+                </Button>
+            </DialogTrigger>
+            <DialogContent>
+                <DialogHeader>
+                    <DialogTitle>Booster la Publication</DialogTitle>
+                    <DialogDescription>
+                        Mettez votre publication en avant pour atteindre une plus grande audience.
+                    </DialogDescription>
+                </DialogHeader>
+                <div className="space-y-4 py-4">
+                    <div className="space-y-2">
+                        <Label htmlFor="duration">Durée du boost</Label>
+                        <Select value={duration} onValueChange={setDuration}>
+                            <SelectTrigger id="duration">
+                                <SelectValue placeholder="Sélectionnez une durée" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="1">1 jour</SelectItem>
+                                <SelectItem value="3">3 jours</SelectItem>
+                                <SelectItem value="7">7 jours</SelectItem>
+                            </SelectContent>
+                        </Select>
+                    </div>
+                    <Alert>
+                        <AlertTitle>Coût du Boost</AlertTitle>
+                        <AlertDescription>
+                            Le coût pour booster cette publication pour {duration} jour(s) est de <span className="font-bold text-primary">{fee} SAHEL</span>.
+                            Ces frais seront transférés au portefeuille de la Core Team.
+                        </AlertDescription>
+                    </Alert>
+                    <PinDialog onPinSuccess={handleBoost}>
+                        <Button className="w-full bg-accent hover:bg-accent/90">Booster pour {fee} SAHEL</Button>
+                    </PinDialog>
+                </div>
+            </DialogContent>
+        </Dialog>
+    );
+};
+
+
+const PostCard = ({ post: initialPost }: { post: FeedPost }) => {
+    const [post, setPost] = useState(initialPost);
     const link = post.linkPreview;
     const contentWithoutUrl = post.content.replace(urlRegex, '').trim();
     
@@ -184,27 +259,36 @@ const PostCard = ({ post }: { post: any }) => {
         }
     }
 
+    const handleBoostSuccess = () => {
+        setPost(prev => ({ ...prev, boosted: true }));
+    };
+
     return (
     <Card>
         <CardHeader>
-            <Link href={`/profile/${post.user.username}`} className="flex items-center gap-3 group">
-                <div className="relative">
-                    <Avatar>
-                        <AvatarImage src={post.user.avatar} alt={post.user.name} data-ai-hint="profile avatar" />
-                        <AvatarFallback>{post.user.name.charAt(0)}</AvatarFallback>
-                    </Avatar>
-                     {post.user.status && (
-                        <div className={cn(
-                            "absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full border-2 border-background",
-                            post.user.status === 'En ligne' ? 'bg-green-500' : 'bg-gray-400'
-                        )} />
-                    )}
-                </div>
-                <div>
-                    <p className="font-semibold group-hover:underline">{post.user.name}</p>
-                    <p className="text-xs text-muted-foreground">{post.time}</p>
-                </div>
-            </Link>
+            <div className="flex items-center justify-between">
+                <Link href={`/profile/${post.user.username}`} className="flex items-center gap-3 group">
+                    <div className="relative">
+                        <Avatar>
+                            <AvatarImage src={post.user.avatar} alt={post.user.name} data-ai-hint="profile avatar" />
+                            <AvatarFallback>{post.user.name.charAt(0)}</AvatarFallback>
+                        </Avatar>
+                         {post.user.status && (
+                            <div className={cn(
+                                "absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full border-2 border-background",
+                                post.user.status === 'En ligne' ? 'bg-green-500' : 'bg-gray-400'
+                            )} />
+                        )}
+                    </div>
+                    <div>
+                        <p className="font-semibold group-hover:underline">{post.user.name}</p>
+                        <p className="text-xs text-muted-foreground">{post.time}</p>
+                    </div>
+                </Link>
+                {post.boosted && (
+                    <span className="text-xs font-semibold text-primary bg-primary/10 px-2 py-1 rounded-md">Sponsorisé</span>
+                )}
+            </div>
         </CardHeader>
         <CardContent>
             {contentWithoutUrl && <p className="mb-4 whitespace-pre-wrap">{contentWithoutUrl}</p>}
@@ -273,6 +357,10 @@ const PostCard = ({ post }: { post: any }) => {
                         </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
+                
+                {post.user.username === 'saheluser' && !post.boosted && (
+                    <BoostDialog post={post} onBoostSuccess={handleBoostSuccess} />
+                )}
 
             </div>
             {showComments && (
@@ -453,6 +541,7 @@ export default function FeedPage() {
       poll: pollData,
       likes: 0,
       comments: [],
+      boosted: false,
     };
 
     addPost(newPost);
@@ -534,5 +623,7 @@ export default function FeedPage() {
     </AppLayout>
   );
 }
+
+    
 
     

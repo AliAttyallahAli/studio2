@@ -84,6 +84,7 @@ export interface FeedPost {
   } | null;
   likes: number;
   comments: { id: string; user: { name: string; avatar: string }; content: string; time: string }[];
+  boosted?: boolean;
 }
 
 export interface BlogPost {
@@ -329,7 +330,8 @@ export let allFeedPosts: FeedPost[] = [
     likes: 12,
     comments: [
         { id: 'c1-1', user: { name: 'Alice', avatar: 'https://picsum.photos/seed/alice/100/100' }, content: 'Bienvenue !', time: '1h' }
-    ]
+    ],
+    boosted: false,
   },
   {
     id: 'post-2',
@@ -347,7 +349,8 @@ export let allFeedPosts: FeedPost[] = [
     },
     poll: null,
     likes: 42,
-    comments: []
+    comments: [],
+    boosted: true,
   },
   {
     id: 'post-4',
@@ -366,7 +369,8 @@ export let allFeedPosts: FeedPost[] = [
         ]
     },
     likes: 75,
-    comments: []
+    comments: [],
+    boosted: false,
   },
   {
     id: 'post-3',
@@ -379,7 +383,8 @@ export let allFeedPosts: FeedPost[] = [
     linkPreview: null,
     poll: null,
     likes: 5,
-    comments: []
+    comments: [],
+    boosted: false,
   },
 ];
 
@@ -508,4 +513,6 @@ export const getBlogPost = (id: string): BlogPost | undefined => {
 }
 
     
+    
+
     
