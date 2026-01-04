@@ -84,15 +84,6 @@ export default function WalletPage() {
         setQrCodeValue(url.toString());
     }
   }, [currentWalletData.sahel.address]);
-  
-   // This effect will re-sync the component state if the global data changes
-   // This is a simple way to propagate state changes without a full state management library
-   useEffect(() => {
-     const interval = setInterval(() => {
-       setCurrentWalletData({...walletData});
-     }, 500); // Check for updates periodically
-     return () => clearInterval(interval);
-   }, []);
    
    const totalBalanceUSD = useMemo(() => {
         const rates = {
@@ -441,5 +432,3 @@ export default function WalletPage() {
     </AppLayout>
   );
 }
-
-    
