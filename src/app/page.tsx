@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { useState, useEffect, useMemo } from 'react';
 import { CircularProgress } from '@/components/ui/circular-progress';
 import { useRouter } from 'next/navigation';
+import { miningData } from '@/lib/chat-data';
 
 const initialWorkers = [
   { id: 'worker-001', name: 'RIG-01', status: 'En ligne', hashRate: '72 TH/s', temp: '65°C', uptime: '24h' },
@@ -18,7 +19,7 @@ const initialWorkers = [
 
 const baseTransactions = [
     {id: 'tx-2', type: 'Transfert P2P', amount: '-10 SAHEL', date: '2024-07-06 10:00'},
-    {id: 'tx-3', type: 'Récompense de minage', amount: '+0.0048 SAHEL', date: '2024-07-05 14:25'},
+    {id: 'tx-3', type: 'Récompense de minage', amount: '+2.00 SAHEL', date: '2024-07-05 14:25'},
 ];
 
 const TOTAL_DURATION = 24 * 3600; // 24 hours in seconds
@@ -79,6 +80,8 @@ export default function MiningPage() {
                         if(typeof window !== 'undefined') {
                             localStorage.removeItem(MINING_SESSION_START_KEY);
                         }
+                        // Here you would typically trigger the logic to update balances
+                        // For now, we assume the data in miningData is updated elsewhere or by a backend
                         return 0;
                     }
                     return newTime;
@@ -120,7 +123,7 @@ export default function MiningPage() {
     const recentTransactions = useMemo(() => {
         if (isMining) {
             return [
-                {id: 'tx-1', type: 'Récompense de minage', amount: '+0.005 SAHEL', date: new Date().toLocaleTimeString('fr-FR', {hour: '2-digit', minute:'2-digit'})},
+                {id: 'tx-1', type: 'Récompense de minage (en cours)', amount: '+2.00 SAHEL', date: new Date().toLocaleTimeString('fr-FR', {hour: '2-digit', minute:'2-digit'})},
                 ...baseTransactions
             ];
         }
@@ -133,6 +136,10 @@ export default function MiningPage() {
         }
         return initialWorkers.map(w => ({...w, status: 'Hors ligne', hashRate: '0 TH/s'}));
     }, [isMining]);
+    
+    const pendingBalance = useMemo(() => {
+        return miningData.completedSessions * 2;
+    }, []);
 
 
     if (!isAuthenticated) {
@@ -170,7 +177,7 @@ export default function MiningPage() {
                {isMining && timeRemaining > 0 ? (
                     <>
                         <p className="font-bold text-2xl">Minage Actif</p>
-                        <p className="text-muted-foreground">Taux de base : +0.1 SAHEL/h</p>
+                        <p className="text-muted-foreground">Récompense de session : +2.00 SAHEL</p>
                     </>
                ) : (
                     <>
@@ -199,7 +206,7 @@ export default function MiningPage() {
               <CardDescription>Coins minés non vérifiés (KYC requis)</CardDescription>
             </CardHeader>
             <CardContent>
-              <p className="text-4xl font-bold text-primary">12.50 SAHEL</p>
+              <p className="text-4xl font-bold text-primary">{pendingBalance.toFixed(2)} SAHEL</p>
               <p className="text-xs text-muted-foreground mt-1">Sera transféré à votre wallet après KYC.</p>
             </CardContent>
           </Card>

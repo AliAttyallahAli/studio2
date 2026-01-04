@@ -4,6 +4,7 @@
 
 
 
+
 export interface ChatMessage {
   id: string;
   type: 'text' | 'image' | 'file' | 'audio' | 'poll';
@@ -107,6 +108,10 @@ export interface BlogPost {
       size: string;
   }
 }
+
+export const miningData = {
+    completedSessions: 6,
+};
 
 export const walletData = {
     sahel: { balance: 10.00, address: '0xSHEL123abc456def789ghi012jkl345mno' },

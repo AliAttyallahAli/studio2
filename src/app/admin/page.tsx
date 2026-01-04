@@ -8,10 +8,12 @@ import { ArrowUpRight, Copy, DollarSign, Users, Shield, Wallet } from 'lucide-re
 import { AppLayout } from '@/components/AppLayout';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { miningData } from '@/lib/chat-data';
+import { useMemo } from 'react';
 
 const coreTeamWallet = {
     address: '0xSHELCORETEAM...a1b2c3d4e5f6',
-    balance: '1,500,000.00 SAHEL',
+    baseBalance: 1500000,
     chains: ['Ethereum', 'BNB Chain', 'Polygon']
 };
 
@@ -28,6 +30,10 @@ export default function AdminPage() {
         router.push(`/verification?email=${encodeURIComponent(email)}`);
     }
 
+    const coreTeamBalance = useMemo(() => {
+        return coreTeamWallet.baseBalance + (miningData.completedSessions * 8);
+    }, []);
+
   return (
     <AppLayout>
       <div className="space-y-6">
@@ -41,7 +47,7 @@ export default function AdminPage() {
                     <DollarSign className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                    <div className="text-2xl font-bold">{coreTeamWallet.balance}</div>
+                    <div className="text-2xl font-bold">{coreTeamBalance.toLocaleString('fr-FR')} SAHEL</div>
                     <p className="text-xs text-muted-foreground mt-1">Wallet multichain principal</p>
                     <Link href="/wallet">
                         <Button variant="outline" size="sm" className="mt-4">
