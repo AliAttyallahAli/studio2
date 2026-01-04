@@ -23,6 +23,7 @@ export const PinSetup: React.FC<PinSetupProps> = ({ onPinSetupSuccess }) => {
     const handleConfirmPin = (pin: string) => {
         if (pin === firstPin) {
             localStorage.setItem('user_pin', pin); // Note: Ne jamais stocker de PIN en clair en production!
+            localStorage.setItem('user_pin_set', 'true');
             toast({
                 title: 'Code PIN Créé',
                 description: 'Votre portefeuille est maintenant sécurisé.',

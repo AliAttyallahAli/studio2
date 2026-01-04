@@ -88,7 +88,7 @@ export const PinDialog: React.FC<PinDialogProps> = ({ children, onPinSuccess, is
   const { toast } = useToast();
 
   const handlePinComplete = (pin: string) => {
-    const storedPin = localStorage.getItem('user_pin') || '1234';
+    const storedPin = localStorage.getItem('user_pin');
     if (pin === storedPin) {
       toast({ title: 'Succès', description: 'Action confirmée.'});
       onPinSuccess(pin);

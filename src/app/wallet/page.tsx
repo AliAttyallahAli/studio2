@@ -108,7 +108,7 @@ export default function WalletPage() {
   const [currentWalletData, setCurrentWalletData] = useState(walletData);
 
   useEffect(() => {
-    const pinIsSet = localStorage.getItem('user_pin') === 'true';
+    const pinIsSet = localStorage.getItem('user_pin_set') === 'true';
     if (pinIsSet) {
       setPinState('unlocked'); // Go directly to unlocked state to avoid re-prompting
     } else {
@@ -161,7 +161,6 @@ export default function WalletPage() {
   }
   
   const handlePinSetupSuccess = () => {
-     localStorage.setItem('user_pin', 'true');
      setPinState('unlocked');
   }
 
