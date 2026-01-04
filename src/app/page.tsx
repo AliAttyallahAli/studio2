@@ -6,21 +6,20 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { AlertTriangle, CheckCircle2, ChevronRight, RefreshCw, Play, StopCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { CircularProgress } from '@/components/ui/circular-progress';
 import { useRouter } from 'next/navigation';
 
-const workers = [
+const initialWorkers = [
   { id: 'worker-001', name: 'RIG-01', status: 'En ligne', hashRate: '72 TH/s', temp: '65°C', uptime: '24h' },
   { id: 'worker-002', name: 'RIG-02', status: 'En ligne', hashRate: '70 TH/s', temp: '68°C', uptime: '24h' },
   { id: 'worker-003', name: 'RIG-03', status: 'Hors ligne', hashRate: '0 TH/s', temp: '-', uptime: '0h' },
-]
+];
 
-const recentTransactions = [
-    {id: 'tx-1', type: 'Récompense de minage', amount: '+0.005 SAHEL', date: '2024-07-07 14:30'},
+const baseTransactions = [
     {id: 'tx-2', type: 'Transfert P2P', amount: '-10 SAHEL', date: '2024-07-06 10:00'},
     {id: 'tx-3', type: 'Récompense de minage', amount: '+0.0048 SAHEL', date: '2024-07-05 14:25'},
-]
+];
 
 const TOTAL_DURATION = 24 * 3600; // 24 hours in seconds
 const MINING_SESSION_START_KEY = 'mining_session_start_time';
@@ -118,6 +117,24 @@ export default function MiningPage() {
         return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
     };
 
+    const recentTransactions = useMemo(() => {
+        if (isMining) {
+            return [
+                {id: 'tx-1', type: 'Récompense de minage', amount: '+0.005 SAHEL', date: new Date().toLocaleTimeString('fr-FR', {hour: '2-digit', minute:'2-digit'})},
+                ...baseTransactions
+            ];
+        }
+        return baseTransactions;
+    }, [isMining]);
+
+    const workers = useMemo(() => {
+        if (isMining) {
+            return initialWorkers;
+        }
+        return initialWorkers.map(w => ({...w, status: 'Hors ligne', hashRate: '0 TH/s'}));
+    }, [isMining]);
+
+
     if (!isAuthenticated) {
         return (
             <div className="flex h-screen items-center justify-center">
@@ -206,14 +223,14 @@ export default function MiningPage() {
                     <div className="flex items-center text-green-400">
                         <CheckCircle2 className="h-5 w-5 mr-2" />
                         <div>
-                            <p className="font-bold">{isMining ? '2' : '0'}</p>
+                            <p className="font-bold">{workers.filter(w => w.status === 'En ligne').length}</p>
                             <p className="text-xs">En ligne</p>
                         </div>
                     </div>
                      <div className="flex items-center text-red-400">
                         <AlertTriangle className="h-5 w-5 mr-2" />
                          <div>
-                            <p className="font-bold">{isMining ? '1' : '3'}</p>
+                            <p className="font-bold">{workers.filter(w => w.status === 'Hors ligne').length}</p>
                             <p className="text-xs">Hors ligne</p>
                         </div>
                     </div>
@@ -245,12 +262,12 @@ export default function MiningPage() {
                                     <TableCell className="font-medium">{worker.name}</TableCell>
                                     <TableCell>
                                         <span className={`px-2 py-1 rounded-full text-xs ${
-                                            isMining && worker.status === 'En ligne' ? 'bg-green-900/50 text-green-400' : 'bg-red-900/50 text-red-400'
+                                            worker.status === 'En ligne' ? 'bg-green-900/50 text-green-400' : 'bg-red-900/50 text-red-400'
                                         }`}>
-                                            {isMining ? worker.status : 'Hors ligne'}
+                                            {worker.status}
                                         </span>
                                     </TableCell>
-                                    <TableCell>{isMining ? worker.hashRate : '0 TH/s'}</TableCell>
+                                    <TableCell>{worker.hashRate}</TableCell>
                                 </TableRow>
                             ))}
                         </TableBody>
@@ -286,5 +303,3 @@ export default function MiningPage() {
     </AppLayout>
   );
 }
-
-    
