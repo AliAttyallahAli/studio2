@@ -1,11 +1,4 @@
 
-
-
-
-
-
-
-
 export interface ChatMessage {
   id: string;
   type: 'text' | 'image' | 'file' | 'audio' | 'poll';
@@ -116,7 +109,7 @@ export const miningData = {
 
 export const coreTeamWallet = {
     address: '0xSHELCORETEAM...a1b2c3d4e5f6',
-    balance: 1500048, // Base (1,500,000) + mining fees (6*8)
+    balance: 1500000 + (6 * 8), // Base + mining fees
     chains: ['Ethereum', 'BNB Chain', 'Polygon']
 };
 
@@ -125,7 +118,7 @@ export const addFeeToCoreTeamWallet = (fee: number) => {
 }
 
 export const walletData = {
-    sahel: { balance: 10.00, address: '0xSHEL123abc456def789ghi012jkl345mno' },
+    sahel: { balance: 200.00, address: '0xSHEL123abc456def789ghi012jkl345mno' },
     privateKey: '0xprivkey_a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6',
     accessKey: 'zoudou-access-key-gamma-7-zeta-9',
     tokens: [
@@ -134,8 +127,12 @@ export const walletData = {
     ]
 };
 
-export const updateSahelBalance = (amount: number) => {
+export const updateSahelBalance = (amount: number): boolean => {
+    if (walletData.sahel.balance + amount < 0) {
+        return false; // Insufficient funds
+    }
     walletData.sahel.balance += amount;
+    return true;
 }
 
 

@@ -73,11 +73,18 @@ export default function MarketplacePage() {
 
     const handlePayFeeAndList = () => {
         const fee = 50;
-        updateSahelBalance(-fee);
-        addFeeToCoreTeamWallet(fee);
-        setIsSellerActivated(true);
-        toast({ title: 'Compte vendeur activé!', description: `${fee} SAHEL ont été déduits de votre solde et transférés à la Core Team.` });
-        handleListNewItem();
+        if (updateSahelBalance(-fee)) {
+            addFeeToCoreTeamWallet(fee);
+            setIsSellerActivated(true);
+            toast({ title: 'Compte vendeur activé!', description: `${fee} SAHEL ont été déduits de votre solde et transférés à la Core Team.` });
+            handleListNewItem();
+        } else {
+             toast({
+                variant: 'destructive',
+                title: 'Solde insuffisant',
+                description: `Vous n'avez pas assez de SAHEL pour payer les frais de ${fee} SAHEL.`,
+            });
+        }
     };
 
     const handleAddNewItem = () => {

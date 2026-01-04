@@ -94,15 +94,22 @@ export default function CardPage() {
 
     const handlePurchaseCard = () => {
         const fee = 30;
-        updateSahelBalance(-fee);
-        addFeeToCoreTeamWallet(fee);
-        localStorage.setItem('sahel_card_purchased', 'true');
-        setIsCardPurchased(true);
-        toast({ title: 'Achat réussi !', description: `Votre carte SAHEL est activée. ${fee} SAHEL ont été déduits.` });
-        
-        // Set P2P URL after purchase
-        const url = `${window.location.origin}/p2p?address=${walletData.sahel.address}`;
-        setP2pUrl(url);
+        if (updateSahelBalance(-fee)) {
+            addFeeToCoreTeamWallet(fee);
+            localStorage.setItem('sahel_card_purchased', 'true');
+            setIsCardPurchased(true);
+            toast({ title: 'Achat réussi !', description: `Votre carte SAHEL est activée. ${fee} SAHEL ont été déduits.` });
+            
+            // Set P2P URL after purchase
+            const url = `${window.location.origin}/p2p?address=${walletData.sahel.address}`;
+            setP2pUrl(url);
+        } else {
+            toast({
+                variant: 'destructive',
+                title: 'Solde insuffisant',
+                description: `Vous n'avez pas assez de SAHEL pour acheter la carte.`,
+            });
+        }
     };
 
     const downloadCardAsPdf = () => {
