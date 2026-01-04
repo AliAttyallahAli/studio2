@@ -4,7 +4,7 @@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { ArrowLeft, Search, UserPlus, Users } from 'lucide-react';
+import { ArrowLeft, Search, UserPlus, Users, Megaphone } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent } from '@/components/ui/card';
 import { getSuggestedUsers, getOrCreateChat, type UserProfileData } from '@/lib/chat-data';
@@ -33,7 +33,7 @@ export default function NewChatPage() {
         </Button>
         <div className="ml-4">
             <h2 className="text-lg font-semibold">Nouveau Chat</h2>
-            <p className="text-sm text-muted-foreground">Sélectionnez un contact ou créez un groupe</p>
+            <p className="text-sm text-muted-foreground">Sélectionnez un contact ou créez un groupe/forum</p>
         </div>
       </header>
 
@@ -44,13 +44,21 @@ export default function NewChatPage() {
         </div>
 
         <Card>
-            <CardContent className="p-0">
+            <CardContent className="p-0 divide-y divide-border">
                 <Link href="/chat/new/group" className="block">
                     <Button variant="ghost" className="w-full justify-start p-4 h-auto text-base">
                         <div className="flex items-center justify-center w-10 h-10 rounded-full bg-accent text-accent-foreground mr-4">
                             <Users className="h-5 w-5" />
                         </div>
                         Nouveau groupe
+                    </Button>
+                </Link>
+                 <Link href="/chat/new/forum" className="block">
+                    <Button variant="ghost" className="w-full justify-start p-4 h-auto text-base">
+                        <div className="flex items-center justify-center w-10 h-10 rounded-full bg-accent text-accent-foreground mr-4">
+                            <Megaphone className="h-5 w-5" />
+                        </div>
+                        Nouveau forum
                     </Button>
                 </Link>
             </CardContent>

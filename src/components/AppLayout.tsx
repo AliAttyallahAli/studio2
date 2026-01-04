@@ -2,7 +2,7 @@
 'use client';
 
 import { usePathname, useRouter } from 'next/navigation';
-import { User, Wallet, Menu, LogOut, Shield, Repeat, MessageSquare, Landmark, Pickaxe, UserCog, Rss, ShoppingBag, Handshake, Newspaper, Moon, Sun } from 'lucide-react';
+import { User, Wallet, Menu, LogOut, Shield, Repeat, MessageSquare, Landmark, Pickaxe, UserCog, Rss, ShoppingBag, Handshake, Newspaper, Moon, Sun, Megaphone } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import {

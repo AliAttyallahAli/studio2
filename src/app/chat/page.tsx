@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { allChats } from '@/lib/chat-data';
 import { cn } from '@/lib/utils';
+import { Megaphone } from 'lucide-react';
 
 const ChatList = () => {
     const router = useRouter();
@@ -30,7 +31,9 @@ const ChatList = () => {
                        <div className="relative">
                             <Avatar className="w-12 h-12">
                                 <AvatarImage src={chat.contact.avatar} alt={chat.contact.name} data-ai-hint={chat.contact.type === 'group' ? 'group icon' : 'profile avatar'} />
-                                <AvatarFallback>{chat.contact.name.charAt(0)}</AvatarFallback>
+                                <AvatarFallback>
+                                    {chat.contact.type === 'forum' ? <Megaphone className="h-6 w-6"/> : chat.contact.name.charAt(0)}
+                                </AvatarFallback>
                             </Avatar>
                             {chat.contact.type === 'user' && (
                                 <div className={cn(

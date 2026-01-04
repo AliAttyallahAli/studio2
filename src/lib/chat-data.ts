@@ -41,7 +41,7 @@ export interface ChatData {
     id: string;
     name: string;
     avatar: string;
-    type: 'user' | 'group';
+    type: 'user' | 'group' | 'forum';
     status?: 'En ligne' | 'Hors ligne';
   };
   lastMessage: string;
@@ -112,8 +112,8 @@ export const coreTeamWallet = {
     address: '0xSHELCORETEAM...a1b2c3d4e5f6',
     balance: 1500000 + (6 * 8), // Base + mining fees
     tokens: [
-        { name: 'Z-Immo', balance: '25000.00 ZIM' },
-        { name: 'EcoToken', balance: '125000.00 ECO' },
+        { name: 'Z-Immo', balance: '25000.00 ZIM', address: '0xZIMCORE...12345' },
+        { name: 'EcoToken', balance: '125000.00 ECO', address: '0xECOCORE...67890' },
     ],
     chains: ['Ethereum', 'BNB Chain', 'Polygon']
 };
@@ -232,7 +232,7 @@ const userProfiles: Record<string, UserProfileData> = {
 export let allChats: ChatData[] = [
   { 
     id: '1', 
-    contact: { id: '1', name: 'SAHEL Annonces', avatar: 'https://picsum.photos/seed/announce/100/100', type: 'group' },
+    contact: { id: '1', name: 'SAHEL Annonces', avatar: 'https://picsum.photos/seed/announce/100/100', type: 'forum' },
     lastMessage: 'Bienvenue sur SAHEL !', 
     time: '14:32', 
     messages: [
@@ -470,6 +470,30 @@ export const createGroupChat = (groupInfo: {name: string, avatar: string, member
     return newGroup;
 };
 
+export const createForumChat = (forumInfo: {name: string, description: string, avatar: string}): ChatData => {
+    const newForumId = `forum-${Date.now()}`;
+    const newForum: ChatData = {
+        id: newForumId,
+        contact: {
+            id: newForumId,
+            name: forumInfo.name,
+            avatar: forumInfo.avatar,
+            type: 'forum',
+        },
+        lastMessage: forumInfo.description || `Bienvenue sur le forum ${forumInfo.name}.`,
+        time: new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }),
+        messages: [{
+            id: `msg-${Date.now()}`,
+            type: 'text',
+            content: `Forum "${forumInfo.name}" créé.`,
+            sender: 'me',
+            time: new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }),
+        }],
+    };
+    allChats.unshift(newForum);
+    return newForum;
+};
+
 export const getOrCreateChat = (userId: string): ChatData => {
     let chat = allChats.find(c => c.contact.id === userId && c.contact.type === 'user');
     if (chat) {
@@ -520,3 +544,4 @@ export const getBlogPost = (id: string): BlogPost | undefined => {
     
 
     
+
