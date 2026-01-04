@@ -4,12 +4,13 @@
 import { AppLayout } from '@/components/AppLayout';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { AlertTriangle, CheckCircle2, ChevronRight, RefreshCw, Play, StopCircle } from 'lucide-react';
+import { AlertTriangle, CheckCircle2, ChevronRight, RefreshCw, Play, StopCircle, Copy } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useState, useEffect, useMemo } from 'react';
 import { CircularProgress } from '@/components/ui/circular-progress';
 import { useRouter } from 'next/navigation';
 import { miningData } from '@/lib/chat-data';
+import { useToast } from '@/hooks/use-toast';
 
 const initialWorkers = [
   { id: 'worker-001', name: 'RIG-01', status: 'En ligne', hashRate: '72 TH/s', temp: '65°C', uptime: '24h' },
@@ -24,6 +25,23 @@ const baseTransactions = [
 
 const TOTAL_DURATION = 24 * 3600; // 24 hours in seconds
 const MINING_SESSION_START_KEY = 'mining_session_start_time';
+const SAHEL_CONTRACT_ADDRESS = '0x1234567890123456789012345678901234567890';
+
+function AddressRow({ address }: { address: string }) {
+    const { toast } = useToast();
+    const copyAddress = () => {
+        navigator.clipboard.writeText(address);
+        toast({ title: 'Copié!', description: 'L\'adresse a été copiée dans le presse-papiers.'});
+    }
+    return (
+        <div className="flex items-center space-x-2 p-2 bg-secondary rounded-md">
+            <p className="text-sm font-mono text-primary flex-grow truncate">{address}</p>
+            <Button variant="ghost" size="icon" onClick={copyAddress}>
+                <Copy className="h-4 w-4" />
+            </Button>
+        </div>
+    );
+}
 
 export default function MiningPage() {
     const router = useRouter();
@@ -245,6 +263,16 @@ export default function MiningPage() {
             </CardContent>
           </Card>
         </div>
+
+        <Card>
+            <CardHeader>
+                <CardTitle>Adresse du Contrat SAHEL</CardTitle>
+                <CardDescription>Utilisez cette adresse pour ajouter le SAHEL coin à un portefeuille externe (ex: MetaMask).</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <AddressRow address={SAHEL_CONTRACT_ADDRESS} />
+            </CardContent>
+        </Card>
         
         <div className="grid gap-6 md:grid-cols-2">
              <Card>
