@@ -242,7 +242,7 @@ export default function WalletPage() {
                         <CardDescription>Veuillez entrer votre code PIN pour accéder à votre portefeuille.</CardDescription>
                     </CardHeader>
                     <CardContent>
-                       <Dialog open={true} onOpenChange={() => {}}>
+                       <Dialog open={pinState === 'locked'} onOpenChange={() => {}}>
                           <DialogContent onInteractOutside={(e) => e.preventDefault()} className="sm:max-w-sm">
                                <PinDialog onPinSuccess={handlePinSuccess} isTrigger={false} />
                           </DialogContent>
