@@ -4,11 +4,16 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { AppLayout } from '@/components/AppLayout';
 import { Button } from '@/components/ui/button';
-import { Download, Handshake } from 'lucide-react';
+import { Download, Handshake, CreditCard } from 'lucide-react';
 import QRCode from 'react-qr-code';
-import { walletData } from '@/lib/chat-data';
+import { walletData, updateSahelBalance, addFeeToCoreTeamWallet } from '@/lib/chat-data';
 import jspdf from 'jspdf';
 import html2canvas from 'html2canvas';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
+import { PinDialog } from '@/components/PinDialog';
+import { useToast } from '@/hooks/use-toast';
+
 
 const currentUser = {
     name: 'Sahel User',
@@ -74,12 +79,31 @@ VisaCardBack.displayName = 'VisaCardBack';
 export default function CardPage() {
     const cardContainerRef = useRef<HTMLDivElement>(null);
     const [p2pUrl, setP2pUrl] = useState('');
+    const [isCardPurchased, setIsCardPurchased] = useState<boolean | null>(null);
+    const { toast } = useToast();
 
     useEffect(() => {
-        // This code runs only on the client, after hydration
+        const purchaseStatus = localStorage.getItem('sahel_card_purchased') === 'true';
+        setIsCardPurchased(purchaseStatus);
+
+        if (purchaseStatus) {
+            const url = `${window.location.origin}/p2p?address=${walletData.sahel.address}`;
+            setP2pUrl(url);
+        }
+    }, []);
+
+    const handlePurchaseCard = () => {
+        const fee = 30;
+        updateSahelBalance(-fee);
+        addFeeToCoreTeamWallet(fee);
+        localStorage.setItem('sahel_card_purchased', 'true');
+        setIsCardPurchased(true);
+        toast({ title: 'Achat réussi !', description: `Votre carte SAHEL est activée. ${fee} SAHEL ont été déduits.` });
+        
+        // Set P2P URL after purchase
         const url = `${window.location.origin}/p2p?address=${walletData.sahel.address}`;
         setP2pUrl(url);
-    }, []);
+    };
 
     const downloadCardAsPdf = () => {
         if (cardContainerRef.current) {
@@ -95,6 +119,43 @@ export default function CardPage() {
             });
         }
     };
+
+    if (isCardPurchased === null) {
+        return (
+            <AppLayout>
+                <div className="flex justify-center items-center h-full">
+                    <p>Chargement...</p>
+                </div>
+            </AppLayout>
+        );
+    }
+
+    if (!isCardPurchased) {
+        return (
+            <AppLayout>
+                <div className="flex justify-center items-center h-full">
+                    <Card className="w-full max-w-md">
+                        <CardHeader>
+                            <CardTitle>Activer votre Carte SAHEL</CardTitle>
+                            <CardDescription>Obtenez votre carte virtuelle pour des transactions simplifiées.</CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                            <Alert>
+                                <CreditCard className="h-4 w-4" />
+                                <AlertTitle>Frais d'activation uniques</AlertTitle>
+                                <AlertDescription>
+                                    Pour obtenir votre carte, des frais de <span className="font-bold text-primary">30 SAHEL</span> seront déduits de votre portefeuille.
+                                </AlertDescription>
+                            </Alert>
+                            <PinDialog onPinSuccess={handlePurchaseCard}>
+                                <Button className="w-full bg-accent hover:bg-accent/90">Acheter ma carte</Button>
+                            </PinDialog>
+                        </CardContent>
+                    </Card>
+                </div>
+            </AppLayout>
+        );
+    }
 
     return (
         <AppLayout>
@@ -117,3 +178,5 @@ export default function CardPage() {
         </AppLayout>
     );
 }
+
+    
