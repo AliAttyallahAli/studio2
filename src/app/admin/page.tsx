@@ -8,7 +8,7 @@ import { ArrowUpRight, Copy, DollarSign, Users, Shield, Wallet } from 'lucide-re
 import { AppLayout } from '@/components/AppLayout';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { miningData, coreTeamWallet } from '@/lib/chat-data';
+import { coreTeamWallet } from '@/lib/chat-data';
 import { useMemo } from 'react';
 
 const recentUsers = [
@@ -43,7 +43,7 @@ export default function AdminPage() {
                 </CardHeader>
                 <CardContent>
                     <div className="text-2xl font-bold">{coreTeamBalance.toLocaleString('fr-FR')} SAHEL</div>
-                    <p className="text-xs text-muted-foreground mt-1">Wallet multichain principal</p>
+                    <p className="text-xs text-muted-foreground mt-1">Solde total incluant les frais collectés</p>
                     <Link href="/wallet">
                         <Button variant="outline" size="sm" className="mt-4">
                             <Wallet className="mr-2 h-4 w-4" />
@@ -69,7 +69,7 @@ export default function AdminPage() {
              <Card>
                 <CardHeader>
                     <CardTitle>Portefeuille Core Team</CardTitle>
-                    <CardDescription>Adresse unique pour les frais de transaction.</CardDescription>
+                    <CardDescription>Adresse unique pour la collecte des frais de transaction et de service.</CardDescription>
                 </CardHeader>
                 <CardContent>
                     <div className="flex items-center space-x-2 p-2 bg-secondary rounded-md">
