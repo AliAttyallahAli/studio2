@@ -54,43 +54,6 @@ function AddressRow({ address }: { address: string }) {
     );
 }
 
-const TransactionConfirmationDialog = ({ details, onConfirm, showConfirmButton = true }: { details: TransactionDetails, onConfirm?: () => void, showConfirmButton?: boolean }) => (
-    <DialogContent>
-        <DialogHeader>
-            <DialogTitle>Détails de la Transaction</DialogTitle>
-            <DialogDescription>Veuillez vérifier les détails de la transaction.</DialogDescription>
-        </DialogHeader>
-        <div className="space-y-4 py-4 text-sm">
-            <div className="flex justify-between items-center">
-                <span className="text-muted-foreground">Date et Heure:</span>
-                <span>{details.date}</span>
-            </div>
-             <div className="flex justify-between items-center">
-                <span className="text-muted-foreground">De (Expéditeur):</span>
-                <span className="font-mono truncate max-w-[50%]">{details.sender}</span>
-            </div>
-             <div className="flex justify-between items-center">
-                <span className="text-muted-foreground">À (Destinataire):</span>
-                <span className="font-mono truncate max-w-[50%]">{details.receiver}</span>
-            </div>
-             <div className="flex justify-between items-center font-semibold text-lg text-primary">
-                <span>Montant:</span>
-                <span>{details.amount} {details.asset}</span>
-            </div>
-            <div className="flex justify-between items-center">
-                <span className="text-muted-foreground">Frais de réseau (estim.):</span>
-                <span>{details.fee} SAHEL</span>
-            </div>
-            <div className="flex flex-col gap-1 pt-2 border-t">
-                <span className="text-muted-foreground text-xs">ID de Transaction:</span>
-                <span className="font-mono text-xs break-all">{details.transactionId}</span>
-            </div>
-        </div>
-         {showConfirmButton && onConfirm && <Button onClick={onConfirm} className="w-full">Confirmer et Envoyer</Button>}
-    </DialogContent>
-);
-
-
 export default function WalletPage() {
   const [pinState, setPinState] = useState<'checking' | 'setup' | 'locked' | 'unlocked'>('checking');
   const [showSendDialog, setShowSendDialog] = useState(false);
@@ -367,12 +330,43 @@ export default function WalletPage() {
               </CardContent>
           </Card>
 
-        <Dialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
-            {transactionDetails && <TransactionConfirmationDialog details={transactionDetails} onConfirm={handleConfirmSend} />}
-        </Dialog>
-        <Dialog open={showDetailsDialog} onOpenChange={setShowDetailsDialog}>
-            {transactionDetails && <TransactionConfirmationDialog details={transactionDetails} showConfirmButton={false} />}
-        </Dialog>
+        {transactionDetails && (
+            <>
+                <Dialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
+                    <DialogContent>
+                        <DialogHeader>
+                            <DialogTitle>Détails de la Transaction</DialogTitle>
+                            <DialogDescription>Veuillez vérifier les détails de la transaction.</DialogDescription>
+                        </DialogHeader>
+                        <div className="space-y-4 py-4 text-sm">
+                            <div className="flex justify-between items-center"><span className="text-muted-foreground">Date et Heure:</span><span>{transactionDetails.date}</span></div>
+                            <div className="flex justify-between items-center"><span className="text-muted-foreground">De (Expéditeur):</span><span className="font-mono truncate max-w-[50%]">{transactionDetails.sender}</span></div>
+                            <div className="flex justify-between items-center"><span className="text-muted-foreground">À (Destinataire):</span><span className="font-mono truncate max-w-[50%]">{transactionDetails.receiver}</span></div>
+                            <div className="flex justify-between items-center font-semibold text-lg text-primary"><span>Montant:</span><span>{transactionDetails.amount} {transactionDetails.asset}</span></div>
+                            <div className="flex justify-between items-center"><span className="text-muted-foreground">Frais de réseau (estim.):</span><span>{transactionDetails.fee} SAHEL</span></div>
+                            <div className="flex flex-col gap-1 pt-2 border-t"><span className="text-muted-foreground text-xs">ID de Transaction:</span><span className="font-mono text-xs break-all">{transactionDetails.transactionId}</span></div>
+                        </div>
+                        <Button onClick={handleConfirmSend} className="w-full">Confirmer et Envoyer</Button>
+                    </DialogContent>
+                </Dialog>
+                <Dialog open={showDetailsDialog} onOpenChange={setShowDetailsDialog}>
+                     <DialogContent>
+                        <DialogHeader>
+                            <DialogTitle>Détails de la Transaction</DialogTitle>
+                            <DialogDescription>Veuillez vérifier les détails de la transaction.</DialogDescription>
+                        </DialogHeader>
+                        <div className="space-y-4 py-4 text-sm">
+                            <div className="flex justify-between items-center"><span className="text-muted-foreground">Date et Heure:</span><span>{transactionDetails.date}</span></div>
+                            <div className="flex justify-between items-center"><span className="text-muted-foreground">De (Expéditeur):</span><span className="font-mono truncate max-w-[50%]">{transactionDetails.sender}</span></div>
+                            <div className="flex justify-between items-center"><span className="text-muted-foreground">À (Destinataire):</span><span className="font-mono truncate max-w-[50%]">{transactionDetails.receiver}</span></div>
+                            <div className="flex justify-between items-center font-semibold text-lg text-primary"><span>Montant:</span><span>{transactionDetails.amount} {transactionDetails.asset}</span></div>
+                            <div className="flex justify-between items-center"><span className="text-muted-foreground">Frais de réseau (estim.):</span><span>{transactionDetails.fee} SAHEL</span></div>
+                            <div className="flex flex-col gap-1 pt-2 border-t"><span className="text-muted-foreground text-xs">ID de Transaction:</span><span className="font-mono text-xs break-all">{transactionDetails.transactionId}</span></div>
+                        </div>
+                    </DialogContent>
+                </Dialog>
+            </>
+        )}
 
           <Card>
             <CardHeader>
