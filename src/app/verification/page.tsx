@@ -1,7 +1,7 @@
 
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, Suspense } from 'react';
 import { AppLayout } from '@/components/AppLayout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -10,7 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { useToast } from "@/hooks/use-toast"
-import { Camera, Upload } from 'lucide-react';
+import { Camera } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useSearchParams } from 'next/navigation';
 import Image from 'next/image';
@@ -25,15 +25,34 @@ const africanCountries = [
     "Ouganda", "Zambie", "Zimbabwe"
 ];
 
+// Mock database for KYC submissions
+const kycSubmissions: { [key: string]: any } = {
+    'test2@gmail.com': {
+        firstName: 'Bob',
+        lastName: 'Test',
+        birthDate: '1995-05-20',
+        birthPlace: 'Cotonou',
+        country: 'Bénin',
+        region: 'Littoral',
+        city: 'Cotonou',
+        district: 'Gbegamey',
+        docType: 'passport',
+        docNumber: 'B12345678',
+        selfiePreview: 'https://picsum.photos/seed/bobselfie/400/300',
+        kycStatus: 'En attente'
+    }
+};
 
-export default function VerificationPage() {
+const VerificationComponent = () => {
   const { toast } = useToast();
   const searchParams = useSearchParams();
   const [hasCameraPermission, setHasCameraPermission] = useState<boolean | null>(null);
   const [email, setEmail] = useState('');
+  const [isAdminView, setIsAdminView] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [selfiePreview, setSelfiePreview] = useState<string | null>(null);
+  const [kycStatus, setKycStatus] = useState('Non vérifié');
 
    const [kycForm, setKycForm] = useState({
     firstName: '',
@@ -46,8 +65,6 @@ export default function VerificationPage() {
     district: '',
     docType: '',
     docNumber: '',
-    docFront: null,
-    docBack: null,
   });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -63,6 +80,31 @@ export default function VerificationPage() {
     const userEmail = searchParams.get('email');
     if (userEmail) {
       setEmail(userEmail);
+      setIsAdminView(true);
+      const submission = kycSubmissions[userEmail];
+      if (submission) {
+        setKycForm({
+            firstName: submission.firstName,
+            lastName: submission.lastName,
+            birthDate: submission.birthDate,
+            birthPlace: submission.birthPlace,
+            country: submission.country,
+            region: submission.region,
+            city: submission.city,
+            district: submission.district,
+            docType: submission.docType,
+            docNumber: submission.docNumber,
+        });
+        setSelfiePreview(submission.selfiePreview);
+        setKycStatus(submission.kycStatus);
+      }
+    } else {
+        const loggedInUserEmail = 'current.user@sahel.app'; // Mock logged in user
+        setEmail(loggedInUserEmail);
+        setIsAdminView(false);
+        if (kycSubmissions[loggedInUserEmail]) {
+            setKycStatus(kycSubmissions[loggedInUserEmail].kycStatus);
+        }
     }
   }, [searchParams]);
 
@@ -79,31 +121,23 @@ export default function VerificationPage() {
         } catch (error) {
           console.error('Error accessing camera:', error);
           setHasCameraPermission(false);
-          toast({
-            variant: 'destructive',
-            title: 'Accès à la caméra refusé',
-            description: 'Veuillez autoriser l\'accès à la caméra dans les paramètres de votre navigateur pour continuer.',
-          });
         }
       } else {
         setHasCameraPermission(false);
-         toast({
-            variant: 'destructive',
-            title: 'Appareil non pris en charge',
-            description: 'Votre navigateur ne prend pas en charge l\'accès à la caméra.',
-          });
       }
     };
 
-    getCameraPermission();
-
+    if (!isAdminView) {
+      getCameraPermission();
+    }
+    
      return () => {
       if (videoRef.current && videoRef.current.srcObject) {
         const stream = videoRef.current.srcObject as MediaStream;
         stream.getTracks().forEach(track => track.stop());
       }
     };
-  }, [toast]);
+  }, [isAdminView]);
 
   const handleCaptureSelfie = () => {
     if (videoRef.current && canvasRef.current) {
@@ -132,7 +166,7 @@ export default function VerificationPage() {
         toast({
           variant: 'destructive',
           title: 'Champ manquant',
-          description: `Veuillez remplir tous les champs avant de soumettre. Le champ "${field}" est requis.`,
+          description: `Veuillez remplir le champ : ${field}`,
         });
         return;
       }
@@ -142,11 +176,15 @@ export default function VerificationPage() {
         toast({
           variant: 'destructive',
           title: 'Selfie manquant',
-          description: 'Veuillez capturer un selfie vidéo avant de soumettre.',
+          description: 'Veuillez capturer un selfie avant de soumettre.',
         });
         return;
     }
-
+    
+    // Simulate submission
+    kycSubmissions[email] = { ...kycForm, selfiePreview, kycStatus: 'En attente' };
+    setKycStatus('En attente');
+    
     toast({
       title: 'Soumission Réussie',
       description: 'Vos informations KYC ont été soumises pour vérification.',
@@ -154,14 +192,22 @@ export default function VerificationPage() {
   };
 
   const handleApprove = () => {
+    if (kycSubmissions[email]) {
+        kycSubmissions[email].kycStatus = 'Vérifié';
+    }
+    setKycStatus('Vérifié');
     toast({
       title: 'KYC Approuvé',
       description: `La vérification pour ${email} a été approuvée avec succès.`,
-      className: 'bg-green-500 text-white',
+      className: 'bg-green-600 text-white',
     });
   };
 
   const handleReject = () => {
+     if (kycSubmissions[email]) {
+        kycSubmissions[email].kycStatus = 'Rejeté';
+    }
+    setKycStatus('Rejeté');
      toast({
       variant: 'destructive',
       title: 'KYC Rejeté',
@@ -169,6 +215,12 @@ export default function VerificationPage() {
     });
   };
 
+  const statusMap: {[key: string]: {text: string, color: string}} = {
+      'Non vérifié': { text: 'Non vérifié', color: 'text-yellow-400' },
+      'En attente': { text: 'En attente', color: 'text-orange-400' },
+      'Vérifié': { text: 'Vérifié', color: 'text-green-400' },
+      'Rejeté': { text: 'Rejeté', color: 'text-red-400' },
+  }
 
   return (
     <AppLayout>
@@ -188,132 +240,152 @@ export default function VerificationPage() {
                 <Card>
                     <CardHeader>
                         <CardTitle>Vérification d'Identité (KYC)</CardTitle>
-                        <CardDescription>Statut : <span className="text-yellow-400 font-semibold">Non vérifié</span></CardDescription>
+                        <CardDescription>
+                            Statut : <span className={`font-semibold ${statusMap[kycStatus]?.color}`}>{statusMap[kycStatus]?.text}</span>
+                        </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
-                        {email && (
-                             <div className="space-y-2">
-                                <Label htmlFor="email">Email de l'utilisateur</Label>
-                                <Input id="email" type="email" value={email} readOnly className="bg-secondary" />
-                            </div>
-                        )}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div className="space-y-2">
-                                <Label htmlFor="firstName">Prénom</Label>
-                                <Input id="firstName" placeholder="Ex: Jean" required value={kycForm.firstName} onChange={handleInputChange} />
-                            </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="lastName">Nom de famille</Label>
-                                <Input id="lastName" placeholder="Ex: Dupont" required value={kycForm.lastName} onChange={handleInputChange} />
-                            </div>
-                        </div>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                           <div className="space-y-2">
-                                <Label htmlFor="birthDate">Date de naissance</Label>
-                                <Input id="birthDate" type="date" required value={kycForm.birthDate} onChange={handleInputChange} />
-                            </div>
-                             <div className="space-y-2">
-                                <Label htmlFor="birthPlace">Lieu de naissance</Label>
-                                <Input id="birthPlace" placeholder="Ex: Dakar" required value={kycForm.birthPlace} onChange={handleInputChange} />
-                            </div>
-                        </div>
-                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div className="space-y-2">
-                                <Label htmlFor="country">Pays</Label>
-                                <Select required value={kycForm.country} onValueChange={(v) => handleSelectChange('country', v)}>
-                                    <SelectTrigger id="country">
-                                        <SelectValue placeholder="Sélectionnez votre pays" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {africanCountries.map(country => (
-                                            <SelectItem key={country} value={country}>{country}</SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                            </div>
-                             <div className="space-y-2">
-                                <Label htmlFor="region">Région</Label>
-                                <Input id="region" placeholder="Ex: Région de Dakar" required value={kycForm.region} onChange={handleInputChange} />
-                            </div>
-                        </div>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                             <div className="space-y-2">
-                                <Label htmlFor="city">Ville</Label>
-                                <Input id="city" placeholder="Ex: Dakar" required value={kycForm.city} onChange={handleInputChange} />
-                            </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="district">Quartier</Label>
-                                <Input id="district" placeholder="Ex: Mermoz" required value={kycForm.district} onChange={handleInputChange} />
-                            </div>
-                        </div>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div className="space-y-2">
-                                <Label htmlFor="docType">Type de pièce</Label>
-                                <Select required value={kycForm.docType} onValueChange={(v) => handleSelectChange('docType', v)}>
-                                    <SelectTrigger id="docType">
-                                        <SelectValue placeholder="Sélectionnez le type" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="nni">NNI</SelectItem>
-                                        <SelectItem value="passport">Passeport</SelectItem>
-                                        <SelectItem value="act">Acte de naissance</SelectItem>
-                                        <SelectItem value="driving-license">Permis de conduire</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                            </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="docNumber">Numéro de pièce</Label>
-                                <Input id="docNumber" placeholder="Ex: 123456789" required value={kycForm.docNumber} onChange={handleInputChange} />
-                            </div>
-                        </div>
-
-                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div className="space-y-2">
-                                <Label htmlFor="doc-front">Pièce d'identité (Recto)</Label>
-                                <Input id="doc-front" type="file" required />
-                            </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="doc-back">Pièce d'identité (Verso)</Label>
-                                <Input id="doc-back" type="file" required />
-                            </div>
-                        </div>
-
-                        <div className="space-y-2">
-                            <Label>Selfie Vidéo</Label>
-                             <div className="p-2 border rounded-md bg-secondary aspect-video flex items-center justify-center">
-                                <video ref={videoRef} className="w-full h-full rounded-md" autoPlay muted playsInline />
-                            </div>
-                            <canvas ref={canvasRef} className="hidden" />
-                             {hasCameraPermission === false && (
-                                <Alert variant="destructive">
-                                    <AlertTitle>Accès à la caméra requis</AlertTitle>
-                                    <AlertDescription>
-                                        Veuillez autoriser l'accès à la caméra pour utiliser cette fonctionnalité.
-                                    </AlertDescription>
-                                  </Alert>
-                            )}
-                            {selfiePreview && (
+                        {(isAdminView || kycStatus !== 'Vérifié') && (
+                            <>
                                 <div className="space-y-2">
-                                    <Label>Aperçu du selfie</Label>
-                                    <div className="p-2 border rounded-md bg-secondary flex justify-center">
-                                        <Image src={selfiePreview} alt="Aperçu du selfie" width={200} height={150} className="rounded-md" />
+                                    <Label htmlFor="email">Email de l'utilisateur</Label>
+                                    <Input id="email" type="email" value={email} readOnly className="bg-secondary" />
+                                </div>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                        <Label htmlFor="firstName">Prénom</Label>
+                                        <Input id="firstName" placeholder="Ex: Jean" required value={kycForm.firstName} onChange={handleInputChange} readOnly={isAdminView} />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="lastName">Nom de famille</Label>
+                                        <Input id="lastName" placeholder="Ex: Dupont" required value={kycForm.lastName} onChange={handleInputChange} readOnly={isAdminView}/>
                                     </div>
                                 </div>
-                            )}
-                            <Button className="w-full" disabled={!hasCameraPermission} onClick={handleCaptureSelfie}>
-                                <Camera className="mr-2 h-4 w-4" />
-                                Capturer le Selfie
-                            </Button>
-                        </div>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                        <Label htmlFor="birthDate">Date de naissance</Label>
+                                        <Input id="birthDate" type="date" required value={kycForm.birthDate} onChange={handleInputChange} readOnly={isAdminView}/>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="birthPlace">Lieu de naissance</Label>
+                                        <Input id="birthPlace" placeholder="Ex: Dakar" required value={kycForm.birthPlace} onChange={handleInputChange} readOnly={isAdminView}/>
+                                    </div>
+                                </div>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                        <Label htmlFor="country">Pays</Label>
+                                        <Select required value={kycForm.country} onValueChange={(v) => handleSelectChange('country', v)} disabled={isAdminView}>
+                                            <SelectTrigger id="country">
+                                                <SelectValue placeholder="Sélectionnez votre pays" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                {africanCountries.map(country => (
+                                                    <SelectItem key={country} value={country}>{country}</SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="region">Région</Label>
+                                        <Input id="region" placeholder="Ex: Région de Dakar" required value={kycForm.region} onChange={handleInputChange} readOnly={isAdminView}/>
+                                    </div>
+                                </div>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                        <Label htmlFor="city">Ville</Label>
+                                        <Input id="city" placeholder="Ex: Dakar" required value={kycForm.city} onChange={handleInputChange} readOnly={isAdminView}/>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="district">Quartier</Label>
+                                        <Input id="district" placeholder="Ex: Mermoz" required value={kycForm.district} onChange={handleInputChange} readOnly={isAdminView}/>
+                                    </div>
+                                </div>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                        <Label htmlFor="docType">Type de pièce</Label>
+                                        <Select required value={kycForm.docType} onValueChange={(v) => handleSelectChange('docType', v)} disabled={isAdminView}>
+                                            <SelectTrigger id="docType">
+                                                <SelectValue placeholder="Sélectionnez le type" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectItem value="nni">NNI</SelectItem>
+                                                <SelectItem value="passport">Passeport</SelectItem>
+                                                <SelectItem value="act">Acte de naissance</SelectItem>
+                                                <SelectItem value="driving-license">Permis de conduire</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="docNumber">Numéro de pièce</Label>
+                                        <Input id="docNumber" placeholder="Ex: 123456789" required value={kycForm.docNumber} onChange={handleInputChange} readOnly={isAdminView}/>
+                                    </div>
+                                </div>
 
-                        {email && (
-                            <div className="flex gap-2">
-                                <Button className="w-full bg-green-600 hover:bg-green-700" onClick={handleApprove}>Approuver</Button>
-                                <Button className="w-full" variant="destructive" onClick={handleReject}>Rejeter</Button>
-                            </div>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                        <Label htmlFor="doc-front">Pièce d'identité (Recto)</Label>
+                                        <Input id="doc-front" type="file" required disabled={isAdminView}/>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="doc-back">Pièce d'identité (Verso)</Label>
+                                        <Input id="doc-back" type="file" required disabled={isAdminView}/>
+                                    </div>
+                                </div>
+
+                                <div className="space-y-2">
+                                    <Label>Selfie</Label>
+                                    {!isAdminView ? (
+                                        <>
+                                            <div className="p-2 border rounded-md bg-secondary aspect-video flex items-center justify-center">
+                                                <video ref={videoRef} className="w-full h-full rounded-md" autoPlay muted playsInline />
+                                            </div>
+                                            <canvas ref={canvasRef} className="hidden" />
+                                            {hasCameraPermission === false && (
+                                                <Alert variant="destructive">
+                                                    <AlertTitle>Accès à la caméra requis</AlertTitle>
+                                                    <AlertDescription>
+                                                        Veuillez autoriser l'accès à la caméra pour utiliser cette fonctionnalité.
+                                                    </AlertDescription>
+                                                </Alert>
+                                            )}
+                                        </>
+                                    ) : null}
+                                    {selfiePreview && (
+                                        <div className="space-y-2">
+                                            <Label>Aperçu du selfie</Label>
+                                            <div className="p-2 border rounded-md bg-secondary flex justify-center">
+                                                <Image src={selfiePreview} alt="Aperçu du selfie" width={200} height={150} className="rounded-md" />
+                                            </div>
+                                        </div>
+                                    )}
+                                     {!isAdminView && (
+                                        <Button className="w-full" disabled={!hasCameraPermission} onClick={handleCaptureSelfie}>
+                                            <Camera className="mr-2 h-4 w-4" />
+                                            Capturer le Selfie
+                                        </Button>
+                                    )}
+                                </div>
+
+                                {isAdminView ? (
+                                    <div className="flex gap-2">
+                                        <Button className="w-full bg-green-600 hover:bg-green-700" onClick={handleApprove}>Approuver</Button>
+                                        <Button className="w-full" variant="destructive" onClick={handleReject}>Rejeter</Button>
+                                    </div>
+                                ) : (
+                                    <Button className="w-full bg-accent hover:bg-accent/90" onClick={handleSubmitKyc} disabled={kycStatus === 'En attente'}>
+                                        {kycStatus === 'En attente' ? 'Soumission en cours...' : 'Soumettre pour vérification KYC'}
+                                    </Button>
+                                )}
+                            </>
                         )}
-                        <Button className="w-full bg-accent hover:bg-accent/90" onClick={handleSubmitKyc}>Soumettre pour vérification KYC</Button>
-
+                        {kycStatus === 'Vérifié' && !isAdminView && (
+                             <Alert variant="default" className="bg-green-900/50 text-green-400 border-green-500">
+                                <AlertTitle>Félicitations !</AlertTitle>
+                                <AlertDescription>
+                                    Votre compte est vérifié. Vous avez maintenant accès à toutes les fonctionnalités.
+                                </AlertDescription>
+                            </Alert>
+                        )}
                     </CardContent>
                 </Card>
               </TabsContent>
@@ -345,4 +417,13 @@ export default function VerificationPage() {
         </div>
     </AppLayout>
   );
+}
+
+
+export default function VerificationPage() {
+    return (
+        <Suspense fallback={<div>Chargement...</div>}>
+            <VerificationComponent />
+        </Suspense>
+    )
 }
