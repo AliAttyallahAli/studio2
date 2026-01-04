@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Camera, Gift, Copy } from 'lucide-react';
+import { Camera, Gift, Copy, CreditCard } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Textarea } from '@/components/ui/textarea';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -98,6 +98,10 @@ export default function ProfilePage() {
                         <h1 className="text-2xl font-bold">{currentUser.username}</h1>
                         <p className="text-muted-foreground">{currentUser.email}</p>
                     </div>
+                     <Button variant="outline" onClick={() => router.push('/card')}>
+                        <CreditCard className="mr-2 h-4 w-4" />
+                        Voir ma carte SAHEL
+                    </Button>
                 </CardContent>
             </Card>
 
