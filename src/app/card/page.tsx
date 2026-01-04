@@ -14,7 +14,8 @@ const currentUser = {
     name: 'Sahel User',
     username: 'saheluser',
     accountNumber: '4000 1234 5678 9010', // Example account number
-    validThru: '12/28'
+    validThru: '12/28',
+    cvv: '123'
 };
 
 const VisaCard = React.forwardRef<HTMLDivElement>((props, ref) => {
@@ -52,20 +53,39 @@ const VisaCard = React.forwardRef<HTMLDivElement>((props, ref) => {
 });
 VisaCard.displayName = 'VisaCard';
 
+const VisaCardBack = React.forwardRef<HTMLDivElement>((props, ref) => {
+    return (
+        <div ref={ref} className="w-[350px] h-[220px] bg-gradient-to-br from-yellow-300 via-yellow-400 to-yellow-500 rounded-xl shadow-lg text-gray-800 flex flex-col justify-between">
+            <div className="h-12 bg-black mt-6"></div>
+            <div className="px-6 py-4 flex items-center gap-4">
+                <div className="bg-white h-8 flex-grow rounded-sm flex items-end justify-end italic pr-2 text-sm">
+                    {currentUser.name}
+                </div>
+                <div className="font-mono bg-white px-2 py-1 rounded-sm text-lg">
+                    {currentUser.cvv}
+                </div>
+            </div>
+            <div className="px-6 pb-4 text-xs text-black/60">
+                <p>This card is issued by SAHEL DEFI Bank. Use of this card is subject to the terms and conditions of the Cardholder Agreement. Not for resale. For assistance, visit sahel.app.</p>
+            </div>
+        </div>
+    );
+});
+VisaCardBack.displayName = 'VisaCardBack';
 
 export default function CardPage() {
-    const cardRef = useRef<HTMLDivElement>(null);
+    const cardContainerRef = useRef<HTMLDivElement>(null);
 
     const downloadCardAsPdf = () => {
-        if (cardRef.current) {
-            html2canvas(cardRef.current).then(canvas => {
+        if (cardContainerRef.current) {
+            html2canvas(cardContainerRef.current, { backgroundColor: null }).then(canvas => {
                 const imgData = canvas.toDataURL('image/png');
                 const pdf = new jspdf({
-                    orientation: 'landscape',
+                    orientation: 'portrait',
                     unit: 'px',
-                    format: [350, 220]
+                    format: [370, 480]
                 });
-                pdf.addImage(imgData, 'PNG', 0, 0, 350, 220);
+                pdf.addImage(imgData, 'PNG', 10, 10, 350, 460);
                 pdf.save('sahel-card.pdf');
             });
         }
@@ -79,11 +99,14 @@ export default function CardPage() {
                     <p className="text-muted-foreground">Voici votre carte virtuelle. Téléchargez-la en PDF.</p>
                 </div>
                 
-                <VisaCard ref={cardRef} />
+                <div ref={cardContainerRef} className="space-y-5">
+                    <VisaCard />
+                    <VisaCardBack />
+                </div>
 
                 <Button onClick={downloadCardAsPdf}>
                     <Download className="mr-2 h-4 w-4" />
-                    Télécharger la carte
+                    Télécharger la carte (Recto/Verso)
                 </Button>
             </div>
         </AppLayout>
