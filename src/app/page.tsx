@@ -23,14 +23,16 @@ const recentTransactions = [
 ]
 
 const TOTAL_DURATION = 24 * 3600; // 24 hours in seconds
+const MINING_SESSION_START_KEY = 'mining_session_start_time';
 
 export default function MiningPage() {
     const router = useRouter();
     const [isAuthenticated, setIsAuthenticated] = useState(false);
-    const [isMining, setIsMining] = useState(true);
-    const [timeRemaining, setTimeRemaining] = useState(TOTAL_DURATION - (8 * 3600 + 14 * 60 + 38)); // Start with some progress
+    const [isMining, setIsMining] = useState(false);
+    const [timeRemaining, setTimeRemaining] = useState(TOTAL_DURATION);
     const [progress, setProgress] = useState(0);
 
+    // Check for auth status on mount
     useEffect(() => {
         if (typeof window !== 'undefined') {
             const authStatus = localStorage.getItem('isAuthenticated') === 'true';
@@ -41,6 +43,30 @@ export default function MiningPage() {
         }
     }, [router]);
 
+    // Initialize mining state from localStorage
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            const sessionStartTime = localStorage.getItem(MINING_SESSION_START_KEY);
+
+            if (sessionStartTime) {
+                const startTime = parseInt(sessionStartTime, 10);
+                const currentTime = Date.now();
+                const elapsedSeconds = Math.floor((currentTime - startTime) / 1000);
+
+                if (elapsedSeconds < TOTAL_DURATION) {
+                    setIsMining(true);
+                    setTimeRemaining(TOTAL_DURATION - elapsedSeconds);
+                } else {
+                    // Session has expired
+                    setIsMining(false);
+                    setTimeRemaining(0);
+                    localStorage.removeItem(MINING_SESSION_START_KEY);
+                }
+            }
+        }
+    }, []);
+
+    // Timer effect
     useEffect(() => {
         let timer: NodeJS.Timeout | undefined;
 
@@ -51,26 +77,35 @@ export default function MiningPage() {
                     if (newTime <= 0) {
                         clearInterval(timer);
                         setIsMining(false);
-                        setProgress(0);
+                        if(typeof window !== 'undefined') {
+                            localStorage.removeItem(MINING_SESSION_START_KEY);
+                        }
                         return 0;
                     }
-                    const newProgress = ((TOTAL_DURATION - newTime) / TOTAL_DURATION) * 100;
-                    setProgress(newProgress);
                     return newTime;
                 });
             }, 1000);
-        } else if (timeRemaining <= 0 && isMining) {
-             setIsMining(false);
-             setProgress(0);
-        } else if (!isMining){
-            setProgress(0);
         }
 
         return () => clearInterval(timer);
     }, [isMining, timeRemaining]);
+
+    // Progress calculation effect
+    useEffect(() => {
+        if (isMining) {
+            const newProgress = ((TOTAL_DURATION - timeRemaining) / TOTAL_DURATION) * 100;
+            setProgress(newProgress);
+        } else {
+            setProgress(0);
+        }
+    }, [isMining, timeRemaining]);
     
     const handleStartMining = () => {
-        if (!isMining && timeRemaining <= 0) {
+        if (!isMining) {
+            const startTime = Date.now();
+            if (typeof window !== 'undefined') {
+                localStorage.setItem(MINING_SESSION_START_KEY, startTime.toString());
+            }
             setTimeRemaining(TOTAL_DURATION);
             setIsMining(true);
         }
@@ -130,10 +165,10 @@ export default function MiningPage() {
                     size="lg" 
                     className="bg-primary hover:bg-primary/90 mt-4 w-full sm:w-auto" 
                     onClick={handleStartMining}
-                    disabled={isMining && timeRemaining > 0}
+                    disabled={isMining}
                 >
-                    {isMining && timeRemaining > 0 ? <StopCircle className="mr-2 h-5 w-5" /> : <Play className="mr-2 h-5 w-5" />}
-                    {isMining && timeRemaining > 0 ? 'Minage en cours...' : 'Commencer le minage'}
+                    {isMining ? <StopCircle className="mr-2 h-5 w-5" /> : <Play className="mr-2 h-5 w-5" />}
+                    {isMining ? 'Minage en cours...' : 'Commencer le minage'}
                 </Button>
             </div>
           </CardContent>
