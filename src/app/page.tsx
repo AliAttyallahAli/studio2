@@ -326,7 +326,7 @@ export default function MiningPage() {
                             </div>
                         ))}
                     </div>
-                     <Button variant="outline" className="w-full mt-4">
+                     <Button variant="outline" className="w-full mt-4" onClick={() => router.push('/wallet')}>
                         Voir tout <ChevronRight className="h-4 w-4 ml-2" />
                     </Button>
                 </CardContent>
