@@ -179,7 +179,15 @@ export default function AdminPage() {
                                     <div className="space-y-4 py-4">
                                         <div className="space-y-2">
                                             <Label htmlFor="asset-select">Actif</Label>
-                                            <Select value={sendForm.asset} onValueChange={(value) => setSendForm(prev => ({ ...prev, asset: value }))}><SelectTrigger id="asset-select"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="SAHEL">SAHEL</SelectItem></SelectContent></Select>
+                                            <Select value={sendForm.asset} onValueChange={(value) => setSendForm(prev => ({ ...prev, asset: value }))}>
+                                                <SelectTrigger id="asset-select"><SelectValue /></SelectTrigger>
+                                                <SelectContent>
+                                                    <SelectItem value="SAHEL">SAHEL</SelectItem>
+                                                    {currentWalletData.tokens.map(t => (
+                                                        <SelectItem key={t.name} value={t.balance.split(' ')[1]}>{t.name}</SelectItem>
+                                                    ))}
+                                                </SelectContent>
+                                            </Select>
                                         </div>
                                         <div className="space-y-2"><Label htmlFor="recipient">Destinataire</Label><Input id="recipient" placeholder="@utilisateur ou 0x..." value={sendForm.recipient} onChange={(e) => setSendForm(prev => ({ ...prev, recipient: e.target.value }))} /></div>
                                         <div className="space-y-2"><Label htmlFor="amount">Montant</Label><Input id="amount" type="number" placeholder="0.00" value={sendForm.amount} onChange={(e) => setSendForm(prev => ({ ...prev, amount: e.target.value }))} /></div>
@@ -197,8 +205,20 @@ export default function AdminPage() {
                             </Dialog>
                         </div>
                         <Tabs defaultValue="coins" className="w-full">
-                            <TabsList className="grid w-full grid-cols-2"><TabsTrigger value="coins">Coins</TabsTrigger><TabsTrigger value="history">Historique</TabsTrigger></TabsList>
+                            <TabsList className="grid w-full grid-cols-3"><TabsTrigger value="coins">Coins</TabsTrigger><TabsTrigger value="tokens">Tokens</TabsTrigger><TabsTrigger value="history">Historique</TabsTrigger></TabsList>
                             <TabsContent value="coins" className="mt-4"><Card className="bg-secondary"><CardHeader><CardTitle className="text-lg">SAHEL Coin</CardTitle></CardHeader><CardContent><p className="text-2xl font-bold text-primary">{currentWalletData.balance.toFixed(2)} SAHEL</p></CardContent></Card></TabsContent>
+                            <TabsContent value="tokens" className="mt-4 space-y-4">
+                                {currentWalletData.tokens.map(token => (
+                                    <Card key={token.name} className="bg-secondary">
+                                        <CardHeader>
+                                            <CardTitle className="text-lg">{token.name}</CardTitle>
+                                        </CardHeader>
+                                        <CardContent>
+                                            <p className="text-2xl font-bold">{token.balance}</p>
+                                        </CardContent>
+                                    </Card>
+                                ))}
+                            </TabsContent>
                             <TabsContent value="history" className="mt-4">
                                 <div className="space-y-2">
                                     {transactions.map((tx) => (
@@ -291,5 +311,3 @@ export default function AdminPage() {
         </AppLayout>
     );
 }
-
-    

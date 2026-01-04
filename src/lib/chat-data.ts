@@ -111,6 +111,10 @@ export const miningData = {
 export const coreTeamWallet = {
     address: '0xSHELCORETEAM...a1b2c3d4e5f6',
     balance: 1500000 + (6 * 8), // Base + mining fees
+    tokens: [
+        { name: 'Z-Immo', balance: '25000.00 ZIM' },
+        { name: 'EcoToken', balance: '125000.00 ECO' },
+    ],
     chains: ['Ethereum', 'BNB Chain', 'Polygon']
 };
 
