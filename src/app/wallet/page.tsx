@@ -5,7 +5,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { AppLayout } from '@/components/AppLayout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { ArrowDown, ArrowUp, QrCode, Repeat, Copy, ShieldAlert } from 'lucide-react';
+import { ArrowDown, ArrowUp, Repeat, Copy, ShieldAlert } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
@@ -18,6 +18,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import Link from 'next/link';
 import { useToast } from '@/hooks/use-toast';
 import { walletData } from '@/lib/chat-data';
+import QRCode from "react-qr-code";
 
 
 const transactions = [
@@ -95,6 +96,7 @@ export default function WalletPage() {
   const [showSendDialog, setShowSendDialog] = useState(false);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [transactionDetails, setTransactionDetails] = useState<TransactionDetails | null>(null);
+  const [qrCodeValue, setQrCodeValue] = useState('');
 
   const [sendForm, setSendForm] = useState({ asset: 'SAHEL', recipient: '', amount: '' });
   
@@ -111,7 +113,13 @@ export default function WalletPage() {
     } else {
       setPinState('setup');
     }
-  }, []);
+    
+    if (typeof window !== 'undefined') {
+        const url = new URL('/p2p', window.location.origin);
+        url.searchParams.set('address', currentWalletData.sahel.address);
+        setQrCodeValue(url.toString());
+    }
+  }, [currentWalletData.sahel.address]);
   
    // This effect will re-sync the component state if the global data changes
    // This is a simple way to propagate state changes without a full state management library
@@ -287,13 +295,20 @@ export default function WalletPage() {
                                             <span className="font-mono text-xs break-all">{currentWalletData.sahel.address}</span>
                                         </DialogDescription>
                                     </DialogHeader>
-                                    <div className="flex justify-center p-4">
-                                         <Link href={`/p2p?address=${currentWalletData.sahel.address}`}>
-                                            <div className="w-48 h-48 bg-white flex items-center justify-center cursor-pointer" data-ai-hint="QR code">
-                                                <QrCode className="w-40 h-40 text-black" />
-                                            </div>
-                                         </Link>
+                                    <div className="flex justify-center p-4 bg-white rounded-md">
+                                        {qrCodeValue && (
+                                            <QRCode
+                                                value={qrCodeValue}
+                                                size={192}
+                                                bgColor="#FFFFFF"
+                                                fgColor="#000000"
+                                                level="L"
+                                            />
+                                        )}
                                     </div>
+                                    <Link href={qrCodeValue} className="text-center text-sm text-blue-500 hover:underline" target="_blank" rel="noopener noreferrer">
+                                        Ouvrir le lien P2P
+                                    </Link>
                                 </DialogContent>
                            </Dialog>
                       </div>

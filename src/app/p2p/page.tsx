@@ -12,7 +12,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { PinDialog } from '@/components/PinDialog';
 import { useToast } from '@/hooks/use-toast';
 import { useSearchParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 
 const buyOffers = [
@@ -79,8 +79,7 @@ const P2PTransactionDialog = ({ offer, type, onTransactionSuccess }: { offer: Of
     );
 };
 
-
-export default function P2PPage() {
+function P2PContent() {
     const { toast } = useToast();
     const searchParams = useSearchParams();
     const [searchQuery, setSearchQuery] = useState('');
@@ -206,4 +205,12 @@ export default function P2PPage() {
       </div>
     </AppLayout>
   );
+}
+
+export default function P2PPage() {
+    return (
+        <Suspense fallback={<div>Chargement...</div>}>
+            <P2PContent />
+        </Suspense>
+    )
 }
