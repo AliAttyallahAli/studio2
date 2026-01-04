@@ -5,7 +5,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { AppLayout } from '@/components/AppLayout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { ArrowDown, ArrowUp, Repeat, Copy, ShieldAlert } from 'lucide-react';
+import { ArrowDown, ArrowUp, Repeat, Copy, ShieldAlert, MoreHorizontal } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
@@ -22,10 +22,10 @@ import QRCode from "react-qr-code";
 
 
 const transactions = [
-    { id: 'tx1', type: 'reçu', amount: '+ 50.25 SAHEL', from: 'de @user123', date: 'Aujourd\'hui', icon: ArrowDown },
-    { id: 'tx2', type: 'swap', amount: '- 100.00 SAHEL', from: 'pour 10000.00 ECO', date: 'Hier', icon: Repeat },
-    { id: 'tx3', type: 'envoyé', amount: '- 10.00 ZIM', from: 'à @market', date: 'Hier', icon: ArrowUp },
-    { id: 'tx4', type: 'récompense', amount: '+ 2.50 SAHEL', from: 'Minage quotidien', date: 'Hier', icon: ArrowDown },
+    { id: 'tx1', type: 'reçu', amount: '+ 50.25 SAHEL', from: 'de @user123', to: '@SahelUser', date: 'Aujourd\'hui', icon: ArrowDown, fee: '0.001' },
+    { id: 'tx2', type: 'swap', amount: '- 100.00 SAHEL', from: 'pour 10000.00 ECO', to: 'DEX', date: 'Hier', icon: Repeat, fee: '0.002' },
+    { id: 'tx3', type: 'envoyé', amount: '- 10.00 ZIM', from: '@SahelUser', to: 'à @market', date: 'Hier', icon: ArrowUp, fee: '0.0005' },
+    { id: 'tx4', type: 'récompense', amount: '+ 2.50 SAHEL', from: 'Minage quotidien', to: '@SahelUser', date: 'Hier', icon: ArrowDown, fee: '0.000' },
 ];
 
 type TransactionDetails = {
@@ -54,11 +54,11 @@ function AddressRow({ address }: { address: string }) {
     );
 }
 
-const TransactionConfirmationDialog = ({ details, onConfirm }: { details: TransactionDetails, onConfirm: () => void }) => (
+const TransactionConfirmationDialog = ({ details, onConfirm, showConfirmButton = true }: { details: TransactionDetails, onConfirm?: () => void, showConfirmButton?: boolean }) => (
     <DialogContent>
         <DialogHeader>
-            <DialogTitle>Confirmer la Transaction</DialogTitle>
-            <DialogDescription>Veuillez vérifier les détails de la transaction avant de confirmer.</DialogDescription>
+            <DialogTitle>Détails de la Transaction</DialogTitle>
+            <DialogDescription>Veuillez vérifier les détails de la transaction.</DialogDescription>
         </DialogHeader>
         <div className="space-y-4 py-4 text-sm">
             <div className="flex justify-between items-center">
@@ -86,7 +86,7 @@ const TransactionConfirmationDialog = ({ details, onConfirm }: { details: Transa
                 <span className="font-mono text-xs break-all">{details.transactionId}</span>
             </div>
         </div>
-         <Button onClick={onConfirm} className="w-full">Confirmer et Envoyer</Button>
+         {showConfirmButton && onConfirm && <Button onClick={onConfirm} className="w-full">Confirmer et Envoyer</Button>}
     </DialogContent>
 );
 
@@ -95,6 +95,7 @@ export default function WalletPage() {
   const [pinState, setPinState] = useState<'checking' | 'setup' | 'locked' | 'unlocked'>('checking');
   const [showSendDialog, setShowSendDialog] = useState(false);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const [showDetailsDialog, setShowDetailsDialog] = useState(false);
   const [transactionDetails, setTransactionDetails] = useState<TransactionDetails | null>(null);
   const [qrCodeValue, setQrCodeValue] = useState('');
 
@@ -160,7 +161,7 @@ export default function WalletPage() {
   }
   
   const handlePinSetupSuccess = () => {
-     localStorage.setItem('pin_is_set', 'true');
+     localStorage.setItem('user_pin', 'true');
      setPinState('unlocked');
   }
 
@@ -191,6 +192,21 @@ export default function WalletPage() {
 
   const handleRevealInfo = () => {
     setShowSensitiveInfo(true);
+  }
+
+  const handleShowDetails = (tx: typeof transactions[0]) => {
+    const [amount, asset] = tx.amount.replace('+ ', '').replace('- ', '').split(' ');
+    const details: TransactionDetails = {
+        sender: tx.type === 'reçu' || tx.type === 'récompense' ? tx.from.replace('de ', '') : currentWalletData.sahel.address,
+        receiver: tx.type === 'envoyé' ? tx.to.replace('à ', '') : currentWalletData.sahel.address,
+        amount: amount,
+        asset: asset,
+        fee: tx.fee,
+        date: tx.date,
+        transactionId: tx.id,
+    };
+    setTransactionDetails(details);
+    setShowDetailsDialog(true);
   }
 
   if (pinState === 'checking') {
@@ -356,9 +372,14 @@ export default function WalletPage() {
           </Card>
 
             {transactionDetails && (
-                <Dialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
-                    <TransactionConfirmationDialog details={transactionDetails} onConfirm={handleConfirmSend} />
-                </Dialog>
+                <>
+                    <Dialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
+                        <TransactionConfirmationDialog details={transactionDetails} onConfirm={handleConfirmSend} />
+                    </Dialog>
+                    <Dialog open={showDetailsDialog} onOpenChange={setShowDetailsDialog}>
+                        <TransactionConfirmationDialog details={transactionDetails} showConfirmButton={false} />
+                    </Dialog>
+                </>
             )}
 
 
@@ -417,8 +438,11 @@ export default function WalletPage() {
                                       <p className="font-semibold">{tx.amount}</p>
                                       <p className="text-sm text-muted-foreground">{tx.from}</p>
                                   </div>
-                                  <div className="text-right">
+                                  <div className="text-right flex items-center gap-2">
                                       <p className="text-xs text-muted-foreground">{tx.date}</p>
+                                       <Button variant="ghost" size="icon" onClick={() => handleShowDetails(tx)}>
+                                        <MoreHorizontal className="h-4 w-4" />
+                                      </Button>
                                   </div>
                               </div>
                           ))}
