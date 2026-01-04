@@ -1,7 +1,7 @@
 
 'use client';
 
-import React, { useRef } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { AppLayout } from '@/components/AppLayout';
 import { Button } from '@/components/ui/button';
 import { Download, Handshake } from 'lucide-react';
@@ -18,10 +18,8 @@ const currentUser = {
     cvv: '123'
 };
 
-const VisaCard = React.forwardRef<HTMLDivElement>((props, ref) => {
-    const p2pUrl = typeof window !== 'undefined' 
-        ? `${window.location.origin}/p2p?address=${walletData.sahel.address}`
-        : '';
+const VisaCard = React.forwardRef<HTMLDivElement, { p2pUrl: string }>((props, ref) => {
+    const { p2pUrl } = props;
 
     return (
         <div ref={ref} className="w-[350px] h-[220px] bg-gradient-to-br from-yellow-300 via-yellow-400 to-yellow-500 rounded-xl p-6 flex flex-col justify-between shadow-lg text-gray-800 relative overflow-hidden">
@@ -45,7 +43,7 @@ const VisaCard = React.forwardRef<HTMLDivElement>((props, ref) => {
                     <p className="font-semibold text-lg uppercase tracking-wider">{currentUser.name}</p>
                 </div>
                 <div className="bg-white p-1 rounded-md">
-                    <QRCode value={p2pUrl} size={50} />
+                    {p2pUrl ? <QRCode value={p2pUrl} size={50} /> : <div className="w-[50px] h-[50px] bg-gray-200 animate-pulse" />}
                 </div>
             </div>
         </div>
@@ -75,6 +73,13 @@ VisaCardBack.displayName = 'VisaCardBack';
 
 export default function CardPage() {
     const cardContainerRef = useRef<HTMLDivElement>(null);
+    const [p2pUrl, setP2pUrl] = useState('');
+
+    useEffect(() => {
+        // This code runs only on the client, after hydration
+        const url = `${window.location.origin}/p2p?address=${walletData.sahel.address}`;
+        setP2pUrl(url);
+    }, []);
 
     const downloadCardAsPdf = () => {
         if (cardContainerRef.current) {
@@ -100,7 +105,7 @@ export default function CardPage() {
                 </div>
                 
                 <div ref={cardContainerRef} className="space-y-5">
-                    <VisaCard />
+                    <VisaCard p2pUrl={p2pUrl} />
                     <VisaCardBack />
                 </div>
 
