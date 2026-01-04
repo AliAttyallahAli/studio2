@@ -367,17 +367,12 @@ export default function WalletPage() {
               </CardContent>
           </Card>
 
-            {transactionDetails && (
-                <>
-                    <Dialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
-                        <TransactionConfirmationDialog details={transactionDetails} onConfirm={handleConfirmSend} />
-                    </Dialog>
-                    <Dialog open={showDetailsDialog} onOpenChange={setShowDetailsDialog}>
-                        <TransactionConfirmationDialog details={transactionDetails} showConfirmButton={false} />
-                    </Dialog>
-                </>
-            )}
-
+        <Dialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
+            {transactionDetails && <TransactionConfirmationDialog details={transactionDetails} onConfirm={handleConfirmSend} />}
+        </Dialog>
+        <Dialog open={showDetailsDialog} onOpenChange={setShowDetailsDialog}>
+            {transactionDetails && <TransactionConfirmationDialog details={transactionDetails} showConfirmButton={false} />}
+        </Dialog>
 
           <Card>
             <CardHeader>
