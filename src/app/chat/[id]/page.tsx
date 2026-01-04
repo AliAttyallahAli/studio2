@@ -157,6 +157,7 @@ const CallView = ({ contact, type, onHangUp }: { contact: ChatData['contact'], t
     const [callStatus, setCallStatus] = useState<'ringing' | 'active'>('ringing');
     const [callTime, setCallTime] = useState(0);
     const selfViewRef = useRef<HTMLVideoElement>(null);
+    const correspondentViewRef = useRef<HTMLVideoElement>(null);
     const [hasCameraPermission, setHasCameraPermission] = useState(false);
 
     useEffect(() => {
@@ -167,6 +168,9 @@ const CallView = ({ contact, type, onHangUp }: { contact: ChatData['contact'], t
                     setHasCameraPermission(true);
                     if (selfViewRef.current) {
                         selfViewRef.current.srcObject = stream;
+                    }
+                    if (correspondentViewRef.current) {
+                        correspondentViewRef.current.srcObject = stream;
                     }
                 } catch (error) {
                     console.error('Error accessing camera:', error);
@@ -200,8 +204,18 @@ const CallView = ({ contact, type, onHangUp }: { contact: ChatData['contact'], t
     };
 
     return (
-        <div className="absolute inset-0 bg-background/95 z-50 flex flex-col items-center justify-between p-8 text-white">
-            <div className="text-center mt-20">
+        <div className="absolute inset-0 bg-background z-50 flex flex-col items-center justify-between p-8 text-white">
+            {type === 'video' ? (
+                <>
+                    {/* Correspondent's video (main view) */}
+                    <video ref={correspondentViewRef} className="absolute inset-0 w-full h-full object-cover" autoPlay muted playsInline />
+                    <div className="absolute inset-0 bg-black/30"></div>
+                </>
+            ) : (
+                 <div className="absolute inset-0 bg-background/95"></div>
+            )}
+            
+            <div className="relative text-center mt-20 z-10">
                 <Avatar className="w-28 h-28 mx-auto border-4 border-primary">
                     <AvatarImage src={contact.avatar} alt={contact.name} data-ai-hint="profile avatar" />
                     <AvatarFallback>{contact.name.charAt(0)}</AvatarFallback>
@@ -213,12 +227,12 @@ const CallView = ({ contact, type, onHangUp }: { contact: ChatData['contact'], t
             </div>
             
             {type === 'video' && (
-                <div className="w-32 h-48 rounded-lg bg-secondary/50 overflow-hidden absolute top-8 right-8">
+                <div className="w-32 h-48 rounded-lg bg-secondary/50 overflow-hidden absolute top-8 right-8 z-20">
                      <video ref={selfViewRef} className="w-full h-full object-cover" autoPlay muted playsInline />
                 </div>
             )}
 
-            <div className="flex items-center justify-center gap-4">
+            <div className="relative flex items-center justify-center gap-4 z-10">
                  <Button variant="secondary" size="icon" className="rounded-full w-16 h-16 bg-white/10 hover:bg-white/20">
                     {type === 'video' ? <VideoOff className="h-7 w-7" /> : <Volume2 className="h-7 w-7" />}
                 </Button>
@@ -625,3 +639,4 @@ export default function ChatPage({ params }: { params: { id: string } }) {
 }
 
     
+
